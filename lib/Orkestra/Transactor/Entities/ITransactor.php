@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor;
+namespace Orkestra\Transactor\Entities;
 
 interface ITransactor
 {

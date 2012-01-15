@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor;
+namespace Orkestra\Transactor\Entities;
 
 use Doctrine\ORM\Mapping as ORM,
     Orkestra\Transactor\Exceptions\TransactException;
@@ -15,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"Test" = "Orkestra\Transactor\TestTransactor"})
  * @ORM\Entity
+ * @package Orkestra
+ * @subpackage Transactor
  */
 abstract class TransactorBase
 {
