@@ -2,7 +2,7 @@
 
 namespace Orkestra\Transactor\Entities;
 
-use \Doctrine\ORM\Mapping as ORM,
+use Doctrine\ORM\Mapping as ORM,
     \DateTime;
 
 /**
@@ -42,7 +42,28 @@ class Transaction extends EntityBase
      * @ORM\Column(name="amount", type="decimal", precision=12, scale=2)
      */
     protected $amount;
-
+    
+    /**
+     * @var string $account
+     *
+     * @ORM\Column(name="account", type="string")
+     */
+    protected $account;
+    
+    /**
+     * @var array $data
+     *
+     * @ORM\Column(name="data", type="array")
+     */
+    protected $data = array();
+    
+    /**
+     * @var string $description
+     *
+     * @ORM\Column(name="description", type="string")
+     */
+    protected $description = '';
+    
     /**
      * @var boolean $transacted
      *
@@ -56,13 +77,6 @@ class Transaction extends EntityBase
      * @ORM\Column(name="date_transacted", type="datetime")
      */
     protected $dateTransacted;
-
-    /**
-     * @var string $description
-     *
-     * @ORM\Column(name="description", type="string")
-     */
-    protected $description = '';
 
     /**
      * @var string $type
@@ -98,6 +112,68 @@ class Transaction extends EntityBase
         return $this->amount;
     }
         
+    /**
+     * Set Account
+     *
+     * @param string $account
+     */
+    public function setAccount($account)
+    {
+        $this->account = $account;
+    }
+    
+    /**
+     * Get Account
+     *
+     * @return string
+     */
+    public function getAccount()
+    {
+        return $this->account;
+    }
+    
+    /**
+     * Set Data
+     *
+     * @param string $key The key of which data to set
+     * @param mixed $value
+     */
+    public function setData($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+    
+    /**
+     * Get Data
+     *
+     * @param string $key The key of which data to get
+     * @return mixed
+     */
+    public function getData($key)
+    {
+        return empty($this->data[$key]) ? null : $this->data[$key];
+    }
+    
+    /**
+     * Set Description
+     *
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * Get Description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
     /**
      * Set Transacted
      *
@@ -147,26 +223,6 @@ class Transaction extends EntityBase
     {
         return $this->dateTransacted;
     }
-    
-    /**
-     * Set Description
-     *
-     * @param string $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * Get Description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
 
     /**
      * Set Type
@@ -195,7 +251,7 @@ class Transaction extends EntityBase
     /**
      * Set Result
      *
-     * @param Orkestra\Transactor\TransactionResult $result
+     * @param Orkestra\Transactor\TransactionResultBase $result
      */
     public function setResult(TransactionResultBase $result)
     {
@@ -205,7 +261,7 @@ class Transaction extends EntityBase
     /**
      * Get Type
      *
-     * @return Orkestra\Transactor\TransactionResult
+     * @return Orkestra\Transactor\TransactionResultBase
      */
     public function getResult()
     {

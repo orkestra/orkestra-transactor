@@ -2,7 +2,7 @@
 
 namespace Orkestra\Transactor\Entities;
 
-use \Doctrine\ORM\Mapping as ORM,
+use Doctrine\ORM\Mapping as ORM,
     \DateTime;
 
 /**

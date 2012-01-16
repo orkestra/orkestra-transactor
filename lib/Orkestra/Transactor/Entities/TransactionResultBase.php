@@ -2,7 +2,7 @@
 
 namespace Orkestra\Transactor\Entities;
 
-use \Doctrine\ORM\Mapping as ORM,
+use Doctrine\ORM\Mapping as ORM,
     \DateTime;
 
 /**
@@ -22,6 +22,20 @@ use \Doctrine\ORM\Mapping as ORM,
 abstract class TransactionResultBase extends EntityBase
 {
     /**
+     * @var string $message
+     *
+     * @ORM\Column(name="message", type="string")
+     */
+    protected $message = '';
+    
+    /**
+     * @var array $data
+     *
+     * @ORM\Column(name="data", type="array")
+     */
+    protected $data = array();
+        
+    /**
      * @var Orkestra\Transactor\Entities\Transaction
      *
      * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entities\Transaction", inversedBy="result")
@@ -40,4 +54,65 @@ abstract class TransactionResultBase extends EntityBase
      * })
      */
     protected $transactor;
+    
+    /**
+     * Constructor
+     *
+     * @param Orkestra\Transactor\Entities\TransactorBase $transactor
+     * @param Orkestra\Transactor\Entities\Transaction $transaction
+     */
+    public function __construct(TransactorBase $transactor, Transaction $transaction, $message = '', $data = array())
+    {
+        parent::__construct();
+        
+        $this->transactor = $transactor;
+        $this->transaction = $transaction;
+        $this->message = $message;
+        $this->data = (array)$data;
+        $transaction->setResult($this);
+        $transaction->setTransacted(true);
+        $transaction->setDateTransacted(new DateTime());
+    }
+    
+    /**
+     * Set Message
+     *
+     * @param string $message
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+
+    /**
+     * Get Message
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+    
+    /**
+     * Set Data
+     *
+     * @param string $key The key of which data to set
+     * @param mixed $value
+     */
+    public function setData($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+    
+    /**
+     * Get Data
+     *
+     * @param string $key The key of which data to get
+     * @return mixed
+     */
+    public function getData($key)
+    {
+        return empty($this->data[$key]) ? null : $this->data[$key];
+    }
 }

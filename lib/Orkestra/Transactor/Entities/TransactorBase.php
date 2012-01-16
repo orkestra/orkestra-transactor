@@ -22,13 +22,31 @@ use Doctrine\ORM\Mapping as ORM,
  */
 abstract class TransactorBase extends EntityBase
 {
+    /**
+     * @var array $_supportedTypes An array of Transaction::TYPE_* constants
+     */
     protected static $_supportedTypes = array();
     
-    protected $credentials = array();
-    
+    /**
+     * @var string $name
+     *
+     * @ORM\Column(name="name", type="string")
+     */
     protected $name;
     
-    protected $description;
+    /**
+     * @var string $description
+     *
+     * @ORM\Column(name="description", type="string")
+     */
+    protected $description = '';
+    
+    /**
+     * @var array $credentials
+     *
+     * @ORM\Column(name="credentials", type="array")
+     */
+    protected $credentials = array();
     
     /**
      * Transact
@@ -63,5 +81,67 @@ abstract class TransactorBase extends EntityBase
         }
         
         return true;
+    }
+    
+    /**
+     * Set Name
+     *
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
+    /**
+     * Get Name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * Set Description
+     *
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * Get Description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
+    /**
+     * Set Credential
+     *
+     * @param string $key The key of which credential to set
+     * @param mixed $value
+     */
+    public function setCredential($key, $value)
+    {
+        $this->credentials[$key] = $value;
+    }
+    
+    /**
+     * Get Credential
+     *
+     * @param string $key The key of which credential to get
+     * @return mixed
+     */
+    public function getCredential($key)
+    {
+        return empty($this->credentials[$key]) ? null : $this->credentials[$key];
     }
 }

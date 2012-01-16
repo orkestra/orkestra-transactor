@@ -2,12 +2,22 @@
 
 namespace Orkestra\Transactor\Entities\Transactor;
 
-use Orkestra\Transactor\Entities\TransactorBase,
+use Doctrine\ORM\Mapping as ORM,
+    Orkestra\Transactor\Entities\TransactorBase,
     Orkestra\Transactor\Entities\Transaction,
     Orkestra\Transactor\Kernel\HttpKernel,
     Symfony\Component\HttpFoundation\Request,
     Symfony\Component\HttpFoundation\Response;
 
+/**
+ * NMI Transactor
+ *
+ * Concrete NMI Transactor implementation
+ *
+ * @ORM\Entity
+ * @package Orkestra
+ * @subpackage Transactor
+ */
 class NmiTransactor extends TransactorBase
 {
     protected static $_supportedTypes = array(

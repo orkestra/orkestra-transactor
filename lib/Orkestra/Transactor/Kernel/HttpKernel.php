@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Request,
  *
  * This kernel provides a wrapper for cURL to execute a given Request and return
  * a normalized Response object.
+ *
+ * @package Orkestra
+ * @subpackage Transactor
  */
 class HttpKernel implements IKernel
 {

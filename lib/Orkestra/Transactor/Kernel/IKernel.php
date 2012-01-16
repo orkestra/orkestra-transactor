@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * A Kernel, in this context, is responsible for transforming (or executing) a
  * Request object into a Response object
+ *
+ * @package Orkestra
+ * @subpackage Transactor
  */
 interface IKernel
 {
