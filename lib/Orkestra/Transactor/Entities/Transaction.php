@@ -17,6 +17,25 @@ use \Doctrine\ORM\Mapping as ORM,
  */
 class Transaction extends EntityBase
 {
+    const TYPE_CARD_SALE = 'card.sale';
+    const TYPE_CARD_AUTH = 'card.auth';
+    const TYPE_ACH_REQEST = 'ach.request';
+    const TYPE_ACH_RESPONSE = 'ach.response';
+    const TYPE_MFA_TRANSFER = 'mfa.transfer';
+    
+    protected static $_types = array(
+        self::TYPE_CARD_SALE,
+        self::TYPE_CARD_AUTH,
+        self::TYPE_ACH_REQUEST,
+        self::TYPE_ACH_RESPONSE,
+        self::TYPE_MFA_TRANSFER
+    );
+    
+    public static function getTypes()
+    {
+        return static::$_types;
+    }
+    
     /**
      * @var decimal $amount
      *
@@ -41,27 +60,21 @@ class Transaction extends EntityBase
     /**
      * @var string $description
      *
-     * @ORM\Column(name="description", type="string", length=255)
+     * @ORM\Column(name="description", type="string")
      */
     protected $description = '';
 
     /**
-     * @var Orkestra\Transactor\TransactionType
+     * @var string $type
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\TransactionType", inversedBy="transaction")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="type_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="type", type="string")
      */
     protected $type;
 
 	/**
-     * @var Orkestra\Transactor\TransactionResult
+     * @var Orkestra\Transactor\TransactionResult $result
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\TransactionResult", inversedBy="transaction")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="result_id", referencedColumnName="id")
-     * })
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entities\TransactionResultBase", mappedBy="transaction")
      */
     protected $result;
     
@@ -158,17 +171,21 @@ class Transaction extends EntityBase
     /**
      * Set Type
      *
-     * @param Orkestra\Transactor\TransactionType $type
+     * @param string $type A valid transaction type
      */
-    public function setType(TransactionTypeBase $type)
+    public function setType($type)
     {
+        if (!in_array($type, static::$_types)) {
+            throw new \InvalidArgumentException('Invalid type specified.');
+        }
+        
         $this->type = $type;
     }
 
     /**
      * Get Type
      *
-     * @return Orkestra\Transactor\TransactionType
+     * @return string
      */
     public function getType()
     {
