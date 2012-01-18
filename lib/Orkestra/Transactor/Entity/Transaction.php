@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Entities;
+namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     \DateTime;
@@ -19,10 +19,13 @@ class Transaction extends EntityBase
 {
     const TYPE_CARD_SALE = 'card.sale';
     const TYPE_CARD_AUTH = 'card.auth';
-    const TYPE_ACH_REQEST = 'ach.request';
+    const TYPE_ACH_REQUEST = 'ach.request';
     const TYPE_ACH_RESPONSE = 'ach.response';
     const TYPE_MFA_TRANSFER = 'mfa.transfer';
     
+    /**
+     * @var array
+     */
     protected static $_types = array(
         self::TYPE_CARD_SALE,
         self::TYPE_CARD_AUTH,
@@ -31,6 +34,13 @@ class Transaction extends EntityBase
         self::TYPE_MFA_TRANSFER
     );
     
+    /**
+     * Get Types
+     *
+     * Returns an array of available transaction types
+     *
+     * @return array Array of available transaction types
+     */
     public static function getTypes()
     {
         return static::$_types;
@@ -38,57 +48,37 @@ class Transaction extends EntityBase
     
     /**
      * @var decimal $amount
-     *
      * @ORM\Column(name="amount", type="decimal", precision=12, scale=2)
      */
     protected $amount;
     
     /**
-     * @var string $account
-     *
-     * @ORM\Column(name="account", type="string")
-     */
-    protected $account;
-    
-    /**
-     * @var array $data
-     *
-     * @ORM\Column(name="data", type="array")
-     */
-    protected $data = array();
-    
-    /**
-     * @var string $description
-     *
-     * @ORM\Column(name="description", type="string")
-     */
-    protected $description = '';
-    
-    /**
      * @var boolean $transacted
-     *
      * @ORM\Column(name="transacted", type="boolean")
      */
     protected $transacted = false;
 
     /**
      * @var DateTime $dateTransacted
-     *
      * @ORM\Column(name="date_transacted", type="datetime")
      */
     protected $dateTransacted;
 
     /**
      * @var string $type
-     *
      * @ORM\Column(name="type", type="string")
      */
     protected $type;
-
+    
+    /**
+     * @var Orkestra\Transactor\Entity\AccountBase $account
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", mappedBy="transaction")
+     */
+    protected $account;
+     
 	/**
-     * @var Orkestra\Transactor\TransactionResult $result
-     *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entities\TransactionResultBase", mappedBy="transaction")
+     * @var Orkestra\Transactor\Entity\TransactionResult $result
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactionResultBase", mappedBy="transaction")
      */
     protected $result;
     
@@ -111,69 +101,7 @@ class Transaction extends EntityBase
     {
         return $this->amount;
     }
-        
-    /**
-     * Set Account
-     *
-     * @param string $account
-     */
-    public function setAccount($account)
-    {
-        $this->account = $account;
-    }
-    
-    /**
-     * Get Account
-     *
-     * @return string
-     */
-    public function getAccount()
-    {
-        return $this->account;
-    }
-    
-    /**
-     * Set Data
-     *
-     * @param string $key The key of which data to set
-     * @param mixed $value
-     */
-    public function setData($key, $value)
-    {
-        $this->data[$key] = $value;
-    }
-    
-    /**
-     * Get Data
-     *
-     * @param string $key The key of which data to get
-     * @return mixed
-     */
-    public function getData($key)
-    {
-        return empty($this->data[$key]) ? null : $this->data[$key];
-    }
-    
-    /**
-     * Set Description
-     *
-     * @param string $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
 
-    /**
-     * Get Description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-    
     /**
      * Set Transacted
      *
@@ -246,6 +174,26 @@ class Transaction extends EntityBase
     public function getType()
     {
         return $this->type;
+    }
+    
+    /**
+     * Set Account
+     *
+     * @param Orkestra\Transactor\Entity\AccountBase $account
+     */
+    public function setAccount(AccountBase $account)
+    {
+        $this->account = $account;
+    }
+    
+    /**
+     * Get Account
+     *
+     * @return Orkestra\Transactor\Entity\AccountBase
+     */
+    public function getAccount()
+    {
+        return $this->account;
     }
     
     /**

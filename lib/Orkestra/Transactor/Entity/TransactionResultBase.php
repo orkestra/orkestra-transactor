@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Entities;
+namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     \DateTime;
@@ -12,9 +12,10 @@ use Doctrine\ORM\Mapping as ORM,
  *
  * @ORM\Table(name="orkestra_transaction_results")
  * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "ApprovedResult" = "Orkestra\Transactor\Entities\TransactorResult\ApprovedResult"
+ *   "ApprovedResult" = "Orkestra\Transactor\Entity\TransactionResult\ApprovedResult"
  * })
  * @package Orkestra
  * @subpackage Transactor
@@ -23,22 +24,20 @@ abstract class TransactionResultBase extends EntityBase
 {
     /**
      * @var string $message
-     *
      * @ORM\Column(name="message", type="string")
      */
     protected $message = '';
     
     /**
      * @var array $data
-     *
      * @ORM\Column(name="data", type="array")
      */
     protected $data = array();
         
     /**
-     * @var Orkestra\Transactor\Entities\Transaction
+     * @var Orkestra\Transactor\Entity\Transaction
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entities\Transaction", inversedBy="result")
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
      * })
@@ -46,9 +45,9 @@ abstract class TransactionResultBase extends EntityBase
     protected $transaction;
     
     /**
-     * @var Orkestra\Transactor\Entities\Transactor
+     * @var Orkestra\Transactor\Entity\Transactor
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entities\Transactor")
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transactor")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transactor_id", referencedColumnName="id")
      * })
@@ -58,8 +57,8 @@ abstract class TransactionResultBase extends EntityBase
     /**
      * Constructor
      *
-     * @param Orkestra\Transactor\Entities\TransactorBase $transactor
-     * @param Orkestra\Transactor\Entities\Transaction $transaction
+     * @param Orkestra\Transactor\Entity\TransactorBase $transactor
+     * @param Orkestra\Transactor\Entity\Transaction $transaction
      */
     public function __construct(TransactorBase $transactor, Transaction $transaction, $message = '', $data = array())
     {

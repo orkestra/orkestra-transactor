@@ -1,8 +1,8 @@
 <?php
 
-namespace Orkestra\Transactor\Entities\TransactionResult;
+namespace Orkestra\Transactor\Entity\TransactionResult;
 
-use Orkestra\Transactor\Entities\TransactionResultBase;
+use Orkestra\Transactor\Entity\TransactionResultBase;
 
 use Doctrine\ORM\Mapping as ORM;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Entities;
+namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     \DateTime;
@@ -47,11 +47,19 @@ abstract class EntityBase
      */
     protected $dateCreated;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->dateCreated = new DateTime();
     }
     
+    /**
+     * To String
+     *
+     * @return string
+     */
     public function __toString()
     {
         return sprintf('%s:%s', get_class($this), spl_object_hash($this));
@@ -126,7 +134,10 @@ abstract class EntityBase
     }
 
     /**
-     * {@inheritdoc}
+     * Validate
+     *
+     * This method allows subclasses to implement validation before an
+     * entity is persisted or updated.
      *
      * @ORM\prePersist
 	 * @ORM\preUpdate

@@ -1,9 +1,9 @@
 <?php
 
-namespace Orkestra\Transactor\Entities;
+namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Transactor\Exceptions\TransactException;
+    Orkestra\Transactor\Exception\TransactException;
 
 /**
  * Transactor Base
@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "NmiTransactor" = "Orkestra\Transactor\Entities\Transactor\NmiTransactor"
+ *   "NmiCardTransactor" = "Orkestra\Transactor\Entity\Transactor\NmiCardTransactor"
  * })
  * @ORM\Entity
  * @package Orkestra
@@ -29,21 +29,18 @@ abstract class TransactorBase extends EntityBase
     
     /**
      * @var string $name
-     *
      * @ORM\Column(name="name", type="string")
      */
     protected $name;
     
     /**
      * @var string $description
-     *
      * @ORM\Column(name="description", type="string")
      */
     protected $description = '';
     
     /**
      * @var array $credentials
-     *
      * @ORM\Column(name="credentials", type="array")
      */
     protected $credentials = array();
@@ -53,7 +50,7 @@ abstract class TransactorBase extends EntityBase
      *
      * @return Orkestra\Transactor\TransactionResult
      */
-    public function transact(Transaction $transaction)
+    public function transact(Transaction $transaction, $options = array())
     {
         if ($transaction->isTransacted()) {
             throw new TransactException('This transaction has already been processed.');
@@ -74,9 +71,9 @@ abstract class TransactorBase extends EntityBase
     public function supports($type)
     {
         if (!in_array($type, Transaction::getTypes())) {
-            throw new \InvalidArgumentException(sprintf('Invalid transation type: %s', $type));
+            throw new \InvalidArgumentException(sprintf('Invalid transaction type: %s', $type));
         }
-        else if (!in_array($type, static::getTypes())) {
+        else if (!in_array($type, static::$_supportedTypes)) {
             return false;
         }
         

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Exceptions;
+namespace Orkestra\Transactor\Exception;
 
 /**
  * Transact Exception
