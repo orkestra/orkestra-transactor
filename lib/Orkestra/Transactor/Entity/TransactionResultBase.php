@@ -47,7 +47,7 @@ abstract class TransactionResultBase extends EntityBase
     /**
      * @var Orkestra\Transactor\Entity\Transactor
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transactor")
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactorBase")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transactor_id", referencedColumnName="id")
      * })
