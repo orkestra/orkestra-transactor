@@ -3,13 +3,14 @@
 namespace Orkestra\Transactor\Entity\Transactor;
 
 use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Transactor\Entity\TransactorBase,
+    Symfony\Component\HttpFoundation\Request,
+    Symfony\Component\HttpFoundation\Response;
+    
+use Orkestra\Transactor\Entity\TransactorBase,
     Orkestra\Transactor\Entity\Transaction,
     Orkestra\Transactor\Entity\Account\CardAccount,
     Orkestra\Transactor\Kernel\HttpKernel,
-    Orkestra\Transactor\Exception\ValidationException,
-    Symfony\Component\HttpFoundation\Request,
-    Symfony\Component\HttpFoundation\Response;
+    Orkestra\Transactor\Exception\ValidationException;
 
 /**
  * NMI Transactor
@@ -44,6 +45,11 @@ class NmiCardTransactor extends TransactorBase
         $response = $kernel->handle($request);
         
         // Parse the response information to determine the result
+    }
+    
+    public function getType()
+    {
+        return 'NMI Card Transactor';
     }
     
     protected function _validateTransaction(Transaction $transaction)

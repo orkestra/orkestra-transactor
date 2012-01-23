@@ -2,8 +2,9 @@
 
 namespace Orkestra\Transactor\Entity;
 
-use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Transactor\Exception\TransactException;
+use Doctrine\ORM\Mapping as ORM;
+
+use Orkestra\Transactor\Exception\TransactException;
 
 /**
  * Transactor Base
@@ -80,6 +81,8 @@ abstract class TransactorBase extends EntityBase
         return true;
     }
     
+    abstract public function getType();
+    
     /**
      * Set Name
      *
@@ -107,7 +110,7 @@ abstract class TransactorBase extends EntityBase
      */
     public function setDescription($description)
     {
-        $this->description = $description;
+        $this->description = $description ?: '';
     }
 
     /**
@@ -140,5 +143,25 @@ abstract class TransactorBase extends EntityBase
     public function getCredential($key)
     {
         return empty($this->credentials[$key]) ? null : $this->credentials[$key];
+    }
+    
+    /**
+     * Set Credentials
+     *
+     * @param array $credentials An array of credentials
+     */
+    public function setCredentials(array $credentials)
+    {
+        $this->credentials = $credentials;
+    }
+    
+    /**
+     * Get Credentials
+     *
+     * @param array An array of credentials
+     */
+    public function getCredentials()
+    {
+        return $this->credentials;
     }
 }
