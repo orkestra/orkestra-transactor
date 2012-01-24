@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM,
  *
  * Represents a single transaction
  *
- * @ORM\Table(name="orkestra_transactions", indexes={@ORM\Index(name="IX_transaction_date", columns={"date_posted"})})
+ * @ORM\Table(name="orkestra_transactions", indexes={@ORM\Index(name="IX_date_transacted", columns={"date_transacted"})})
  * @ORM\Entity
  * @package Orkestra
  * @subpackage Transactor
