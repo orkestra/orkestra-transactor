@@ -32,13 +32,20 @@ class NmiCardTransactor extends TransactorBase
         parent::transact($transaction);
         
         $this->_validateTransaction($transaction);
+        
+        $account = $transaction->getAccount();
                 
         // Set appropriate request information
         $params = array(
             'type' => $this->_getNmiType($transaction),
+            'username' => $this->getCredential('username'),
+            'password' => $this->getCredential('password'),
+            'ccnumber' => $account->getAccountNumber(),
+            'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 0, 2),
+            'amount' => $transaction->getAmount(),
         );
         
-        $request = Request::create();
+        $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
         
         $kernel = new HttpKernel();
         
@@ -60,8 +67,11 @@ class NmiCardTransactor extends TransactorBase
             throw ValidationException::missingAccountInformation();
         }
         
-        if (null == $account->getAccountNumber()) {
+        if (null === $account->getAccountNumber()) {
             throw ValidationException::missingRequiredParameter('account number');
+        }
+        else if (null === $account->getExpMonth() || null === $account->getExpYear()) {
+            throw ValidationException::missingRequiredParameter('card expiration');
         }
     }
     

@@ -72,7 +72,10 @@ class Transaction extends EntityBase
     
     /**
      * @var Orkestra\Transactor\Entity\AccountBase $account
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", mappedBy="transaction")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", inversedBy="transactions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
+     * })
      */
     protected $account;
      
