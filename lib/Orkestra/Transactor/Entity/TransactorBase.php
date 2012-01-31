@@ -81,6 +81,23 @@ abstract class TransactorBase extends EntityBase
         return true;
     }
     
+    /**
+     * To String
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf('%s (%s)', $this->getName(), $this->getType());
+    }
+    
+    /**
+     * Get Type
+     *
+     * Returns a string containing the type of transactor this is
+     *
+     * @return string
+     */
     abstract public function getType();
     
     /**
