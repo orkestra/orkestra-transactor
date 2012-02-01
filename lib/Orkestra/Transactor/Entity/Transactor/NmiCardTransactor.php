@@ -8,6 +8,9 @@ use Doctrine\ORM\Mapping as ORM,
     
 use Orkestra\Transactor\Entity\TransactorBase,
     Orkestra\Transactor\Entity\Transaction,
+    Orkestra\Transactor\Entity\TransactionResult\ApprovedResult,
+    Orkestra\Transactor\Entity\TransactionResult\DeclinedResult,
+    Orkestra\Transactor\Entity\TransactionResult\ErrorResult,
     Orkestra\Transactor\Entity\Account\CardAccount,
     Orkestra\Transactor\Kernel\HttpKernel,
     Orkestra\Transactor\Exception\ValidationException;
@@ -24,7 +27,12 @@ use Orkestra\Transactor\Entity\TransactorBase,
 class NmiCardTransactor extends TransactorBase
 {
     protected static $_supportedTypes = array(
-        Transaction::TYPE_CARD_SALE
+        Transaction::TYPE_CARD_SALE,
+        Transaction::TYPE_CARD_AUTH,
+        Transaction::TYPE_CARD_CAPTURE,
+        Transaction::TYPE_CARD_CREDIT,
+        Transaction::TYPE_CARD_REFUND,
+        Transaction::TYPE_CARD_VOID,
     );
     
     public function transact(Transaction $transaction, $options = array())
@@ -51,9 +59,27 @@ class NmiCardTransactor extends TransactorBase
         
         $response = $kernel->handle($request);
         
-        // Parse the response information to determine the result
+        $responseData = array();
+        parse_str($response->getContent(), $responseData);
+        
+        if (empty($responseData['response']) || $responseData['response'] == '3') {
+            $result = new ErrorResult($this, $transaction, 
+                empty($responseData['responsetext']) ? 'An unknown error occurred.' : $responseData['responsetext']);
+        }
+        else if ($responseData['response'] == '2') {
+            $result = new DeclinedResult($this, $transaction,
+                empty($responseData['responsetext']) ? 'An unknown error occurred.' : $responseData['responsetext']);
+        }
+        else {
+            $result = new ApprovedResult($this, $transaction);
+        }
+        
+        return $result;
     }
     
+    /**
+     * {@inheritdoc}
+     */
     public function getType()
     {
         return 'NMI Card Transactor';
@@ -82,8 +108,14 @@ class NmiCardTransactor extends TransactorBase
                 return 'sale';
             case Transaction::TYPE_CARD_AUTH:
                 return 'auth';
-            default:
-                return 'nope';
+            case Transaction::TYPE_CARD_CAPTURE:
+                return 'capture';
+            case Transaction::TYPE_CARD_CREDIT:
+                return 'credit';
+            case Transaction::TYPE_CARD_REFUND:
+                return 'refund';
+            case Transaction::TYPE_CARD_VOID:
+                return 'void';
         }
     }
 }

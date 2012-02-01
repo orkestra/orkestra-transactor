@@ -54,10 +54,10 @@ abstract class TransactorBase extends EntityBase
     public function transact(Transaction $transaction, $options = array())
     {
         if ($transaction->isTransacted()) {
-            throw new TransactException('This transaction has already been processed.');
+            throw TransactException::transactionAlreadyProcessed();
         }
         else if (!$this->supports($transaction->getType())) {
-            throw new TransactException('The given transaction is not supported by this Transactor');
+            throw TransactException::unsupportedTransactionType($transaction->getType());
         }
     }
     
@@ -72,7 +72,7 @@ abstract class TransactorBase extends EntityBase
     public function supports($type)
     {
         if (!in_array($type, Transaction::getTypes())) {
-            throw new \InvalidArgumentException(sprintf('Invalid transaction type: %s', $type));
+            throw TransactException::invalidTransactionType($type);
         }
         else if (!in_array($type, static::$_supportedTypes)) {
             return false;

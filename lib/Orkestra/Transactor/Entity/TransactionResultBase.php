@@ -15,7 +15,9 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "ApprovedResult" = "Orkestra\Transactor\Entity\TransactionResult\ApprovedResult"
+ *   "ApprovedResult" = "Orkestra\Transactor\Entity\TransactionResult\ApprovedResult",
+ *   "DeclinedResult" = "Orkestra\Transactor\Entity\TransactionResult\DeclinedResult",
+ *   "ErrorResult" = "Orkestra\Transactor\Entity\TransactionResult\ErrorResult"
  * })
  * @package Orkestra
  * @subpackage Transactor
@@ -37,7 +39,7 @@ abstract class TransactionResultBase extends EntityBase
     /**
      * @var Orkestra\Transactor\Entity\Transaction
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result")
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
      * })
@@ -47,7 +49,7 @@ abstract class TransactionResultBase extends EntityBase
     /**
      * @var Orkestra\Transactor\Entity\Transactor
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactorBase")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\TransactorBase")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transactor_id", referencedColumnName="id")
      * })

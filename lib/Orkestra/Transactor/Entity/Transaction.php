@@ -4,6 +4,8 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     \DateTime;
+    
+use Orkestra\Transactor\Exception\TransactException;
 
 /**
  * Transaction Entity
@@ -19,8 +21,14 @@ class Transaction extends EntityBase
 {
     const TYPE_CARD_SALE = 'card.sale';
     const TYPE_CARD_AUTH = 'card.auth';
+    const TYPE_CARD_CAPTURE = 'card.capture';
+    const TYPE_CARD_CREDIT = 'card.credit';
+    const TYPE_CARD_REFUND = 'card.refund';
+    const TYPE_CARD_VOID = 'card.void';
+    
     const TYPE_ACH_REQUEST = 'ach.request';
     const TYPE_ACH_RESPONSE = 'ach.response';
+    
     const TYPE_MFA_TRANSFER = 'mfa.transfer';
     
     /**
@@ -29,6 +37,10 @@ class Transaction extends EntityBase
     protected static $_types = array(
         self::TYPE_CARD_SALE,
         self::TYPE_CARD_AUTH,
+        self::TYPE_CARD_CAPTURE,
+        self::TYPE_CARD_CREDIT,
+        self::TYPE_CARD_REFUND,
+        self::TYPE_CARD_VOID,
         self::TYPE_ACH_REQUEST,
         self::TYPE_ACH_RESPONSE,
         self::TYPE_MFA_TRANSFER
@@ -72,7 +84,7 @@ class Transaction extends EntityBase
     
     /**
      * @var Orkestra\Transactor\Entity\AccountBase $account
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", inversedBy="transactions")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
      * })
@@ -81,7 +93,7 @@ class Transaction extends EntityBase
      
 	/**
      * @var Orkestra\Transactor\Entity\TransactionResult $result
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactionResultBase", mappedBy="transaction")
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactionResultBase", mappedBy="transaction", cascade={"persist"})
      */
     protected $result;
     
@@ -163,7 +175,7 @@ class Transaction extends EntityBase
     public function setType($type)
     {
         if (!in_array($type, static::$_types)) {
-            throw new \InvalidArgumentException('Invalid type specified.');
+            throw TransactException::invalidTransactionType($type);
         }
         
         $this->type = $type;

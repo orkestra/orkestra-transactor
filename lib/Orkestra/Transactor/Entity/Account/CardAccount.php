@@ -64,4 +64,64 @@ class CardAccount extends AccountBase
      * @ORM\Column(name="card_postal_code", type="string", nullable=true)
      */
     protected $postalCode;
+    
+    /**
+     * Set Exp Month
+     *
+     * @param string $expMonth
+     */
+    public function setExpMonth($expMonth)
+    {
+        $this->expMonth = $expMonth;
+    }
+    
+    /**
+     * Get Exp Month
+     *
+     * @return string
+     */
+    public function getExpMonth()
+    {
+        return $this->expMonth;
+    }
+    
+    /**
+     * Set Exp Year
+     *
+     * @param string $expYear
+     */
+    public function setExpYear($expYear)
+    {
+        $this->expYear = $expYear;
+    }
+    
+    /**
+     * Get Exp Year
+     *
+     * @return string
+     */
+    public function getExpYear()
+    {
+        return $this->expYear;
+    }
+    
+    /**
+     * Set Cvv
+     *
+     * @param string $cvv
+     */
+    public function setCvv($cvv)
+    {
+        $this->cvv = $cvv;
+    }
+    
+    /**
+     * Get Cvv
+     *
+     * @return string
+     */
+    public function getCvv()
+    {
+        return $this->cvv;
+    }
 }

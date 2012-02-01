@@ -38,7 +38,7 @@ abstract class AccountBase extends EntityBase
     
     /**
      * @var Orkestra\Transactor\Entity\Transaction
-     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="account")
+     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="account", cascade={"persist"})
      */
     protected $transactions;
     
