@@ -49,7 +49,7 @@ class NmiCardTransactor extends TransactorBase
             'username' => $this->getCredential('username'),
             'password' => $this->getCredential('password'),
             'ccnumber' => $account->getAccountNumber(),
-            'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 0, 2),
+            'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 2),
             'amount' => $transaction->getAmount(),
         );
         

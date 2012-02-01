@@ -26,11 +26,14 @@ class HttpKernel implements IKernel
         $headers = $this->_convertHeadersToCurlFormat($request->headers->all());
         $params = $request->request->all();
         
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+        if ($request->getMethod() == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+        }
+        else if ($request->getMethod() != 'GET') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
         
         $rawResponse = curl_exec($ch);
         $info = curl_getinfo($ch);
