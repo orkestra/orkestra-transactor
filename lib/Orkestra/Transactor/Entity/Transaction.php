@@ -83,6 +83,21 @@ class Transaction extends EntityBase
     protected $type;
     
     /**
+     * @var Orkestra\Transactor\Entity\Transaction $parent
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * })
+     */
+    protected $parent;
+    
+    /**
+     * @var Doctrine\Common\Collections\Collection $children
+     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="parent", cascade={"persist"})
+     */
+    protected $children;
+    
+    /**
      * @var Orkestra\Transactor\Entity\AccountBase $account
      * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumns({
@@ -96,6 +111,14 @@ class Transaction extends EntityBase
      * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactionResultBase", mappedBy="transaction", cascade={"persist"})
      */
     protected $result;
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+    }
     
     /**
      * Set Amount
@@ -189,6 +212,53 @@ class Transaction extends EntityBase
     public function getType()
     {
         return $this->type;
+    }
+    
+    /**
+     * Set Parent
+     *
+     * @param Orkestra\Transactor\Entity\Transaction $parent
+     */
+    public function setParent(Transaction $parent)
+    {
+        $this->parent = $parent;
+    }
+    
+    /**
+     * Get Parent
+     *
+     * @return Orkestra\Transactor\Entity\Transaction
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+    
+    /**
+     * Create Child
+     *
+     * @return Orkestra\Transactor\Entity\Transaction
+     */
+    public function createChild($type, $amount = 0)
+    {
+        $child = new Transaction();
+        $child->setType($type);
+        $child->setAmount($amount);
+        $child->setAccount($this->account);
+        $child->setParent($this);
+        $this->children[] = $child;
+        
+        return $child;
+    }
+    
+    /**
+     * Get Children
+     *
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getChildren()
+    {
+        return $this->children;
     }
     
     /**
