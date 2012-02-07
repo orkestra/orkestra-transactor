@@ -35,44 +35,37 @@ class NmiCardTransactor extends TransactorBase
         Transaction::TYPE_CARD_VOID,
     );
     
+    /**
+     * {@inheritdoc}
+     */
     public function transact(Transaction $transaction, $options = array())
     {
         parent::transact($transaction);
-        
+
         $this->_validateTransaction($transaction);
-        
-        $account = $transaction->getAccount();
-                
-        // Set appropriate request information
-        $params = array(
-            'type' => $this->_getNmiType($transaction),
-            'username' => $this->getCredential('username'),
-            'password' => $this->getCredential('password'),
-            'ccnumber' => $account->getAccountNumber(),
-            'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 2),
-            'amount' => $transaction->getAmount(),
-        );
-        
+        $params = $this->_buildParams($transaction);
+
         $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
-        
         $kernel = new HttpKernel();
-        
         $response = $kernel->handle($request);
         
         $responseData = array();
         parse_str($response->getContent(), $responseData);
         
         if (empty($responseData['response']) || $responseData['response'] == '3') {
-            $result = new ErrorResult($this, $transaction, 
+            $result = new ErrorResult($this, $transaction, empty($responseData['transactionid']) ? '' : $responseData['transactionid'],
                 empty($responseData['responsetext']) ? 'An unknown error occurred.' : $responseData['responsetext']);
         }
         else if ($responseData['response'] == '2') {
-            $result = new DeclinedResult($this, $transaction,
+            $result = new DeclinedResult($this, $transaction, $responseData['transactionid'],
                 empty($responseData['responsetext']) ? 'An unknown error occurred.' : $responseData['responsetext']);
         }
         else {
-            $result = new ApprovedResult($this, $transaction);
+            $result = new ApprovedResult($this, $transaction, $responseData['transactionid']);
         }
+        
+        $result->setData('request', $params);
+        $result->setData('response', $responseData);
         
         return $result;
     }
@@ -88,6 +81,10 @@ class NmiCardTransactor extends TransactorBase
     protected function _validateTransaction(Transaction $transaction)
     {
         $account = $transaction->getAccount();
+        
+        if (!$transaction->getParent() && in_array($transaction->getType(), array(Transaction::TYPE_CARD_CAPTURE, Transaction::TYPE_CARD_REFUND, Transaction::TYPE_CARD_VOID))) {
+            throw ValidationException::parentTransactionRequired();
+        }
         
         if (empty($account) || !$account instanceof CardAccount) {
             throw ValidationException::missingAccountInformation();
@@ -117,5 +114,33 @@ class NmiCardTransactor extends TransactorBase
             case Transaction::TYPE_CARD_VOID:
                 return 'void';
         }
+    }
+    
+    protected function _buildParams(Transaction $transaction)
+    {
+        $params = array(
+            'type' => $this->_getNmiType($transaction),
+            'username' => $this->getCredential('username'),
+            'password' => $this->getCredential('password'),
+        );
+        
+        if (in_array($transaction->getType(), array(Transaction::TYPE_CARD_CAPTURE, Transaction::TYPE_CARD_REFUND, Transaction::TYPE_CARD_VOID))) {
+            $params = array_merge($params, array(
+                'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
+            ));
+        }
+        else {
+            $account = $transaction->getAccount();            
+            $params = array_merge($params, array(
+                'ccnumber' => $account->getAccountNumber(),
+                'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 2),
+            ));
+        }
+        
+        if ($transaction->getType() != Transaction::TYPE_CARD_VOID) {
+            $params['amount'] = $transaction->getAmount();
+        }
+        
+        return $params;
     }
 }

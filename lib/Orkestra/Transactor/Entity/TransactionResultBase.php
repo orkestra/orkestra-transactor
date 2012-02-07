@@ -25,6 +25,12 @@ use Doctrine\ORM\Mapping as ORM,
 abstract class TransactionResultBase extends EntityBase
 {
     /**
+     * @var string $externalId
+     * @ORM\Column(name="external_id", type="string")
+     */
+    protected $externalId = '';
+    
+    /**
      * @var string $message
      * @ORM\Column(name="message", type="string")
      */
@@ -35,7 +41,7 @@ abstract class TransactionResultBase extends EntityBase
      * @ORM\Column(name="data", type="array")
      */
     protected $data = array();
-        
+
     /**
      * @var Orkestra\Transactor\Entity\Transaction
      *
@@ -62,15 +68,36 @@ abstract class TransactionResultBase extends EntityBase
      * @param Orkestra\Transactor\Entity\TransactorBase $transactor
      * @param Orkestra\Transactor\Entity\Transaction $transaction
      */
-    public function __construct(TransactorBase $transactor, Transaction $transaction, $message = '', $data = array())
+    public function __construct(TransactorBase $transactor, Transaction $transaction, $externalId = '', $message = '', $data = array())
     {
         parent::__construct();
         
         $this->transactor = $transactor;
         $this->transaction = $transaction;
+        $this->externalId = $externalId;
         $this->message = $message;
         $this->data = (array)$data;
         $transaction->setResult($this);
+    }
+    
+    /**
+     * Set External ID
+     *
+     * @param string $externalId
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+    }
+
+    /**
+     * Get External ID
+     *
+     * @return string
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
     }
     
     /**

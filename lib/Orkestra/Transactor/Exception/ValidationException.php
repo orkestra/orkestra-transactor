@@ -15,6 +15,11 @@ class ValidationException extends \Exception
         $this->message = 'Validation failed: ' . $message;
     }
     
+    public static function parentTransactionRequired()
+    {
+        return new self('parent transaction is required to transact.');
+    }
+    
     public static function missingAccountInformation()
     {
         return new self('account information is missing or invalid.');
