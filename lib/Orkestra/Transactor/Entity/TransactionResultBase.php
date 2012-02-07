@@ -71,8 +71,6 @@ abstract class TransactionResultBase extends EntityBase
         $this->message = $message;
         $this->data = (array)$data;
         $transaction->setResult($this);
-        $transaction->setTransacted(true);
-        $transaction->setDateTransacted(new DateTime());
     }
     
     /**

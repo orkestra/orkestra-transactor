@@ -127,6 +127,9 @@ class Transaction extends EntityBase
      */
     public function setAmount($amount)
     {
+        if ($this->transacted)
+            return;
+        
         $this->amount = $amount;
     }
     
@@ -140,16 +143,6 @@ class Transaction extends EntityBase
         return $this->amount;
     }
 
-    /**
-     * Set Transacted
-     *
-     * @param boolean $transacted
-     */
-    public function setTransacted($transacted)
-    {
-        $this->transacted = $transacted ? true : false;
-    }
-    
     /**
      * Get Transacted
      *
@@ -171,16 +164,6 @@ class Transaction extends EntityBase
     }
     
     /**
-     * Set Date Transacted
-     *
-     * @param DateTime $dateTransacted
-     */
-    public function setDateTransacted(DateTime $dateTransacted)
-    {
-        $this->dateTransacted = $dateTransacted;
-    }
-    
-    /**
      * Get Date Transacted
      *
      * @return DateTime
@@ -197,6 +180,9 @@ class Transaction extends EntityBase
      */
     public function setType($type)
     {
+        if ($this->transacted)
+            return;
+            
         if (!in_array($type, static::$_types)) {
             throw TransactException::invalidTransactionType($type);
         }
@@ -268,6 +254,9 @@ class Transaction extends EntityBase
      */
     public function setAccount(AccountBase $account)
     {
+        if ($this->transacted)
+            return;
+            
         $this->account = $account;
     }
     
@@ -288,6 +277,11 @@ class Transaction extends EntityBase
      */
     public function setResult(TransactionResultBase $result)
     {
+        if ($this->transacted)
+            return;
+            
+        $this->transacted = true;
+        $this->dateTransacted = new DateTime();
         $this->result = $result;
     }
 
