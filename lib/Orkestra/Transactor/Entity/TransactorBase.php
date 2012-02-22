@@ -24,7 +24,7 @@ use Orkestra\Transactor\Exception\TransactException;
 abstract class TransactorBase extends EntityBase
 {
     /**
-     * @var array $_supportedTypes An array of Transaction::TYPE_* constants
+     * @var array $_supportedTypes An array of TransactionType constants
      */
     protected static $_supportedTypes = array();
     
@@ -69,12 +69,9 @@ abstract class TransactorBase extends EntityBase
      * @param mixed $type A valid Transaction type
      * @return boolean True if supported
      */
-    public function supports($type)
+    public function supports(TransactionType $type)
     {
-        if (!in_array($type, Transaction::getTypes())) {
-            throw TransactException::invalidTransactionType($type);
-        }
-        else if (!in_array($type, static::$_supportedTypes)) {
+        if (!in_array($type->getValue(), static::$_supportedTypes)) {
             return false;
         }
         

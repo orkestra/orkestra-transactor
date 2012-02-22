@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM,
     
 use Orkestra\Transactor\Entity\TransactorBase,
     Orkestra\Transactor\Entity\Transaction,
+    Orkestra\Transactor\Entity\TransactionType,
     Orkestra\Transactor\Entity\TransactionResult\ApprovedResult,
     Orkestra\Transactor\Entity\TransactionResult\DeclinedResult,
     Orkestra\Transactor\Entity\TransactionResult\ErrorResult,
@@ -27,12 +28,12 @@ use Orkestra\Transactor\Entity\TransactorBase,
 class NmiCardTransactor extends TransactorBase
 {
     protected static $_supportedTypes = array(
-        Transaction::TYPE_CARD_SALE,
-        Transaction::TYPE_CARD_AUTH,
-        Transaction::TYPE_CARD_CAPTURE,
-        Transaction::TYPE_CARD_CREDIT,
-        Transaction::TYPE_CARD_REFUND,
-        Transaction::TYPE_CARD_VOID,
+        TransactionType::CardSale,
+        TransactionType::CardAuth,
+        TransactionType::CardCapture,
+        TransactionType::CardCredit,
+        TransactionType::CardRefund,
+        TransactionType::CardVoid,
     );
     
     /**
@@ -50,8 +51,9 @@ class NmiCardTransactor extends TransactorBase
         $response = $kernel->handle($request);
         
         $responseData = array();
+
         parse_str($response->getContent(), $responseData);
-        
+                
         if (empty($responseData['response']) || $responseData['response'] == '3') {
             $result = new ErrorResult($this, $transaction, empty($responseData['transactionid']) ? '' : $responseData['transactionid'],
                 empty($responseData['responsetext']) ? 'An unknown error occurred.' : $responseData['responsetext']);
@@ -82,7 +84,7 @@ class NmiCardTransactor extends TransactorBase
     {
         $account = $transaction->getAccount();
         
-        if (!$transaction->getParent() && in_array($transaction->getType(), array(Transaction::TYPE_CARD_CAPTURE, Transaction::TYPE_CARD_REFUND, Transaction::TYPE_CARD_VOID))) {
+        if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(TransactionType::CardCapture, TransactionType::CardRefund, TransactionType::CardVoid))) {
             throw ValidationException::parentTransactionRequired();
         }
         
@@ -100,18 +102,18 @@ class NmiCardTransactor extends TransactorBase
     
     protected function _getNmiType(Transaction $transaction)
     {
-        switch ($transaction->getType()) {
-            case Transaction::TYPE_CARD_SALE:
+        switch ($transaction->getType()->getValue()) {
+            case TransactionType::CardSale:
                 return 'sale';
-            case Transaction::TYPE_CARD_AUTH:
+            case TransactionType::CardAuth:
                 return 'auth';
-            case Transaction::TYPE_CARD_CAPTURE:
+            case TransactionType::CardCapture:
                 return 'capture';
-            case Transaction::TYPE_CARD_CREDIT:
+            case TransactionType::CardCredit:
                 return 'credit';
-            case Transaction::TYPE_CARD_REFUND:
+            case TransactionType::CardRefund:
                 return 'refund';
-            case Transaction::TYPE_CARD_VOID:
+            case TransactionType::CardVoid:
                 return 'void';
         }
     }
@@ -124,7 +126,7 @@ class NmiCardTransactor extends TransactorBase
             'password' => $this->getCredential('password'),
         );
         
-        if (in_array($transaction->getType(), array(Transaction::TYPE_CARD_CAPTURE, Transaction::TYPE_CARD_REFUND, Transaction::TYPE_CARD_VOID))) {
+        if (in_array($transaction->getType()->getValue(), array(TransactionType::CardCapture, TransactionType::CardRefund, TransactionType::CardVoid))) {
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
             ));
@@ -137,10 +139,10 @@ class NmiCardTransactor extends TransactorBase
             ));
         }
         
-        if ($transaction->getType() != Transaction::TYPE_CARD_VOID) {
+        if ($transaction->getType()->getValue() != TransactionType::CardVoid) {
             $params['amount'] = $transaction->getAmount();
         }
-        
+                
         return $params;
     }
 }

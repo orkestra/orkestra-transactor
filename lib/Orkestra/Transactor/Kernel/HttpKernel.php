@@ -34,10 +34,13 @@ class HttpKernel implements IKernel
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         
         $rawResponse = curl_exec($ch);
+
         $info = curl_getinfo($ch);
-        
+
         $headers = explode("\n", substr($rawResponse, 0, $info['header_size']));
         $body = ltrim(substr($rawResponse, $info['header_size']));
         $code = $info['http_code'];

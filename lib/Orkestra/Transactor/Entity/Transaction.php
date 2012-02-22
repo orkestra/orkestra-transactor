@@ -19,45 +19,6 @@ use Orkestra\Transactor\Exception\TransactException;
  */
 class Transaction extends EntityBase
 {
-    const TYPE_CARD_SALE = 'card.sale';
-    const TYPE_CARD_AUTH = 'card.auth';
-    const TYPE_CARD_CAPTURE = 'card.capture';
-    const TYPE_CARD_CREDIT = 'card.credit';
-    const TYPE_CARD_REFUND = 'card.refund';
-    const TYPE_CARD_VOID = 'card.void';
-    
-    const TYPE_ACH_REQUEST = 'ach.request';
-    const TYPE_ACH_RESPONSE = 'ach.response';
-    
-    const TYPE_MFA_TRANSFER = 'mfa.transfer';
-    
-    /**
-     * @var array
-     */
-    protected static $_types = array(
-        self::TYPE_CARD_SALE,
-        self::TYPE_CARD_AUTH,
-        self::TYPE_CARD_CAPTURE,
-        self::TYPE_CARD_CREDIT,
-        self::TYPE_CARD_REFUND,
-        self::TYPE_CARD_VOID,
-        self::TYPE_ACH_REQUEST,
-        self::TYPE_ACH_RESPONSE,
-        self::TYPE_MFA_TRANSFER
-    );
-    
-    /**
-     * Get Types
-     *
-     * Returns an array of available transaction types
-     *
-     * @return array Array of available transaction types
-     */
-    public static function getTypes()
-    {
-        return static::$_types;
-    }
-    
     /**
      * @var decimal $amount
      * @ORM\Column(name="amount", type="decimal", precision=12, scale=2)
@@ -178,15 +139,11 @@ class Transaction extends EntityBase
      *
      * @param string $type A valid transaction type
      */
-    public function setType($type)
+    public function setType(TransactionType $type)
     {
         if ($this->transacted)
             return;
-            
-        if (!in_array($type, static::$_types)) {
-            throw TransactException::invalidTransactionType($type);
-        }
-        
+
         $this->type = $type;
     }
 
@@ -225,7 +182,7 @@ class Transaction extends EntityBase
      *
      * @return Orkestra\Transactor\Entity\Transaction
      */
-    public function createChild($type, $amount = 0)
+    public function createChild(TransactionType $type, $amount = 0)
     {
         $child = new Transaction();
         $child->setType($type);
