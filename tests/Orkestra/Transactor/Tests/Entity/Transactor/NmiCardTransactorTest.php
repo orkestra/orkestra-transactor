@@ -6,7 +6,9 @@ use Orkestra\Transactor\Entity\Transactor\NmiCardTransactor,
     Orkestra\Transactor\Entity\TransactionType,
     Orkestra\Transactor\Entity\Transaction,
     Orkestra\Transactor\Entity\TransactionResult\ApprovedResult,
-    Orkestra\Transactor\Entity\Account\CardAccount;
+    Orkestra\Transactor\Entity\Account\CardAccount,
+    Orkestra\Transactor\Type\Month,
+    Orkestra\Transactor\Type\Year;
 
 /**
  * NmiTransactor Test
@@ -59,8 +61,8 @@ class NmiCardTransactorTest extends \PHPUnit_Framework_TestCase
         
         $account = new CardAccount();
         $account->setAccountNumber('4111111111111111');
-        $account->setExpMonth('10');
-        $account->setExpYear('2010');
+        $account->setExpMonth(new Month(10));
+        $account->setExpYear(new Year(2010));
         
         $transaction = new Transaction();
         $transaction->setAmount(10);

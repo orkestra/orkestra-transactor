@@ -135,7 +135,7 @@ class NmiCardTransactor extends TransactorBase
             $account = $transaction->getAccount();            
             $params = array_merge($params, array(
                 'ccnumber' => $account->getAccountNumber(),
-                'ccexp' => $account->getExpMonth() . substr($account->getExpYear(), 2),
+                'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
             ));
         }
         

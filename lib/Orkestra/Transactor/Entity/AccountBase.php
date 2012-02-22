@@ -16,7 +16,10 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "BankAccount" = "Orkestra\Transactor\Entity\Account\BankAccount",
+ *   "PersonalCheckingAccount" = "Orkestra\Transactor\Entity\Account\PersonalCheckingAccount",
+ *   "PersonalSavingsAccount" = "Orkestra\Transactor\Entity\Account\PersonalSavingsAccount",
+ *   "BusinessCheckingAccount" = "Orkestra\Transactor\Entity\Account\BusinessCheckingAccount",
+ *   "BusinessSavingsAccount" = "Orkestra\Transactor\Entity\Account\BusinessSavingsAccount",
  *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount"
  * })
  * @package Orkestra

@@ -2,9 +2,11 @@
 
 namespace Orkestra\Transactor\Entity\Account;
 
-use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Transactor\Entity\AccountBase,
-    \DateTime;
+use Doctrine\ORM\Mapping as ORM;
+
+use Orkestra\Transactor\Entity\AccountBase,
+    Orkestra\Transactor\Type\Month,
+    Orkestra\Transactor\Type\Year;
 
 /**
  * Card Account Entity
@@ -18,14 +20,14 @@ use Doctrine\ORM\Mapping as ORM,
 class CardAccount extends AccountBase
 {
     /**
-     * @var string
-     * @ORM\Column(name="card_exp_month", type="string", length=2, nullable=true)
+     * @var Orkestra\Transactor\Type\Month
+     * @ORM\Column(name="card_exp_month", type="orkestra.month", length=2, nullable=true)
      */
     protected $expMonth;
     
     /**
-     * @var string
-     * @ORM\Column(name="card_exp_year", type="string", length=4, nullable=true)
+     * @var Orkestra\Transactor\Type\Year
+     * @ORM\Column(name="card_exp_year", type="orkestra.year", length=4, nullable=true)
      */
     protected $expYear;
     
@@ -68,9 +70,9 @@ class CardAccount extends AccountBase
     /**
      * Set Exp Month
      *
-     * @param string $expMonth
+     * @param Orkestra\Transactor\Type\Month $expMonth
      */
-    public function setExpMonth($expMonth)
+    public function setExpMonth(Month $expMonth)
     {
         $this->expMonth = $expMonth;
     }
@@ -78,7 +80,7 @@ class CardAccount extends AccountBase
     /**
      * Get Exp Month
      *
-     * @return string
+     * @return Orkestra\Transactor\Type\Month
      */
     public function getExpMonth()
     {
@@ -88,9 +90,9 @@ class CardAccount extends AccountBase
     /**
      * Set Exp Year
      *
-     * @param string $expYear
+     * @param Orkestra\Transactor\Type\Year $expYear
      */
-    public function setExpYear($expYear)
+    public function setExpYear(Year $expYear)
     {
         $this->expYear = $expYear;
     }
@@ -98,7 +100,7 @@ class CardAccount extends AccountBase
     /**
      * Get Exp Year
      *
-     * @return string
+     * @return Orkestra\Transactor\Type\Year
      */
     public function getExpYear()
     {
