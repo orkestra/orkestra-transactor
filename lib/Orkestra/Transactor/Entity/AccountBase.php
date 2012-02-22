@@ -4,7 +4,7 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     Doctrine\Common\Collections\ArrayCollection,
-    \DateTime;
+    Orkestra\Common\Entity\EntityBase;
 
 /**
  * Account Base
@@ -50,8 +50,6 @@ abstract class AccountBase extends EntityBase
      */
     public function __construct()
     {
-        parent::__construct();
-        
         $this->transactions = new ArrayCollection();
     }
     

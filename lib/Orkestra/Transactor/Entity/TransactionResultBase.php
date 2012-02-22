@@ -3,7 +3,7 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
-    \DateTime;
+    Orkestra\Common\Entity\EntityBase;
 
 /**
  * Transaction Result Base
@@ -70,8 +70,6 @@ abstract class TransactionResultBase extends EntityBase
      */
     public function __construct(TransactorBase $transactor, Transaction $transaction, $externalId = '', $message = '', $data = array())
     {
-        parent::__construct();
-        
         $this->transactor = $transactor;
         $this->transaction = $transaction;
         $this->externalId = $externalId;

@@ -4,6 +4,11 @@ namespace Orkestra\Transactor\Entity;
 
 use Orkestra\Common\Type\Enum;
 
+/**
+ * Transaction Type Enumeration
+ *
+ * Describes the different types of transactions
+ */
 class TransactionType extends Enum
 {
     /**

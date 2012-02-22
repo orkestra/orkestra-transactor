@@ -3,7 +3,8 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
-    \DateTime;
+    Orkestra\Common\Entity\EntityBase,
+    Orkestra\Common\Type\DateTime;
     
 use Orkestra\Transactor\Exception\TransactException;
 

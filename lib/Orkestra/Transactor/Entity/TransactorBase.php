@@ -2,7 +2,8 @@
 
 namespace Orkestra\Transactor\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM,
+    Orkestra\Common\Entity\EntityBase;
 
 use Orkestra\Transactor\Exception\TransactException;
 
@@ -49,7 +50,9 @@ abstract class TransactorBase extends EntityBase
     /**
      * Transact
      *
-     * @return Orkestra\Transactor\TransactionResult
+     * This method should be overridden by subclass
+     *
+     * @return Orkestra\Transactor\Entity\TransactionResult
      */
     public function transact(Transaction $transaction, $options = array())
     {
@@ -66,7 +69,7 @@ abstract class TransactorBase extends EntityBase
      *
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param mixed $type A valid Transaction type
+     * @param Orkestra\Transactor\Entity\TransactionType $type A valid Transaction type
      * @return boolean True if supported
      */
     public function supports(TransactionType $type)
