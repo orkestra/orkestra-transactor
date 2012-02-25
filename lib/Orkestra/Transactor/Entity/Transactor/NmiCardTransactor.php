@@ -5,7 +5,9 @@ namespace Orkestra\Transactor\Entity\Transactor;
 use Doctrine\ORM\Mapping as ORM,
     Symfony\Component\HttpFoundation\Request,
     Symfony\Component\HttpFoundation\Response;
-    
+
+use Orkestra\Common\Kernel\HttpKernel;
+
 use Orkestra\Transactor\Entity\TransactorBase,
     Orkestra\Transactor\Entity\Transaction,
     Orkestra\Transactor\Entity\TransactionType,
@@ -13,9 +15,8 @@ use Orkestra\Transactor\Entity\TransactorBase,
     Orkestra\Transactor\Entity\TransactionResult\DeclinedResult,
     Orkestra\Transactor\Entity\TransactionResult\ErrorResult,
     Orkestra\Transactor\Entity\Account\CardAccount,
-    Orkestra\Transactor\Kernel\HttpKernel,
     Orkestra\Transactor\Exception\ValidationException;
-
+    
 /**
  * NMI Transactor
  *
