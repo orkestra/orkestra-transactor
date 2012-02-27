@@ -40,7 +40,7 @@ class Transaction extends EntityBase
 
     /**
      * @var string $type
-     * @ORM\Column(name="type", type="string")
+     * @ORM\Column(name="type", type="enum.orkestra.transaction_type")
      */
     protected $type;
     
