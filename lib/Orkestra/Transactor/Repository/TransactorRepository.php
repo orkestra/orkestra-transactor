@@ -2,7 +2,10 @@
 
 namespace Orkestra\Transactor\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityRepository,
+    Doctrine\DBAL\LockMode;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Transactor Repository
@@ -33,7 +36,7 @@ class TransactorRepository extends EntityRepository
     {
         $entity = parent::find($id, $lockMode, $lockVersion);
         
-        if ($entity) {
+        if ($this->_container && $entity) {
             $entity->setContainer($this->_container);
         }
         
@@ -47,8 +50,10 @@ class TransactorRepository extends EntityRepository
     {
         $results = parent::findBy($criteria, $orderBy, $limit, $offset);
         
-        foreach ($results as $result) {
-            $result->setContainer($this->_container);
+        if ($this->_container) {
+            foreach ($results as $result) {
+                $result->setContainer($this->_container);
+            }
         }
         
         return $results;
@@ -61,7 +66,7 @@ class TransactorRepository extends EntityRepository
     {
         $entity = parent::findOneBy($criteria);
         
-        if ($entity) {
+        if ($this->_container && $entity) {
             $entity->setContainer($this->_container);
         }
         
