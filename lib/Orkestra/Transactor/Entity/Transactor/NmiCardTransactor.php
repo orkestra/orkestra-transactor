@@ -52,7 +52,7 @@ class NmiCardTransactor extends TransactorBase
         $params = $this->_buildParams($transaction);
 
         $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
-        $kernel = $this->_container->get('orkestra.http_kernel');
+        $kernel = $this->_container->get('orkestra.kernel.http');
         $response = $kernel->handle($request);
         
         $responseData = array();
