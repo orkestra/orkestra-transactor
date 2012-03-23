@@ -43,12 +43,16 @@ class NmiCardTransactor extends TransactorBase
     public function transact(Transaction $transaction, $options = array())
     {
         parent::transact($transaction);
+        
+        if (empty($this->_container)) {
+            throw new \RuntimeException(sprintf('%s requires an instance of Symfony\Component\DependencyInjection\ContainerInterface to transact', $this->getType()));
+        }
 
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);
 
         $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
-        $kernel = new HttpKernel();
+        $kernel = $this->_container->get('orkestra.http_kernel');
         $response = $kernel->handle($request);
         
         $responseData = array();

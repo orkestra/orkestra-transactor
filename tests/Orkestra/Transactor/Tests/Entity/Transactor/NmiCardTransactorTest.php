@@ -9,6 +9,8 @@ use Orkestra\Transactor\Entity\Transactor\NmiCardTransactor,
     Orkestra\Transactor\Entity\Account\CardAccount,
     Orkestra\Transactor\Type\Month,
     Orkestra\Transactor\Type\Year;
+    
+use Orkestra\Common\Kernel\HttpKernel;
 
 /**
  * NmiTransactor Test
@@ -22,7 +24,7 @@ use Orkestra\Transactor\Entity\Transactor\NmiCardTransactor,
  */
 class NmiCardTransactorTest extends \PHPUnit_Framework_TestCase
 {
-    protected function _getDemoTransactor()
+    protected function _getBrokenDemoTransactor()
     {
         $transactor = new NmiCardTransactor();
         $transactor->setCredentials(array('username' => 'demo', 'password' => 'password'));
@@ -30,6 +32,22 @@ class NmiCardTransactorTest extends \PHPUnit_Framework_TestCase
         return $transactor;
     }
     
+    protected function _getDemoTransactor()
+    {
+        $transactor = $this->_getBrokenDemoTransactor();
+        
+        $kernel = new HttpKernel();
+        
+        $container = $this->getMock('Symfony\Component\DependencyInjection\Container');
+        $container->expects($this->once())
+                  ->method('get')
+                  ->will($this->returnValue($kernel));
+        
+        $transactor->setContainer($container);
+        
+        return $transactor;
+    }
+
     public function testSupportsCorrectTypes()
     {
         $transactor = new NmiCardTransactor();
@@ -53,6 +71,25 @@ class NmiCardTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new NmiCardTransactor();
         
         $this->assertEquals('NMI Card Transactor', $transactor->getType());
+    }
+    
+    public function testRequiresDIContainer()
+    {
+        $transactor = $this->_getBrokenDemoTransactor();
+        
+        $account = new CardAccount();
+        $account->setAccountNumber('4111111111111111');
+        $account->setExpMonth(new Month(10));
+        $account->setExpYear(new Year(2010));
+        
+        $transaction = new Transaction();
+        $transaction->setAmount(10);
+        $transaction->setType(new TransactionType(TransactionType::CardSale));
+        $transaction->setAccount($account);
+        
+        $this->setExpectedException('RuntimeException', 'NMI Card Transactor requires an instance of Symfony\Component\DependencyInjection\ContainerInterface to transact');
+        
+        $transactor->transact($transaction);
     }
     
     public function testCardSale()

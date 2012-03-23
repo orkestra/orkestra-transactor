@@ -4,6 +4,8 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     Orkestra\Common\Entity\EntityBase;
+    
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Orkestra\Transactor\Exception\TransactException;
 
@@ -18,7 +20,7 @@ use Orkestra\Transactor\Exception\TransactException;
  * @ORM\DiscriminatorMap({
  *   "NmiCardTransactor" = "Orkestra\Transactor\Entity\Transactor\NmiCardTransactor"
  * })
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Orkestra\Transactor\Repository\TransactorRepository")
  * @package Orkestra
  * @subpackage Transactor
  */
@@ -46,6 +48,11 @@ abstract class TransactorBase extends EntityBase
      * @ORM\Column(name="credentials", type="array")
      */
     protected $credentials = array();
+    
+    /**
+     * @var Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected $_container;
     
     /**
      * Transact
@@ -180,5 +187,15 @@ abstract class TransactorBase extends EntityBase
     public function getCredentials()
     {
         return $this->credentials;
+    }
+    
+    /**
+     * Set Container
+     *
+     * @param Symfony\Component\DependencyInjection\ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->_container = $container;
     }
 }
