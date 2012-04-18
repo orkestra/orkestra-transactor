@@ -3,8 +3,11 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
-    Doctrine\Common\Collections\ArrayCollection,
-    Orkestra\Common\Entity\EntityBase;
+    Doctrine\Common\Collections\ArrayCollection;
+
+use Orkestra\Common\Entity\EntityBase;
+
+use Orkestra\Transactor\Exception\ValidationException;
 
 /**
  * Account Base
@@ -16,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "PersonalCheckingAccount" = "Orkestra\Transactor\Entity\Account\PersonalCheckingAccount",
- *   "PersonalSavingsAccount" = "Orkestra\Transactor\Entity\Account\PersonalSavingsAccount",
- *   "BusinessCheckingAccount" = "Orkestra\Transactor\Entity\Account\BusinessCheckingAccount",
- *   "BusinessSavingsAccount" = "Orkestra\Transactor\Entity\Account\BusinessSavingsAccount",
+ *   "BankAccount" = "Orkestra\Transactor\Entity\Account\BankAccount",
  *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount"
  * })
  * @package Orkestra
@@ -115,7 +115,7 @@ abstract class AccountBase extends EntityBase
         if ($transaction->getAccount() !== $this)
             $transaction->setAccount($this);
         
-        $this->transactions[] = $transction;
+        $this->transactions[] = $transaction;
     }
     
     /**
