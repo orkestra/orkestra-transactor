@@ -6,7 +6,7 @@ use Doctrine\DBAL\Types\StringType,
     Doctrine\DBAL\Platforms\AbstractPlatform,
     Doctrine\DBAL\Types\ConversionException;
 
-use Orkestra\Common\Type\Year;
+use Orkestra\Transactor\Type\Year;
 
 /**
  * Year Type
