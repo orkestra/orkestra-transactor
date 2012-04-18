@@ -19,5 +19,5 @@ class AccountTypeEnumType extends EnumTypeBase
     /**
      * @var string The fully qualified class name of the Enum that this class wraps
      */
-    protected $_class = 'Orkestra\Transactor\Entity\TransactionType';
+    protected $_class = 'Orkestra\Transactor\Entity\Account\BankAccount\AccountType';
 }
