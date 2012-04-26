@@ -79,6 +79,16 @@ abstract class TransactionResultBase extends EntityBase
     }
     
     /**
+     * Gets the associated Transaction
+     * 
+     * @return Orkestra\Transactor\Entity\Transaction
+     */
+    public function getTransaction()
+    {
+    	return $this->transaction;
+    }
+    
+    /**
      * Set External ID
      *
      * @param string $externalId
