@@ -10,9 +10,8 @@
     ],
     "require" : {
         "php" : ">=5.3.2",
-        "doctrine/orm" : "2.1.*",
         "symfony/dependency-injection" : "2.0.*",
-        "orkestra/common" : "0.1.4"
+        "orkestra/common" : "0.1.x.x-dev"
     },
     "autoload" : {
         "psr-0" : { "Orkestra\\Transactor" : "lib/" }
