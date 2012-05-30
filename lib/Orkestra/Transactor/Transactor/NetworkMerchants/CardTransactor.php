@@ -14,9 +14,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 
 /**
- * NMI Transactor
- *
- * Concrete NMI Transactor implementation
+ * Credit card transactor for the Network Merchants payment processing gateway
  *
  * @ORM\Entity
  */
