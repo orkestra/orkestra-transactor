@@ -127,7 +127,7 @@ class CardTransactor extends AbstractTransactor
 
         if (!$credentials) {
             throw ValidationException::missingCredentials();
-        } elseif (null === $credentials->username || null === $credentials->password) {
+        } elseif (null === $credentials->getCredential('username') || null === $credentials->getCredential('password')) {
             throw ValidationException::missingRequiredParameter('username or password');
         }
 
@@ -176,8 +176,8 @@ class CardTransactor extends AbstractTransactor
 
         $params = array(
             'type' => $this->_getNmiType($transaction),
-            'username' => $credentials->username,
-            'password' => $credentials->password,
+            'username' => $credentials->getCredential('username'),
+            'password' => $credentials->getCredential('password'),
         );
 
         if (in_array($transaction->getType()->getValue(), array(
