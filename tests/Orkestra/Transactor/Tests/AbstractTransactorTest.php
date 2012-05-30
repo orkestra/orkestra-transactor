@@ -93,6 +93,6 @@ class TestTransactor extends AbstractTransactor
 
     public function getType()
     {
-        return 'orkestra.test_transaction';
+        return 'orkestra.test_transactor';
     }
 }
