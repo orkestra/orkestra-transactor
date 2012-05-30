@@ -65,7 +65,8 @@ class CardTransactor extends AbstractTransactor
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);
 
-        $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
+        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://secure.networkmerchants.com/api/transact.php';
+        $request = Request::create($postUrl, 'POST', $params);
         $response = $this->_kernel->handle($request);
 
         $data = array();
@@ -106,7 +107,7 @@ class CardTransactor extends AbstractTransactor
      */
     public function getName()
     {
-        return 'NMI Card Transactor';
+        return 'Network Merchants Credit Card Gateway';
     }
 
     /**
