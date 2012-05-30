@@ -14,20 +14,20 @@ class AccountType extends Enum
     /**
      * A personal savings account
      */
-    const PersonalSavings = 'Personal Savings';
-    
+    const PERSONAL_SAVINGS = 'Personal Savings';
+
     /**
      * A personal checking account
      */
-    const PersonalChecking = 'Personal Checking';
-    
+    const PERSONAL_CHECKING = 'Personal Checking';
+
     /**
      * A business savings account
      */
-    const BusinessSavings = 'Business Savings';
-    
+    const BUSINESS_SAVINGS = 'Business Savings';
+
     /**
      * A business checking account
      */
-    const BusinessChecking = 'Business Checking';
+    const BUSINESS_CHECKING = 'Business Checking';
 }

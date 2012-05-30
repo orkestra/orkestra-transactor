@@ -5,8 +5,6 @@ namespace Orkestra\Transactor\Type;
 use Orkestra\Common\Type\TypeBase;
 
 /**
- * Month
- *
  * Represents a single month of the year
  */
 class Month extends TypeBase
@@ -18,7 +16,7 @@ class Month extends TypeBase
     {
         return ($value > 0 && $value < 13) ? true : false;
     }
-    
+
     /**
      * To String
      *
@@ -30,7 +28,7 @@ class Month extends TypeBase
     {
         return $this->getLongName();
     }
-    
+
     /**
      * Get Short Month
      *
@@ -40,7 +38,7 @@ class Month extends TypeBase
     {
         return date('n', mktime(0, 0, 0, $this->_value));
     }
-    
+
     /**
      * Get Long Month
      *
@@ -50,7 +48,7 @@ class Month extends TypeBase
     {
         return date('m', mktime(0, 0, 0, $this->_value));
     }
-    
+
     /**
      * Get Short Name
      *
@@ -60,7 +58,7 @@ class Month extends TypeBase
     {
         return date('M', mktime(0, 0, 0, $this->_value));
     }
-    
+
     /**
      * Get Long Name
      *

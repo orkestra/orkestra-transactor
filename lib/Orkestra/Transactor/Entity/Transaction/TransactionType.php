@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Entity;
+namespace Orkestra\Transactor\Entity\Transaction;
 
 use Orkestra\Common\Type\Enum;
 
@@ -14,45 +14,45 @@ class TransactionType extends Enum
     /**
      * A Credit Card Sale
      */
-    const CardSale = 'card.sale';
-    
+    const CARD_SALE = 'Card Sale';
+
     /**
      * A Credit Card Authorization
      */
-    const CardAuth = 'card.auth';
-    
+    const CARD_AUTH = 'Card Auth';
+
     /**
      * A Credit Card Capture
      */
-    const CardCapture = 'card.capture';
-    
+    const CARD_CAPTURE = 'Card Capture';
+
     /**
      * A Credit Card Credit
      */
-    const CardCredit = 'card.credit';
-    
+    const CARD_CREDIT = 'Card Credit';
+
     /**
      * A Credit Card Refund
      */
-    const CardRefund = 'card.refund';
-    
+    const CARD_REFUND = 'Card Refund';
+
     /**
      * A Credit Card Void
      */
-    const CardVoid = 'card.void';
-    
+    const CARD_VOID = 'Card Void';
+
     /**
      * An ACH Request
-     */    
-    const AchRequest = 'ach.request';
-    
+     */
+    const ACH_REQUEST = 'ACH Request';
+
     /**
      * An ACH Response
      */
-    const AchResponse = 'ach.response';
-    
+    const ACH_RESPONSE = 'ACH Response';
+
     /**
      * An MFA Transfer
      */
-    const MfaTransfer = 'mfa.transfer';
+    const MFA_TRANSFER = 'MFA Transfer';
 }

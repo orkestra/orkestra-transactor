@@ -2,11 +2,11 @@
 
 namespace Orkestra\Transactor\Entity;
 
-use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Common\Entity\EntityBase,
-    Orkestra\Common\Type\DateTime;
-    
-use Orkestra\Transactor\Exception\TransactException;
+use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Common\Type\DateTime;
+
+use Orkestra\Transactor\Exception\TransactorException;
 
 /**
  * Transaction Entity
@@ -15,65 +15,81 @@ use Orkestra\Transactor\Exception\TransactException;
  *
  * @ORM\Table(name="orkestra_transactions", indexes={@ORM\Index(name="IX_date_transacted", columns={"date_transacted"})})
  * @ORM\Entity
- * @package Orkestra
- * @subpackage Transactor
  */
 class Transaction extends EntityBase
 {
     /**
-     * @var decimal $amount
+     * @var float $amount
+     *
      * @ORM\Column(name="amount", type="decimal", precision=12, scale=2)
      */
     protected $amount;
-    
+
     /**
      * @var boolean $transacted
+     *
      * @ORM\Column(name="transacted", type="boolean")
      */
     protected $transacted = false;
 
     /**
      * @var DateTime $dateTransacted
+     *
      * @ORM\Column(name="date_transacted", type="datetime")
      */
     protected $dateTransacted;
 
     /**
      * @var string $type
+     *
      * @ORM\Column(name="type", type="enum.orkestra.transaction_type")
      */
     protected $type;
-    
+
     /**
-     * @var Orkestra\Transactor\Entity\Transaction $parent
+     * @var \Orkestra\Transactor\Entity\Transaction $parent
+     *
      * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      * })
      */
     protected $parent;
-    
+
     /**
-     * @var Doctrine\Common\Collections\Collection $children
+     * @var \Doctrine\Common\Collections\Collection $children
+     *
      * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="parent", cascade={"persist"})
      */
     protected $children;
-    
+
     /**
-     * @var Orkestra\Transactor\Entity\AccountBase $account
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AccountBase", inversedBy="transactions", cascade={"persist"})
+     * @var \Orkestra\Transactor\Entity\AbstractAccount $account
+     *
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
      * })
      */
     protected $account;
-     
+
+    /**
+     * @var \Orkestra\Transactor\Entity\Credentials $credentials
+     *
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
+     * })
+     */
+    protected $credentials;
+
 	/**
-     * @var Orkestra\Transactor\Entity\TransactionResult $result
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\TransactionResultBase", mappedBy="transaction", cascade={"persist"})
+     * @var \Orkestra\Transactor\Entity\Result $result
+     *
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Result", mappedBy="transaction", cascade={"persist"})
      */
     protected $result;
-    
+
     /**
      * Constructor
      */
@@ -81,9 +97,9 @@ class Transaction extends EntityBase
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
-     * Set Amount
+     * Sets the amount
      *
      * @param float $amount
      */
@@ -91,14 +107,14 @@ class Transaction extends EntityBase
     {
         if ($this->transacted)
             return;
-        
+
         $this->amount = $amount;
     }
-    
+
     /**
-     * Get Amount
+     * Gets the amount
      *
-     * @return decimal
+     * @return float
      */
     public function getAmount()
     {
@@ -106,7 +122,7 @@ class Transaction extends EntityBase
     }
 
     /**
-     * Get Transacted
+     * Returns true if this transaction has been transacted
      *
      * @return boolean
      */
@@ -114,9 +130,9 @@ class Transaction extends EntityBase
     {
         return $this->transacted;
     }
-    
+
     /**
-     * Is Transacted
+     * Returns true if this transaction has been transacted
      *
      * @return boolean
      */
@@ -124,9 +140,9 @@ class Transaction extends EntityBase
     {
         return $this->getTransacted();
     }
-    
+
     /**
-     * Get Date Transacted
+     * Gets the date transacted
      *
      * @return DateTime
      */
@@ -136,11 +152,11 @@ class Transaction extends EntityBase
     }
 
     /**
-     * Set Type
+     * Sets the transaction type
      *
-     * @param string $type A valid transaction type
+     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
      */
-    public function setType(TransactionType $type)
+    public function setType(Transaction\TransactionType $type)
     {
         if ($this->transacted)
             return;
@@ -149,41 +165,44 @@ class Transaction extends EntityBase
     }
 
     /**
-     * Get Type
+     * Gets the transaction type
      *
-     * @return string
+     * @return \Orkestra\Transactor\Entity\Transaction\TransactionType
      */
     public function getType()
     {
         return $this->type;
     }
-    
+
     /**
-     * Set Parent
+     * Sets the parent transaction
      *
-     * @param Orkestra\Transactor\Entity\Transaction $parent
+     * @param \Orkestra\Transactor\Entity\Transaction $parent
      */
     public function setParent(Transaction $parent)
     {
         $this->parent = $parent;
     }
-    
+
     /**
-     * Get Parent
+     * Gets the parent transaction
      *
-     * @return Orkestra\Transactor\Entity\Transaction
+     * @return \Orkestra\Transactor\Entity\Transaction
      */
     public function getParent()
     {
         return $this->parent;
     }
-    
+
     /**
-     * Create Child
+     * Creates a new child transaction
      *
-     * @return Orkestra\Transactor\Entity\Transaction
+     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @param float $amount
+     *
+     * @return \Orkestra\Transactor\Entity\Transaction
      */
-    public function createChild(TransactionType $type, $amount = 0)
+    public function createChild(Transaction\TransactionType $type, $amount = 0.0)
     {
         $child = new Transaction();
         $child->setType($type);
@@ -191,65 +210,85 @@ class Transaction extends EntityBase
         $child->setAccount($this->account);
         $child->setParent($this);
         $this->children[] = $child;
-        
+
         return $child;
     }
-    
+
     /**
-     * Get Children
+     * Gets the transaction's children
      *
-     * @return Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChildren()
     {
         return $this->children;
     }
-    
+
     /**
-     * Set Account
+     * Sets the associated account
      *
-     * @param Orkestra\Transactor\Entity\AccountBase $account
+     * @param \Orkestra\Transactor\Entity\AbstractAccount $account
      */
-    public function setAccount(AccountBase $account)
+    public function setAccount(AbstractAccount $account)
     {
         if ($this->transacted)
             return;
-            
+
         $this->account = $account;
     }
-    
+
     /**
-     * Get Account
+     * Gets the associated account
      *
-     * @return Orkestra\Transactor\Entity\AccountBase
+     * @return \Orkestra\Transactor\Entity\AbstractAccount
      */
     public function getAccount()
     {
         return $this->account;
     }
-    
+
     /**
-     * Set Result
+     * Sets the associated result
      *
-     * @param Orkestra\Transactor\TransactionResultBase $result
+     * @param \Orkestra\Transactor\Entity\Result $result
      */
-    public function setResult(TransactionResultBase $result)
+    public function setResult(Result $result)
     {
         if ($this->transacted)
             return;
-            
+
         $this->transacted = true;
         $this->dateTransacted = new DateTime();
         $this->result = $result;
     }
 
     /**
-     * Get Type
+     * Gets the associated result
      *
-     * @return Orkestra\Transactor\TransactionResultBase
+     * @return \Orkestra\Transactor\Entity\Result
      */
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * Sets the associated credentials
+     *
+     * @param \Orkestra\Transactor\Entity\Credentials $credentials
+     */
+    public function setCredentials(Credentials $credentials)
+    {
+        $this->credentials = $credentials;
+    }
+
+    /**
+     * Gets the associated credentials
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function getCredentials()
+    {
+        return $this->credentials;
     }
 }

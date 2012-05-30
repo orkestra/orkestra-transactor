@@ -2,9 +2,9 @@
 
 namespace Orkestra\Transactor\DBAL\Types;
 
-use Doctrine\DBAL\Types\StringType,
-    Doctrine\DBAL\Platforms\AbstractPlatform,
-    Doctrine\DBAL\Types\ConversionException;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\ConversionException;
 
 use Orkestra\Transactor\Type\Year;
 
@@ -23,10 +23,10 @@ class YearType extends StringType
         if ($value === null) {
             return null;
         }
-        
+
         return $value->__toString();
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -42,10 +42,10 @@ class YearType extends StringType
         catch (\InvalidArgumentException $e) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
-        
+
         return $val;
     }
-    
+
     /**
      * {@inheritdoc}
      */

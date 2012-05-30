@@ -5,8 +5,6 @@ namespace Orkestra\Transactor\Type;
 use Orkestra\Common\Type\TypeBase;
 
 /**
- * Year
- *
  * Represents a single year
  */
 class Year extends TypeBase
@@ -18,7 +16,7 @@ class Year extends TypeBase
     {
         return ($value > 1000 && $value < 9999) ? true : false;
     }
-    
+
     /**
      * To String
      *
@@ -30,7 +28,7 @@ class Year extends TypeBase
     {
         return $this->getLongYear();
     }
-    
+
     /**
      * Get Long Year
      *
@@ -42,7 +40,7 @@ class Year extends TypeBase
     {
         return (string)$this->_value;
     }
-    
+
     /**
      * Get Short Year
      *

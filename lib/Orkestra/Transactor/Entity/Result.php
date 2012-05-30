@@ -2,48 +2,48 @@
 
 namespace Orkestra\Transactor\Entity;
 
-use Doctrine\ORM\Mapping as ORM,
-    Orkestra\Common\Entity\EntityBase;
+use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Transactor\TransactorInterface;
 
 /**
- * Transaction Result Base
+ * Represents the result of a transaction
  *
- * Base class for all Transaction Results
- *
- * @ORM\Table(name="orkestra_transaction_results")
+ * @ORM\Table(name="orkestra_results")
  * @ORM\Entity
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({
- *   "ApprovedResult" = "Orkestra\Transactor\Entity\TransactionResult\ApprovedResult",
- *   "DeclinedResult" = "Orkestra\Transactor\Entity\TransactionResult\DeclinedResult",
- *   "ErrorResult" = "Orkestra\Transactor\Entity\TransactionResult\ErrorResult"
- * })
- * @package Orkestra
- * @subpackage Transactor
  */
-abstract class TransactionResultBase extends EntityBase
+class Result extends EntityBase
 {
     /**
      * @var string $externalId
+     *
      * @ORM\Column(name="external_id", type="string")
      */
     protected $externalId = '';
-    
+
     /**
      * @var string $message
+     *
      * @ORM\Column(name="message", type="string")
      */
     protected $message = '';
-    
+
     /**
      * @var array $data
+     *
      * @ORM\Column(name="data", type="array")
      */
     protected $data = array();
 
     /**
-     * @var Orkestra\Transactor\Entity\Transaction
+     * @var \Orkestra\Transactor\Entity\Result\ResultType
+     *
+     * @ORM\Column(name="type", type="enum.orkestra.result_type")
+     */
+    protected $type;
+
+    /**
+     * @var \Orkestra\Transactor\Entity\Transaction
      *
      * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result", cascade={"persist"})
      * @ORM\JoinColumns({
@@ -51,43 +51,43 @@ abstract class TransactionResultBase extends EntityBase
      * })
      */
     protected $transaction;
-    
+
     /**
-     * @var Orkestra\Transactor\Entity\Transactor
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\TransactorBase")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transactor_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="transactor", type="string")
      */
     protected $transactor;
-    
+
     /**
      * Constructor
      *
-     * @param Orkestra\Transactor\Entity\TransactorBase $transactor
-     * @param Orkestra\Transactor\Entity\Transaction $transaction
+     * @param \Orkestra\Transactor\TransactorInterface $transactor
+     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param string $externalId
+     * @param string $message
+     * @param array $data
      */
-    public function __construct(TransactorBase $transactor, Transaction $transaction, $externalId = '', $message = '', $data = array())
+    public function __construct(TransactorInterface $transactor, Transaction $transaction, $externalId = '', $message = '', $data = array())
     {
-        $this->transactor = $transactor;
+        $this->transactor = $transactor->getType();
         $this->transaction = $transaction;
         $this->externalId = $externalId;
         $this->message = $message;
         $this->data = (array)$data;
         $transaction->setResult($this);
     }
-    
+
     /**
      * Gets the associated Transaction
-     * 
-     * @return Orkestra\Transactor\Entity\Transaction
+     *
+     * @return \Orkestra\Transactor\Entity\Transaction
      */
     public function getTransaction()
     {
     	return $this->transaction;
     }
-    
+
     /**
      * Set External ID
      *
@@ -107,7 +107,7 @@ abstract class TransactionResultBase extends EntityBase
     {
         return $this->externalId;
     }
-    
+
     /**
      * Set Message
      *
@@ -127,7 +127,7 @@ abstract class TransactionResultBase extends EntityBase
     {
         return $this->message;
     }
-    
+
     /**
      * Set Data
      *
@@ -138,7 +138,7 @@ abstract class TransactionResultBase extends EntityBase
     {
         $this->data[$key] = $value;
     }
-    
+
     /**
      * Get Data
      *
@@ -148,5 +148,35 @@ abstract class TransactionResultBase extends EntityBase
     public function getData($key)
     {
         return empty($this->data[$key]) ? null : $this->data[$key];
+    }
+
+    /**
+     * Sets the result type
+     *
+     * @param \Orkestra\Transactor\Entity\Result\ResultType $type
+     */
+    public function setType(Result\ResultType $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Gets the result type
+     *
+     * @return \Orkestra\Transactor\Entity\Result\ResultType
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Gets the transactor
+     *
+     * @param string $transactor
+     */
+    public function getTransactor()
+    {
+        return $this->transactor;
     }
 }
