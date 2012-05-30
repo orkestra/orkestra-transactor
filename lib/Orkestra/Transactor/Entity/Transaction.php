@@ -26,25 +26,18 @@ class Transaction extends EntityBase
     protected $amount;
 
     /**
-     * @var boolean $transacted
-     *
-     * @ORM\Column(name="transacted", type="boolean")
-     */
-    protected $transacted = false;
-
-    /**
-     * @var DateTime $dateTransacted
-     *
-     * @ORM\Column(name="date_transacted", type="datetime")
-     */
-    protected $dateTransacted;
-
-    /**
      * @var string $type
      *
      * @ORM\Column(name="type", type="enum.orkestra.transaction_type")
      */
     protected $type;
+
+    /**
+     * @var string $network
+     *
+     * @ORM\Column(name="network", type="enum.orkestra.network_type")
+     */
+    protected $network;
 
     /**
      * @var \Orkestra\Transactor\Entity\Transaction $parent
@@ -66,7 +59,7 @@ class Transaction extends EntityBase
     /**
      * @var \Orkestra\Transactor\Entity\AbstractAccount $account
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
      * })
@@ -76,7 +69,7 @@ class Transaction extends EntityBase
     /**
      * @var \Orkestra\Transactor\Entity\Credentials $credentials
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
      * })
@@ -93,9 +86,14 @@ class Transaction extends EntityBase
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Transaction $parent = null)
     {
+        if ($parent) {
+            $this->parent = $parent;
+        }
+
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->result = new Result();
     }
 
     /**
@@ -105,8 +103,9 @@ class Transaction extends EntityBase
      */
     public function setAmount($amount)
     {
-        if ($this->transacted)
+        if ($this->isTransacted()) {
             return;
+        }
 
         $this->amount = $amount;
     }
@@ -128,7 +127,7 @@ class Transaction extends EntityBase
      */
     public function getTransacted()
     {
-        return $this->transacted;
+        return $this->isTransacted();
     }
 
     /**
@@ -138,17 +137,7 @@ class Transaction extends EntityBase
      */
     public function isTransacted()
     {
-        return $this->getTransacted();
-    }
-
-    /**
-     * Gets the date transacted
-     *
-     * @return DateTime
-     */
-    public function getDateTransacted()
-    {
-        return $this->dateTransacted;
+        return $this->result->isTransacted();
     }
 
     /**
@@ -158,8 +147,9 @@ class Transaction extends EntityBase
      */
     public function setType(Transaction\TransactionType $type)
     {
-        if ($this->transacted)
+        if ($this->isTransacted()) {
             return;
+        }
 
         $this->type = $type;
     }
@@ -175,13 +165,27 @@ class Transaction extends EntityBase
     }
 
     /**
-     * Sets the parent transaction
+     * Sets the network
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $parent
+     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType $network
      */
-    public function setParent(Transaction $parent)
+    public function setNetwork(Transaction\NetworkType $network)
     {
-        $this->parent = $parent;
+        if ($this->isTransacted() || $this->parent) {
+            return;
+        }
+
+        $this->network = $network;
+    }
+
+    /**
+     * Gets the network
+     *
+     * @return \Orkestra\Transactor\Entity\Transaction\NetworkType
+     */
+    public function getNetwork()
+    {
+        return $this->network;
     }
 
     /**
@@ -204,12 +208,12 @@ class Transaction extends EntityBase
      */
     public function createChild(Transaction\TransactionType $type, $amount = 0.0)
     {
-        $child = new Transaction();
+        $child = new Transaction($this);
         $child->setType($type);
-        $child->setAmount($amount);
+        $child->setNetwork($this->network);
         $child->setAccount($this->account);
-        $child->setParent($this);
-        $this->children[] = $child;
+        $child->setAmount($amount);
+        $this->children->add($child);
 
         return $child;
     }
@@ -231,8 +235,9 @@ class Transaction extends EntityBase
      */
     public function setAccount(AbstractAccount $account)
     {
-        if ($this->transacted)
+        if ($this->isTransacted() || $this->parent) {
             return;
+        }
 
         $this->account = $account;
     }
@@ -245,21 +250,6 @@ class Transaction extends EntityBase
     public function getAccount()
     {
         return $this->account;
-    }
-
-    /**
-     * Sets the associated result
-     *
-     * @param \Orkestra\Transactor\Entity\Result $result
-     */
-    public function setResult(Result $result)
-    {
-        if ($this->transacted)
-            return;
-
-        $this->transacted = true;
-        $this->dateTransacted = new DateTime();
-        $this->result = $result;
     }
 
     /**
@@ -279,6 +269,10 @@ class Transaction extends EntityBase
      */
     public function setCredentials(Credentials $credentials)
     {
+        if ($this->isTransacted()) {
+            return;
+        }
+
         $this->credentials = $credentials;
     }
 

@@ -12,6 +12,11 @@ use Orkestra\Common\Type\Enum;
 class ResultType extends Enum
 {
     /**
+     * The transaction has not yet been transacted
+     */
+    const UNPROCESSED = 'Unprocessed';
+
+    /**
      * The transaction was approved
      */
     const APPROVED = 'Approved';
@@ -25,4 +30,14 @@ class ResultType extends Enum
      * An error occurred
      */
     const ERROR = 'Error';
+
+    /**
+     * The transaction is pending
+     */
+    const PENDING = 'Pending';
+
+    /**
+     * The transaction has been processed but is not yet completed
+     */
+    const PROCESSED = 'Processed';
 }

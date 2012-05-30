@@ -23,22 +23,33 @@ use Orkestra\Transactor\Type\Year;
  */
 class CardTransactorTest extends \PHPUnit_Framework_TestCase
 {
+    public function testSupportsCorrectNetworks()
+    {
+        $transactor = $this->_getTransactor();
+
+        // Supported
+        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
+
+        // Unsupported
+        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
+        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
+    }
+
     public function testSupportsCorrectTypes()
     {
         $transactor = $this->_getTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_SALE)));
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_AUTH)));
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_CAPTURE)));
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_CREDIT)));
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_REFUND)));
-        $this->assertTrue($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::CARD_VOID)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
+        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
 
         // Unsupported
-        $this->assertFalse($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::ACH_REQUEST)));
-        $this->assertFalse($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::ACH_RESPONSE)));
-        $this->assertFalse($transactor->supports(new Transaction\TransactionType(Transaction\TransactionType::MFA_TRANSFER)));
+        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::QUERY)));
+        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
     }
 
     public function testCardSaleSuccess()
@@ -147,7 +158,8 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         $transaction = new Transaction();
         $transaction->setAmount(10);
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::CARD_SALE));
+        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
         $transaction->setCredentials($credentials);
         $transaction->setAccount($account);
 

@@ -21,13 +21,26 @@ class TransactorException extends \Exception
      * Occurs when an attempt is made to process a transaction of a type not supported by the
      * given Transactor.
      *
-     * @param string $givenType
+     * @param string $type
      *
      * @return \Orkestra\Transactor\Exception\TransactorException
      */
-    public static function unsupportedTransactionType($givenType)
+    public static function unsupportedTransactionType($type)
     {
-        return new self(sprintf('Transaction type "%s" is not supported by this Transactor', $givenType));
+        return new self(sprintf('Transaction type "%s" is not supported by this Transactor', $type ?: 'NULL'));
+    }
+
+    /**
+     * Occurs when an attempt is made to process a transaction on a network not supported by the
+     * given Transactor.
+     *
+     * @param string $network
+     *
+     * @return \Orkestra\Transactor\Exception\TransactorException
+     */
+    public static function unsupportedTransactionNetwork($network)
+    {
+        return new self(sprintf('Transaction network "%s" is not supported by this Transactor', $network ?: 'NULL'));
     }
 
     /**

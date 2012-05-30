@@ -26,7 +26,16 @@ interface TransactorInterface
      * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
      * @return boolean
      */
-    function supports(Transaction\TransactionType $type);
+    function supportsType(Transaction\TransactionType $type = null);
+
+    /**
+     * Returns true if the Transactor supports the given network type
+     *
+     * @abstract
+     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @return boolean
+     */
+    function supportsNetwork(Transaction\NetworkType $network = null);
 
     /**
      * Returns the internally used type of this Transactor

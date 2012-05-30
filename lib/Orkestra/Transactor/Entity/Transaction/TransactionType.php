@@ -12,47 +12,42 @@ use Orkestra\Common\Type\Enum;
 class TransactionType extends Enum
 {
     /**
-     * A Credit Card Sale
+     * A sale transaction
      */
-    const CARD_SALE = 'Card Sale';
+    const SALE = 'Sale';
 
     /**
-     * A Credit Card Authorization
+     * An authorization transaction
      */
-    const CARD_AUTH = 'Card Auth';
+    const AUTH = 'Auth';
 
     /**
-     * A Credit Card Capture
+     * A capture transaction
      */
-    const CARD_CAPTURE = 'Card Capture';
+    const CAPTURE = 'Capture';
 
     /**
-     * A Credit Card Credit
+     * A credit transaction
      */
-    const CARD_CREDIT = 'Card Credit';
+    const CREDIT = 'Credit';
 
     /**
-     * A Credit Card Refund
+     * A refund transaction
      */
-    const CARD_REFUND = 'Card Refund';
+    const REFUND = 'Refund';
 
     /**
-     * A Credit Card Void
+     * A void transaction
      */
-    const CARD_VOID = 'Card Void';
+    const VOID = 'Void';
 
     /**
-     * An ACH Request
+     * A transaction that queries for the current status of the parent transaction
      */
-    const ACH_REQUEST = 'ACH Request';
+    const QUERY = 'Query';
 
     /**
-     * An ACH Response
+     * An transaction that updates the parent transaction
      */
-    const ACH_RESPONSE = 'ACH Response';
-
-    /**
-     * An MFA Transfer
-     */
-    const MFA_TRANSFER = 'MFA Transfer';
+    const UPDATE = 'Update';
 }

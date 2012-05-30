@@ -23,13 +23,20 @@ class CardTransactor extends AbstractTransactor
     /**
      * @var array
      */
+    protected static $_supportedNetworks = array(
+        Transaction\NetworkType::CARD,
+    );
+
+    /**
+     * @var array
+     */
     protected static $_supportedTypes = array(
-        Transaction\TransactionType::CARD_SALE,
-        Transaction\TransactionType::CARD_AUTH,
-        Transaction\TransactionType::CARD_CAPTURE,
-        Transaction\TransactionType::CARD_CREDIT,
-        Transaction\TransactionType::CARD_REFUND,
-        Transaction\TransactionType::CARD_VOID,
+        Transaction\TransactionType::SALE,
+        Transaction\TransactionType::AUTH,
+        Transaction\TransactionType::CAPTURE,
+        Transaction\TransactionType::CREDIT,
+        Transaction\TransactionType::REFUND,
+        Transaction\TransactionType::VOID,
     );
 
     /**
@@ -53,24 +60,22 @@ class CardTransactor extends AbstractTransactor
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
      * @param array $options
      *
-     * @return \Orkestra\Transaction\Entity\Result
-     * @throws \RuntimeException
+     * @return \Orkestra\Transactor\Entity\Result
      */
     public function _doTransact(Transaction $transaction, $options = array())
     {
+        $result = $transaction->getResult();
+
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);
 
-        $request = Request::create('https://www.google.com', 'POST', $params);
+        $request = Request::create('https://secure.networkmerchants.com/api/transact.php', 'POST', $params);
         $response = $this->_kernel->handle($request);
-
-        $result = new Result($this, $transaction);
 
         $data = array();
         parse_str($response->getContent(), $data);
 
         if (empty($data['response']) || '1' != $data['response']) {
-
             $result->setType(new Result\ResultType('2' == $data['response'] ? Result\ResultType::DECLINED : Result\ResultType::ERROR));
             $result->setMessage(empty($data['responsetext']) ? 'An unknown error occurred.' : $data['responsetext']);
 
@@ -95,7 +100,7 @@ class CardTransactor extends AbstractTransactor
      */
     public function getType()
     {
-        return 'orkestra.transactor.nmi_card';
+        return 'orkestra.network_merchants.card';
     }
 
     /**
@@ -117,7 +122,7 @@ class CardTransactor extends AbstractTransactor
      */
     protected function _validateTransaction(Transaction $transaction)
     {
-        if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CARD_CAPTURE, Transaction\TransactionType::CARD_REFUND, Transaction\TransactionType::CARD_VOID))) {
+        if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CAPTURE, Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))) {
             throw ValidationException::parentTransactionRequired();
         }
 
@@ -149,17 +154,17 @@ class CardTransactor extends AbstractTransactor
     protected function _getNmiType(Transaction $transaction)
     {
         switch ($transaction->getType()->getValue()) {
-            case Transaction\TransactionType::CARD_SALE:
+            case Transaction\TransactionType::SALE:
                 return 'sale';
-            case Transaction\TransactionType::CARD_AUTH:
+            case Transaction\TransactionType::AUTH:
                 return 'auth';
-            case Transaction\TransactionType::CARD_CAPTURE:
+            case Transaction\TransactionType::CAPTURE:
                 return 'capture';
-            case Transaction\TransactionType::CARD_CREDIT:
+            case Transaction\TransactionType::CREDIT:
                 return 'credit';
-            case Transaction\TransactionType::CARD_REFUND:
+            case Transaction\TransactionType::REFUND:
                 return 'refund';
-            case Transaction\TransactionType::CARD_VOID:
+            case Transaction\TransactionType::VOID:
                 return 'void';
         }
     }
@@ -179,9 +184,9 @@ class CardTransactor extends AbstractTransactor
         );
 
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CARD_CAPTURE,
-            Transaction\TransactionType::CARD_REFUND,
-            Transaction\TransactionType::CARD_VOID))
+            Transaction\TransactionType::CAPTURE,
+            Transaction\TransactionType::REFUND,
+            Transaction\TransactionType::VOID))
         ) {
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
@@ -195,7 +200,7 @@ class CardTransactor extends AbstractTransactor
             ));
         }
 
-        if ($transaction->getType()->getValue() != Transaction\TransactionType::CARD_VOID) {
+        if ($transaction->getType()->getValue() != Transaction\TransactionType::VOID) {
             $params['amount'] = $transaction->getAmount();
         }
 

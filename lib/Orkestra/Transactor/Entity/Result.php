@@ -3,6 +3,7 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Common\Type\NullDateTime;
 use Orkestra\Common\Entity\EntityBase;
 use Orkestra\Transactor\TransactorInterface;
 
@@ -43,6 +44,27 @@ class Result extends EntityBase
     protected $type;
 
     /**
+     * @var boolean $transacted
+     *
+     * @ORM\Column(name="transacted", type="boolean")
+     */
+    protected $transacted = false;
+
+    /**
+     * @var \DateTime $dateTransacted
+     *
+     * @ORM\Column(name="date_transacted", type="datetime")
+     */
+    protected $dateTransacted;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="transactor", type="string")
+     */
+    protected $transactor;
+
+    /**
      * @var \Orkestra\Transactor\Entity\Transaction
      *
      * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result", cascade={"persist"})
@@ -53,29 +75,42 @@ class Result extends EntityBase
     protected $transaction;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="transactor", type="string")
+     * Constructor
      */
-    protected $transactor;
+    public function __construct()
+    {
+        $this->dateTransacted = new NullDateTime();
+        $this->type = new Result\ResultType(Result\ResultType::UNPROCESSED);
+    }
 
     /**
-     * Constructor
+     * Returns true if the transaction has been transacted
      *
-     * @param \Orkestra\Transactor\TransactorInterface $transactor
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param string $externalId
-     * @param string $message
-     * @param array $data
+     * @return bool
      */
-    public function __construct(TransactorInterface $transactor, Transaction $transaction, $externalId = '', $message = '', $data = array())
+    public function getTransacted()
     {
-        $this->transactor = $transactor->getType();
+        return $this->isTransacted();
+    }
+
+    /**
+     * Returns true if the transaction has been transacted
+     *
+     * @return bool
+     */
+    public function isTransacted()
+    {
+        return $this->transacted;
+    }
+
+    /**
+     * Sets the associated Transaction
+     *
+     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     */
+    public function setTransaction(Transaction $transaction)
+    {
         $this->transaction = $transaction;
-        $this->externalId = $externalId;
-        $this->message = $message;
-        $this->data = (array)$data;
-        $transaction->setResult($this);
     }
 
     /**
@@ -157,6 +192,10 @@ class Result extends EntityBase
      */
     public function setType(Result\ResultType $type)
     {
+        if (Result\ResultType::UNPROCESSED !== $type->getValue()) {
+            $this->transacted = true;
+        }
+
         $this->type = $type;
     }
 
@@ -178,5 +217,15 @@ class Result extends EntityBase
     public function getTransactor()
     {
         return $this->transactor;
+    }
+
+    /**
+     * Sets the transactor
+     *
+     * @param string $transactor
+     */
+    public function setTransactor(TransactorInterface $transactor)
+    {
+        $this->transactor = $transactor->getType();
     }
 }

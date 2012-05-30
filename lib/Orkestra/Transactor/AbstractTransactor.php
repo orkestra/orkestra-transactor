@@ -11,6 +11,11 @@ use Orkestra\Transactor\Exception\TransactorException;
 abstract class AbstractTransactor implements TransactorInterface
 {
     /**
+     * @var array $_supportedNetworks An array of NetworkType constants
+     */
+    protected static $_supportedNetworks = array();
+
+    /**
      * @var array $_supportedTypes An array of TransactionType constants
      */
     protected static $_supportedTypes = array();
@@ -29,9 +34,10 @@ abstract class AbstractTransactor implements TransactorInterface
     {
         if ($transaction->isTransacted()) {
             throw TransactorException::transactionAlreadyProcessed();
-        }
-        else if (!$this->supports($transaction->getType())) {
+        } elseif (!$this->supportsType($transaction->getType())) {
             throw TransactorException::unsupportedTransactionType($transaction->getType());
+        } elseif (!$this->supportsNetwork($transaction->getNetwork())) {
+            throw TransactorException::unsupportedTransactionNetwork($transaction->getNetwork());
         }
 
         return $this->_doTransact($transaction, $options);
@@ -48,20 +54,26 @@ abstract class AbstractTransactor implements TransactorInterface
     abstract protected function _doTransact(Transaction $transaction, $options = array());
 
     /**
-     * Supports
-     *
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type A valid Transaction type
+     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
      * @return boolean True if supported
      */
-    public function supports(Transaction\TransactionType $type)
+    public function supportsType(Transaction\TransactionType $type = null)
     {
-        if (!in_array($type->getValue(), static::$_supportedTypes)) {
-            return false;
-        }
+        return in_array((null === $type ? null : $type->getValue()), static::$_supportedTypes);
+    }
 
-        return true;
+    /**
+     * Returns true if this Transactor supports a given Network type
+     *
+     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType|null $network
+     *
+     * @return boolean True if supported
+     */
+    public function supportsNetwork(Transaction\NetworkType $network = null)
+    {
+        return in_array((null === $network ? null : $network->getValue()), static::$_supportedNetworks);
     }
 
     /**
