@@ -2,9 +2,7 @@
 
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Orkestra\Common\Kernel\HttpKernel;
 
 use Orkestra\Transactor\AbstractTransactor;
@@ -15,8 +13,6 @@ use Orkestra\Transactor\Exception\ValidationException;
 
 /**
  * Credit card transactor for the Network Merchants payment processing gateway
- *
- * @ORM\Entity
  */
 class CardTransactor extends AbstractTransactor
 {
