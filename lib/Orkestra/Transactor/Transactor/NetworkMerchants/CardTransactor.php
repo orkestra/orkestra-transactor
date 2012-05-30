@@ -60,8 +60,6 @@ class CardTransactor extends AbstractTransactor
      */
     public function _doTransact(Transaction $transaction, $options = array())
     {
-        $result = $transaction->getResult();
-
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);
 
@@ -69,6 +67,7 @@ class CardTransactor extends AbstractTransactor
         $request = Request::create($postUrl, 'POST', $params);
         $response = $this->_kernel->handle($request);
 
+        $result = $transaction->getResult();
         $data = array();
         parse_str($response->getContent(), $data);
 
@@ -88,26 +87,6 @@ class CardTransactor extends AbstractTransactor
         $result->setData('response', $data);
 
         return $result;
-    }
-
-    /**
-     * Returns the internally used type of this Transactor
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return 'orkestra.network_merchants.card';
-    }
-
-    /**
-     * Returns the name of this Transactor
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return 'Network Merchants Credit Card Gateway';
     }
 
     /**
@@ -202,5 +181,25 @@ class CardTransactor extends AbstractTransactor
         }
 
         return $params;
+    }
+
+    /**
+     * Returns the internally used type of this Transactor
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'orkestra.network_merchants.card';
+    }
+
+    /**
+     * Returns the name of this Transactor
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'Network Merchants Credit Card Gateway';
     }
 }
