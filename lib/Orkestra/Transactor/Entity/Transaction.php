@@ -13,7 +13,7 @@ use Orkestra\Transactor\Exception\TransactorException;
  *
  * Represents a single transaction
  *
- * @ORM\Table(name="orkestra_transactions", indexes={@ORM\Index(name="IX_date_transacted", columns={"date_transacted"})})
+ * @ORM\Table(name="orkestra_transactions")
  * @ORM\Entity
  */
 class Transaction extends EntityBase
@@ -85,6 +85,8 @@ class Transaction extends EntityBase
 
     /**
      * Constructor
+     *
+     * @param \Orkestra\Transactor\Entity\Transaction|null $parent
      */
     public function __construct(Transaction $parent = null)
     {
@@ -94,6 +96,7 @@ class Transaction extends EntityBase
 
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->result = new Result();
+        $this->result->setTransaction($this);
     }
 
     /**
