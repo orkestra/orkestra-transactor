@@ -96,11 +96,11 @@ class Credentials extends EntityBase
     /**
      * Sets the transactor
      *
-     * @param \Orkestra\Transactor\TransactorInterface $transactor
+     * @param \Orkestra\Transactor\TransactorInterface|string $transactor
      */
-    public function setTransactor(TransactorInterface $transactor)
+    public function setTransactor($transactor)
     {
-        $this->transactor = $transactor->getType();
+        $this->transactor = is_object($transactor) ? $transactor->getType() : $transactor;
     }
 
     /**
