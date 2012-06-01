@@ -74,7 +74,7 @@ class AchTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         if ('Approved' !== $data->CommandStatus) {
             $result->setType(new Result\ResultType('Declined' !== $data->CommandStatus ? Result\ResultType::ERROR : Result\ResultType::DECLINED));
-            $result->setMessage($data->Description . ': ' . $data->ErrorInformation);
+            $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
 
             if (!empty($data->TransAct_ReferenceID)) {
                 $result->setExternalId($data->TransAct_ReferenceID);
@@ -155,12 +155,15 @@ class AchTransactor extends AbstractTransactor
 
         $params = array(
             'ProviderID' => $credentials->getCredential('providerId'),
-            'Provider_GateID' => $credentials->getCredential('gateId'),
-            'Provider_GateKey' => $credentials->getCredential('gateKey'),
+            'Provider_GateID' => $credentials->getCredential('providerGateId'),
+            'Provider_GateKey' => $credentials->getCredential('providerGateKey'),
             'Command' => $this->_getCommand($transaction),
             'CommandVersion' => '1.0',
-            'TestMode' => !empty($options['testMode']) ? true : false,
-            'ResponseType' => 'JSON'
+            'TestMode' => !empty($options['testMode']) ? 'On' : 'Off',
+            'ResponseType' => 'JSON',
+            'MerchantID' => $credentials->getCredential('merchantId'),
+            'Merchant_GateID' => $credentials->getCredential('merchantGateId'),
+            'Merchant_GateKey' => $credentials->getCredential('merchantGateKey'),
         );
 
         if (Transaction\TransactionType::SALE === $transaction->getType()->getValue()) {
