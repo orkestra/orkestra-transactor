@@ -21,7 +21,7 @@ class TransactorFactory
      */
     public function registerTransactor(TransactorInterface $transactor)
     {
-        $this->_transactors[$transactor->getName()] = $transactor;
+        $this->_transactors[$transactor->getType()] = $transactor;
     }
 
     /**
