@@ -42,7 +42,7 @@ class Transaction extends EntityBase
     /**
      * @var \Orkestra\Transactor\Entity\Transaction $parent
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"}, fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      * })
@@ -52,7 +52,7 @@ class Transaction extends EntityBase
     /**
      * @var \Doctrine\Common\Collections\Collection $children
      *
-     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="parent", cascade={"persist"}, fetch="EAGER")
      */
     protected $children;
 

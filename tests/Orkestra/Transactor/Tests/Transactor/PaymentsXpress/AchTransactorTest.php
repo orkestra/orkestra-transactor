@@ -41,16 +41,16 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         // Supported
         $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
         $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::QUERY)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
+        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
     }
 
-    public function testCardSaleSuccess()
+    public function testSaleSuccess()
     {
         $response = new Response(
             '{"CommandStatus":"Approved","Description":"","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"56789","ResponseCode":"100"}',
@@ -67,11 +67,11 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::APPROVED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
         $this->assertEquals('56789', $result->getExternalId());
     }
 
-    public function testCardSaleError()
+    public function testSaleError()
     {
         $response = new Response(
             '{"CommandStatus":"Error","Description":"Internal Gateway Error","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"54321","ResponseCode":"100"}',
@@ -90,11 +90,11 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $result = $transactor->transact($transaction);
 
         $this->assertEquals(Result\ResultType::ERROR, $result->getType()->getValue());
-        $this->assertEquals('Internal Gateway Error: ', $result->getMessage());
+        $this->assertEquals('Internal Gateway Error', $result->getMessage());
         $this->assertEquals('54321', $result->getExternalId());
     }
 
-    public function testCardSaleDecline()
+    public function testSaleDecline()
     {
         $response = new Response(
             '{"CommandStatus":"Declined","Description":"Invalid Gateway Credentials","ErrorInformation":"Provider_Credentials","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"12345","ResponseCode":"100"}',

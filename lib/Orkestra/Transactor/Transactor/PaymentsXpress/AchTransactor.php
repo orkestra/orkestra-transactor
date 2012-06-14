@@ -29,13 +29,13 @@ class AchTransactor extends AbstractTransactor
      */
     protected static $_supportedTypes = array(
         Transaction\TransactionType::SALE,
-        Transaction\TransactionType::CREDIT,
-        Transaction\TransactionType::AUTH,
-        Transaction\TransactionType::CAPTURE,
-        Transaction\TransactionType::REFUND,
-        Transaction\TransactionType::VOID,
+        // Transaction\TransactionType::CREDIT,
+        // Transaction\TransactionType::AUTH,
+        // Transaction\TransactionType::CAPTURE,
+        // Transaction\TransactionType::REFUND,
+        // Transaction\TransactionType::VOID,
         Transaction\TransactionType::QUERY,
-        Transaction\TransactionType::UPDATE,
+        // Transaction\TransactionType::UPDATE,
     );
 
     /**
@@ -80,7 +80,13 @@ class AchTransactor extends AbstractTransactor
                 $result->setExternalId($data->TransAct_ReferenceID);
             }
         } else {
-            $result->setType(new Result\ResultType(Result\ResultType::APPROVED));
+            if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
+                // Loop through data, find latest event for the given transaction. If none, get last status from parent transaction
+
+            } else {
+                $result->setType(new Result\ResultType(Result\ResultType::PENDING));
+            }
+
             $result->setExternalId($data->TransAct_ReferenceID);
         }
 
@@ -153,7 +159,7 @@ class AchTransactor extends AbstractTransactor
         $credentials = $transaction->getCredentials();
         $account = $transaction->getAccount();
 
-        $params = array(
+        $params = $params = array(
             'ProviderID' => $credentials->getCredential('providerId'),
             'Provider_GateID' => $credentials->getCredential('providerGateId'),
             'Provider_GateKey' => $credentials->getCredential('providerGateKey'),
@@ -166,7 +172,9 @@ class AchTransactor extends AbstractTransactor
             'Merchant_GateKey' => $credentials->getCredential('merchantGateKey'),
         );
 
-        if (Transaction\TransactionType::SALE === $transaction->getType()->getValue()) {
+        $transactionType = $transaction->getType()->getValue();
+
+        if (Transaction\TransactionType::SALE === $transactionType) {
             $params = array_merge($params, array(
                 'PaymentDirection' => 'FromCustomer',
                 'Amount' => $transaction->getAmount(),
@@ -188,6 +196,8 @@ class AchTransactor extends AbstractTransactor
                 'Run_ExpressVerify' => 'No',
                 'SECCode' => 'WEB',
             ));
+        } elseif (Transaction\TransactionType::QUERY === $transactionType) {
+            $params['TrackingDate'] = !empty($options['date']) ? $options['date'] : date('mdY');
         } else {
             throw new \RuntimeException(sprintf('The transaction type %s is not yet implemented', $transaction->getType()->getValue()));
         }
