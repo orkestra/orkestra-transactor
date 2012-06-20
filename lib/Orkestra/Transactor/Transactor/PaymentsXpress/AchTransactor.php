@@ -13,7 +13,7 @@ use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
 
 /**
- * ACH transactor for the Payments Xpress payment processing gateway
+ * ACH transactor for the PaymentsXpress payment processing gateway
  */
 class AchTransactor extends AbstractTransactor
 {
@@ -70,24 +70,32 @@ class AchTransactor extends AbstractTransactor
         $request = Request::create($postUrl, 'POST', $params);
         $response = $this->_kernel->handle($request);
 
-        $data = json_decode($response->getContent());
         $result = $transaction->getResult();
-        if ('Approved' !== $data->CommandStatus) {
-            $result->setType(new Result\ResultType('Declined' !== $data->CommandStatus ? Result\ResultType::ERROR : Result\ResultType::DECLINED));
-            $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
 
-            if (!empty($data->TransAct_ReferenceID)) {
+        $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
+            ? json_decode($response->getContent())
+            : $this->_normalizeQueryResponse($response->getContent());
+
+        if (null === $data) {
+            $result->setType(new Result\ResultType(Result\ResultType::ERROR));
+            $result->setMessage('An error occurred while contacting the PaymentsXpress system');
+        } else {
+            if ('Approved' !== $data->CommandStatus) {
+                $result->setType(new Result\ResultType('Declined' !== $data->CommandStatus ? Result\ResultType::ERROR : Result\ResultType::DECLINED));
+                $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
+
+                if (!empty($data->TransAct_ReferenceID)) {
+                    $result->setExternalId($data->TransAct_ReferenceID);
+                }
+            } else {
+                if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
+                    $this->_handleQueryResponse($transaction, $data);
+                } else {
+                    $result->setType(new Result\ResultType(Result\ResultType::PENDING));
+                }
+
                 $result->setExternalId($data->TransAct_ReferenceID);
             }
-        } else {
-            if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
-                // Loop through data, find latest event for the given transaction. If none, get last status from parent transaction
-
-            } else {
-                $result->setType(new Result\ResultType(Result\ResultType::PENDING));
-            }
-
-            $result->setExternalId($data->TransAct_ReferenceID);
         }
 
         $result->setData('request', $params);
@@ -152,6 +160,9 @@ class AchTransactor extends AbstractTransactor
 
     /**
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param array $options
+     *
+     * @throws \RuntimeException
      * @return array
      */
     protected function _buildParams(Transaction $transaction, $options)
@@ -166,7 +177,6 @@ class AchTransactor extends AbstractTransactor
             'Command' => $this->_getCommand($transaction),
             'CommandVersion' => '1.0',
             'TestMode' => !empty($options['testMode']) ? 'On' : 'Off',
-            'ResponseType' => 'JSON',
             'MerchantID' => $credentials->getCredential('merchantId'),
             'Merchant_GateID' => $credentials->getCredential('merchantGateId'),
             'Merchant_GateKey' => $credentials->getCredential('merchantGateKey'),
@@ -176,6 +186,7 @@ class AchTransactor extends AbstractTransactor
 
         if (Transaction\TransactionType::SALE === $transactionType) {
             $params = array_merge($params, array(
+                'ResponseType' => 'JSON',
                 'PaymentDirection' => 'FromCustomer',
                 'Amount' => $transaction->getAmount(),
                 'CheckType' => in_array($account->getAccountType()->getValue(), array(
@@ -186,6 +197,8 @@ class AchTransactor extends AbstractTransactor
                     AccountType::PERSONAL_SAVINGS,
                     AccountType::BUSINESS_SAVINGS
                 )) ? 'Savings' : 'Checking',
+                'RoutingNumber' => $account->getRoutingNumber(),
+                'AccountNumber' => $account->getAccountNumber(),
                 'Billing_CustomerName' => $account->getName(),
                 'Billing_Address1' => $account->getAddress(),
                 'Billing_City' => $account->getCity(),
@@ -195,6 +208,7 @@ class AchTransactor extends AbstractTransactor
                 'SendEmailToCustomer' => 'No',
                 'Run_ExpressVerify' => 'No',
                 'SECCode' => 'WEB',
+                'Customer_IPAddress' => $account->getIpAddress(),
             ));
         } elseif (Transaction\TransactionType::QUERY === $transactionType) {
             $params['TrackingDate'] = !empty($options['date']) ? $options['date'] : date('mdY');
@@ -205,6 +219,11 @@ class AchTransactor extends AbstractTransactor
         return $params;
     }
 
+    /**
+     * @param Transaction $transaction
+     *
+     * @return string
+     */
     protected function _getCommand(Transaction $transaction)
     {
         switch ($transaction->getType()->getValue()) {
@@ -232,6 +251,119 @@ class AchTransactor extends AbstractTransactor
     }
 
     /**
+     * Handles a query response
+     *
+     * @param Transaction $transaction
+     * @param object $data
+     */
+    protected function _handleQueryResponse(Transaction $transaction, $data)
+    {
+        $result = $transaction->getResult();
+        $parentResult = $transaction->getParent()->getResult();
+        $eventResult = null;
+
+        foreach ($data->Results as $event) {
+            if ($event->TransAct_ReferenceID === $parentResult->getExternalId()) {
+                $eventResult = $event;
+
+                // We don't break in case the transaction has multiple events in the same query-- we want the latest
+            }
+        }
+
+        $resultType = $parentResult->getType()->getValue();
+
+        if (null !== $eventResult) {
+            switch ($eventResult->ResultingStatus) {
+                case 'Scheduled':
+                    $resultType = Result\ResultType::PENDING;
+                    break;
+
+                case 'Cancelled':
+                    $resultType = Result\ResultType::CANCELLED;
+                    break;
+
+                case 'In-Process':
+                    $resultType = Result\ResultType::PROCESSED;
+                    break;
+
+                case 'Cleared':
+                    $resultType = Result\ResultType::APPROVED;
+                    break;
+
+                case 'Failed Verification':
+                case 'Returned-NSF':
+                case 'Returned-Other':
+                    $resultType = Result\ResultType::DECLINED;
+                    break;
+
+                case 'Charged Back':
+                    $resultType = Result\ResultType::CHARGED_BACK;
+                    break;
+
+                case 'Merchant Hold':
+                case 'Processor Hold':
+                    $resultType = Result\ResultType::HOLD;
+                    break;
+            }
+        }
+
+        $result->setType(new Result\ResultType($resultType));
+    }
+
+    /**
+     * Normalizes a Query response, converting it from CSV to an object
+     *
+     * @param $content
+     *
+     * @return null|object
+     */
+    protected function _normalizeQueryResponse($content)
+    {
+        $result = new \stdClass();
+        $result->Results = array();
+
+        $lines = explode("\n", $content);
+
+        foreach ($lines as $line) {
+            if (empty($line)) {
+                continue;
+            }
+
+            $parts = str_getcsv($line);
+
+            if ($parts[0] === 'Command Response') {
+                $result->CommandStatus = $parts[1];
+                $result->ResponseCode = $parts[2];
+                $result->Description = $parts[3];
+                $result->ErrorInformation = $parts[4];
+                $result->TransAct_ReferenceID = $parts[5];
+
+                continue;
+            }
+
+            $status = new \stdClass();
+            $status->TransAct_ReferenceID = $parts[0];
+            $status->Provider_TransactionID = $parts[1];
+            $status->MerchantID = $parts[2];
+            $status->EventName = $parts[3];
+            $status->EventDate = $parts[4];
+            $status->ResultingStatus = $parts[5];
+            $status->ReturnCode = $parts[6];
+            $status->VerificationStatus = $parts[7];
+            $status->VerificationCode = $parts[8];
+            $status->VerificationText = $parts[9];
+
+            $result->Results[] = $status;
+        }
+
+        if (!$result->CommandStatus) {
+            return null;
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns the internally used type of this Transactor
      *
      * @return string
@@ -250,5 +382,4 @@ class AchTransactor extends AbstractTransactor
     {
         return 'Payments Xpress ACH Gateway';
     }
-
 }

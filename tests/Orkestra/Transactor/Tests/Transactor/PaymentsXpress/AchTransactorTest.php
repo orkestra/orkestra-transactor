@@ -20,6 +20,7 @@ use Orkestra\Transactor\Type\Year;
  *
  * @group orkestra
  * @group transactor
+ * @group ach
  */
 class AchTransactorTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,6 +51,23 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
     }
 
+    public function testResponseError()
+    {
+        $response = new Response(
+            '',
+            500
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $this->_getTransaction();
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::ERROR, $result->getType()->getValue());
+        $this->assertEquals('An error occurred while contacting the PaymentsXpress system', $result->getMessage());
+    }
+
     public function testSaleSuccess()
     {
         $response = new Response(
@@ -57,11 +75,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
             200
         );
 
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
+        $kernel = $this->_getMockKernel($response);
         $transactor = $this->_getTransactor($kernel);
         $transaction = $this->_getTransaction();
 
@@ -69,6 +83,8 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
         $this->assertEquals('56789', $result->getExternalId());
+
+        return $transaction;
     }
 
     public function testSaleError()
@@ -78,11 +94,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
             200
         );
 
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
+        $kernel = $this->_getMockKernel($response);
         $transactor = $this->_getTransactor($kernel);
         $transaction = $this->_getTransaction();
         $transaction->setAmount(.5);
@@ -101,11 +113,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
             200
         );
 
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
+        $kernel = $this->_getMockKernel($response);
         $transactor = $this->_getTransactor($kernel);
         $transaction = $this->_getTransaction();
 
@@ -117,11 +125,187 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithNoUpdateSetsParentStatus(Transaction $parent)
+    {
+        $response = new Response(
+            'Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertNotSame($result->getType(), $parent->getResult()->getType());
+        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
+        $this->assertEquals($result->getType()->getValue(), $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithScheduledStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '12345,,,Created,02/20/2003 02:59:00,Scheduled,,,,
+56789,,,Created,02/20/2003 03:00:00,Scheduled,,,,
+45666,,,Created,02/20/2003 02:59:00,Scheduled,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithCancelledStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Cancelled,02/20/2003 03:00:00,Cancelled,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::CANCELLED, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithProcessedStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Submitted,02/20/2003 03:00:00,In-Process,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::PROCESSED, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithApprovedStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Cleared,02/20/2003 03:00:00,Cleared,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::APPROVED, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithDeclinedStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Rejected,02/20/2003 03:00:00,Failed Verification,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::DECLINED, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithChargedBackStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Charged Back,02/20/2003 03:00:00,Charged Back,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::CHARGED_BACK, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
+     * @depends testSaleSuccess
+     */
+    public function testQueryWithHoldBackStatus(Transaction $parent)
+    {
+        $response = new Response(
+            '56789,,,Held by Merchant,02/20/2003 03:00:00,Merchant Hold,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
+            200
+        );
+
+        $kernel = $this->_getMockKernel($response);
+        $transactor = $this->_getTransactor($kernel);
+        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultType::HOLD, $result->getType()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+    }
+
+    /**
      * @return \PHPUnit_Framework_MockObject_MockObject|\Orkestra\Common\Kernel\HttpKernel
      */
-    protected function _getMockKernel()
+    protected function _getMockKernel($response = null)
     {
         $mockKernel = $this->getMock('Orkestra\Common\Kernel\HttpKernel');
+        if ($response) {
+            $mockKernel->expects($this->once())
+                ->method('handle')
+                ->will($this->returnValue($response));
+        }
 
         return $mockKernel;
     }
@@ -146,14 +330,14 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     protected function _getTransaction()
     {
         $account = new BankAccount();
-        $account->setAccountNumber('4111111111111111');
-        $account->setRoutingNumber('123456789');
+        $account->setAccountNumber('123456789');
+        $account->setRoutingNumber('123123123');
         $account->setAccountType(new BankAccount\AccountType(BankAccount\AccountType::PERSONAL_CHECKING));
 
         $credentials = new Credentials();
-        $credentials->setCredential('providerId', '2001');
-        $credentials->setCredential('providerGateId', 'test');
-        $credentials->setCredential('providerGateKey', 'test');
+        $credentials->setCredential('providerId', '1074');
+        $credentials->setCredential('providerGateId', 'sp-57181796');
+        $credentials->setCredential('providerGateKey', 'p8u-6wb*');
         $credentials->setCredential('merchantId', '2001');
         $credentials->setCredential('merchantGateId', 'test');
         $credentials->setCredential('merchantGateKey', 'test');
