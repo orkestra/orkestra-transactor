@@ -40,4 +40,19 @@ class ResultType extends Enum
      * The transaction has been processed but is not yet completed
      */
     const PROCESSED = 'Processed';
+
+    /**
+     * The transaction has been cancelled
+     */
+    const CANCELLED = 'Cancelled';
+
+    /**
+     * The transaction is on hold
+     */
+    const HOLD = 'Hold';
+
+    /**
+     * The transaction has been charged back
+     */
+    const CHARGED_BACK = 'Charged-back';
 }
