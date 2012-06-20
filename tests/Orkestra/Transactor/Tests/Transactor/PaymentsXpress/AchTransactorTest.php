@@ -152,9 +152,9 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     public function testQueryWithScheduledStatus(Transaction $parent)
     {
         $response = new Response(
-            '12345,,,Created,02/20/2003 02:59:00,Scheduled,,,,
+            '12345,,,Cancelled,02/20/2003 02:59:00,Cancelled,,,,
 56789,,,Created,02/20/2003 03:00:00,Scheduled,,,,
-45666,,,Created,02/20/2003 02:59:00,Scheduled,,,,
+45666,,,Cancelled,02/20/2003 03:01:00,Cancelled,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
             200
         );
