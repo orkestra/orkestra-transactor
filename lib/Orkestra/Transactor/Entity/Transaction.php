@@ -26,14 +26,14 @@ class Transaction extends EntityBase
     protected $amount;
 
     /**
-     * @var string $type
+     * @var \Orkestra\Transactor\Entity\Transaction\TransactionType $type
      *
      * @ORM\Column(name="type", type="enum.orkestra.transaction_type")
      */
     protected $type;
 
     /**
-     * @var string $network
+     * @var \Orkestra\Transactor\Entity\Transaction\NetworkType $network
      *
      * @ORM\Column(name="network", type="enum.orkestra.network_type")
      */
@@ -92,6 +92,9 @@ class Transaction extends EntityBase
     {
         if ($parent) {
             $this->parent = $parent;
+            $this->network = $parent->getNetwork();
+            $this->credentials = $parent->getCredentials();
+            $this->account = $parent->getAccount();
         }
 
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
@@ -213,8 +216,6 @@ class Transaction extends EntityBase
     {
         $child = new Transaction($this);
         $child->setType($type);
-        $child->setNetwork($this->network);
-        $child->setAccount($this->account);
         $child->setAmount($amount);
         $this->children->add($child);
 
