@@ -100,18 +100,6 @@ abstract class AbstractAccount extends EntityBase
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function validate()
-    {
-        parent::validate();
-
-        if (empty($this->accountNumber)) {
-            throw ValidationException::missingRequiredParameter('account number');
-        }
-    }
-
-    /**
      * Set Account Number
      *
      * @param string $accountNumber
