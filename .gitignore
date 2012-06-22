@@ -2,4 +2,3 @@
 vendor/*
 phpunit.xml
 composer.lock
-1
