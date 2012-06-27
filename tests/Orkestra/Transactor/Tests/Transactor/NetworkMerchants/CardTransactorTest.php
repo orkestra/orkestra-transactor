@@ -2,8 +2,6 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\NetworkMerchants;
 
-require_once __DIR__ . '/../../../../../bootstrap.php';
-
 use Orkestra\Common\Kernel\HttpKernel;
 use Symfony\Component\HttpFoundation\Response;
 

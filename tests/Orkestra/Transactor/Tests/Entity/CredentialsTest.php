@@ -2,8 +2,6 @@
 
 namespace Orkestra\Transactor\Tests\Entity;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
-
 use Orkestra\Transactor\Entity\Credentials;
 
 /**

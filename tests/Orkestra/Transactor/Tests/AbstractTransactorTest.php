@@ -2,8 +2,6 @@
 
 namespace Orkestra\Transactor\Tests;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Result;
