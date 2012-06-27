@@ -40,6 +40,13 @@ class Transaction extends EntityBase
     protected $network;
 
     /**
+     * @var \Orkestra\Transactor\Entity\Result\ResultStatus
+     *
+     * @ORM\Column(name="status", type="enum.orkestra.result_status")
+     */
+    protected $status;
+
+    /**
      * @var \Orkestra\Transactor\Entity\Transaction $parent
      *
      * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"}, fetch="EAGER")
@@ -98,8 +105,17 @@ class Transaction extends EntityBase
         }
 
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->result = new Result();
-        $this->result->setTransaction($this);
+        $this->result = new Result($this);
+    }
+
+    /**
+     * Returns true if this transaction is a parent transaction
+     *
+     * @return boolean
+     */
+    public function isParent()
+    {
+        return !$this->parent ? true : false;
     }
 
     /**
@@ -192,6 +208,26 @@ class Transaction extends EntityBase
     public function getNetwork()
     {
         return $this->network;
+    }
+
+    /**
+     * Sets the status
+     *
+     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
+     */
+    public function setStatus(Result\ResultStatus $status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * Gets the status
+     *
+     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**

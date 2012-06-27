@@ -76,11 +76,14 @@ class Result extends EntityBase
 
     /**
      * Constructor
+     *
+     * @param \Orkestra\Transactor\Entity\Transaction
      */
-    public function __construct()
+    public function __construct(Transaction $transaction)
     {
+        $this->transaction = $transaction;
         $this->dateTransacted = new NullDateTime();
-        $this->status = new Result\ResultStatus(Result\ResultStatus::UNPROCESSED);
+        $this->setStatus(new Result\ResultStatus(Result\ResultStatus::UNPROCESSED));
     }
 
     /**
@@ -188,15 +191,20 @@ class Result extends EntityBase
     /**
      * Sets the result type
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $type
+     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
      */
-    public function setStatus(Result\ResultStatus $type)
+    public function setStatus(Result\ResultStatus $status)
     {
-        if (Result\ResultStatus::UNPROCESSED !== $type->getValue()) {
+        if (Result\ResultStatus::UNPROCESSED !== $status->getValue()) {
             $this->transacted = true;
         }
 
-        $this->status = $type;
+        if (!$this->transaction->isParent())  {
+            $this->transaction->getParent()->setStatus($status);
+        }
+
+        $this->transaction->setStatus($status);
+        $this->status = $status;
     }
 
     /**
