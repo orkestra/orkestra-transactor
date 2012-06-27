@@ -37,11 +37,11 @@ class Result extends EntityBase
     protected $data = array();
 
     /**
-     * @var \Orkestra\Transactor\Entity\Result\ResultType
+     * @var \Orkestra\Transactor\Entity\Result\ResultStatus
      *
-     * @ORM\Column(name="type", type="enum.orkestra.result_type")
+     * @ORM\Column(name="status", type="enum.orkestra.result_status")
      */
-    protected $type;
+    protected $status;
 
     /**
      * @var boolean $transacted
@@ -80,7 +80,7 @@ class Result extends EntityBase
     public function __construct()
     {
         $this->dateTransacted = new NullDateTime();
-        $this->type = new Result\ResultType(Result\ResultType::UNPROCESSED);
+        $this->status = new Result\ResultStatus(Result\ResultStatus::UNPROCESSED);
     }
 
     /**
@@ -188,25 +188,25 @@ class Result extends EntityBase
     /**
      * Sets the result type
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultType $type
+     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $type
      */
-    public function setType(Result\ResultType $type)
+    public function setStatus(Result\ResultStatus $type)
     {
-        if (Result\ResultType::UNPROCESSED !== $type->getValue()) {
+        if (Result\ResultStatus::UNPROCESSED !== $type->getValue()) {
             $this->transacted = true;
         }
 
-        $this->type = $type;
+        $this->status = $type;
     }
 
     /**
      * Gets the result type
      *
-     * @return \Orkestra\Transactor\Entity\Result\ResultType
+     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
      */
-    public function getType()
+    public function getStatus()
     {
-        return $this->type;
+        return $this->status;
     }
 
     /**

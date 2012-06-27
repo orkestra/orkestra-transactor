@@ -67,7 +67,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::APPROVED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -89,7 +89,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::ERROR, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('Invalid Credit Card Number REFID:330352367', $result->getMessage());
         $this->assertEquals('', $result->getExternalId());
     }
@@ -111,7 +111,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::DECLINED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::DECLINED, $result->getStatus()->getValue());
         $this->assertEquals('DECLINE', $result->getMessage());
         $this->assertEquals('54321', $result->getExternalId());
     }

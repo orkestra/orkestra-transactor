@@ -77,11 +77,11 @@ class AchTransactor extends AbstractTransactor
             : $this->_normalizeQueryResponse($response->getContent());
 
         if (null === $data) {
-            $result->setType(new Result\ResultType(Result\ResultType::ERROR));
+            $result->setStatus(new Result\ResultStatus(Result\ResultStatus::ERROR));
             $result->setMessage('An error occurred while contacting the PaymentsXpress system');
         } else {
             if ('Approved' !== $data->CommandStatus) {
-                $result->setType(new Result\ResultType('Declined' !== $data->CommandStatus ? Result\ResultType::ERROR : Result\ResultType::DECLINED));
+                $result->setStatus(new Result\ResultStatus('Declined' !== $data->CommandStatus ? Result\ResultStatus::ERROR : Result\ResultStatus::DECLINED));
                 $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
 
                 if (!empty($data->TransAct_ReferenceID)) {
@@ -91,7 +91,7 @@ class AchTransactor extends AbstractTransactor
                 if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
                     $this->_handleQueryResponse($transaction, $data);
                 } else {
-                    $result->setType(new Result\ResultType(Result\ResultType::PENDING));
+                    $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
                 }
 
                 $result->setExternalId($data->TransAct_ReferenceID);
@@ -270,44 +270,44 @@ class AchTransactor extends AbstractTransactor
             }
         }
 
-        $resultType = $parentResult->getType()->getValue();
+        $resultType = $parentResult->getStatus()->getValue();
 
         if (null !== $eventResult) {
             switch ($eventResult->ResultingStatus) {
                 case 'Scheduled':
-                    $resultType = Result\ResultType::PENDING;
+                    $resultType = Result\ResultStatus::PENDING;
                     break;
 
                 case 'Cancelled':
-                    $resultType = Result\ResultType::CANCELLED;
+                    $resultType = Result\ResultStatus::CANCELLED;
                     break;
 
                 case 'In-Process':
-                    $resultType = Result\ResultType::PROCESSED;
+                    $resultType = Result\ResultStatus::PROCESSED;
                     break;
 
                 case 'Cleared':
-                    $resultType = Result\ResultType::APPROVED;
+                    $resultType = Result\ResultStatus::APPROVED;
                     break;
 
                 case 'Failed Verification':
                 case 'Returned-NSF':
                 case 'Returned-Other':
-                    $resultType = Result\ResultType::DECLINED;
+                    $resultType = Result\ResultStatus::DECLINED;
                     break;
 
                 case 'Charged Back':
-                    $resultType = Result\ResultType::CHARGED_BACK;
+                    $resultType = Result\ResultStatus::CHARGED_BACK;
                     break;
 
                 case 'Merchant Hold':
                 case 'Processor Hold':
-                    $resultType = Result\ResultType::HOLD;
+                    $resultType = Result\ResultStatus::HOLD;
                     break;
             }
         }
 
-        $result->setType(new Result\ResultType($resultType));
+        $result->setStatus(new Result\ResultStatus($resultType));
     }
 
     /**

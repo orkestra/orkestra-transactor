@@ -62,7 +62,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::ERROR, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('An error occurred while contacting the PaymentsXpress system', $result->getMessage());
     }
 
@@ -79,7 +79,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals('56789', $result->getExternalId());
 
         return $transaction;
@@ -99,7 +99,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::ERROR, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('Internal Gateway Error', $result->getMessage());
         $this->assertEquals('54321', $result->getExternalId());
     }
@@ -117,7 +117,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::DECLINED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::DECLINED, $result->getStatus()->getValue());
         $this->assertEquals('Invalid Gateway Credentials: Provider_Credentials', $result->getMessage());
         $this->assertEquals('12345', $result->getExternalId());
     }
@@ -138,9 +138,9 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertNotSame($result->getType(), $parent->getResult()->getType());
-        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
-        $this->assertEquals($result->getType()->getValue(), $result->getType()->getValue());
+        $this->assertNotSame($result->getStatus(), $parent->getResult()->getStatus());
+        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
+        $this->assertEquals($result->getStatus()->getValue(), $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -163,7 +163,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::PENDING, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -184,7 +184,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::CANCELLED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::CANCELLED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -205,7 +205,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::PROCESSED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::PROCESSED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -226,7 +226,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::APPROVED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -247,7 +247,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::DECLINED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::DECLINED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -268,7 +268,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::CHARGED_BACK, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::CHARGED_BACK, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -289,7 +289,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultType::HOLD, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::HOLD, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 

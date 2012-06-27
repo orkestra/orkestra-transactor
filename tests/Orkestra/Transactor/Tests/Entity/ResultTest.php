@@ -16,7 +16,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
     {
         $result = new Result();
 
-        $this->assertEquals(Result\ResultType::UNPROCESSED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::UNPROCESSED, $result->getStatus()->getValue());
     }
 
     public function testIsTransacted()
@@ -25,9 +25,9 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($result->isTransacted());
 
-        $result->setType(new Result\ResultType(Result\ResultType::APPROVED));
+        $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
 
-        $this->assertEquals(Result\ResultType::APPROVED, $result->getType()->getValue());
+        $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertTrue($result->isTransacted());
     }
 }

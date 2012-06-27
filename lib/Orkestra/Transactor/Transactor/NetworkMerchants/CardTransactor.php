@@ -72,14 +72,14 @@ class CardTransactor extends AbstractTransactor
         parse_str($response->getContent(), $data);
 
         if (empty($data['response']) || '1' != $data['response']) {
-            $result->setType(new Result\ResultType('2' == $data['response'] ? Result\ResultType::DECLINED : Result\ResultType::ERROR));
+            $result->setStatus(new Result\ResultStatus('2' == $data['response'] ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
             $result->setMessage(empty($data['responsetext']) ? 'An unknown error occurred.' : $data['responsetext']);
 
             if (!empty($data['transactionid'])) {
                 $result->setExternalId($data['transactionid']);
             }
         } else {
-            $result->setType(new Result\ResultType(Result\ResultType::APPROVED));
+            $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
             $result->setExternalId($data['transactionid']);
         }
 

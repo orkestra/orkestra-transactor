@@ -41,7 +41,7 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->getResult()->setType(new Result\ResultType(Result\ResultType::APPROVED));
+        $transaction->getResult()->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
 
         $this->setExpectedException('Orkestra\Transactor\Exception\TransactorException', 'This transaction has already been processed');
 

@@ -9,7 +9,7 @@ use Orkestra\Common\Type\Enum;
  *
  * Describes the different types of results
  */
-class ResultType extends Enum
+class ResultStatus extends Enum
 {
     /**
      * The transaction has not yet been transacted
