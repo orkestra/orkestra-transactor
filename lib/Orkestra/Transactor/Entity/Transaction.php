@@ -76,9 +76,9 @@ class Transaction extends EntityBase
     /**
      * @var \Orkestra\Transactor\Entity\Credentials $credentials
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Credentials")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="credentials_id", referencedColumnName="id")
      * })
      */
     protected $credentials;
