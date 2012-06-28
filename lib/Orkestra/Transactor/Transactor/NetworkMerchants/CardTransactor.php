@@ -68,6 +68,7 @@ class CardTransactor extends AbstractTransactor
         $response = $this->_kernel->handle($request);
 
         $result = $transaction->getResult();
+        $result->setTransactor($this);
         $data = array();
         parse_str($response->getContent(), $data);
 

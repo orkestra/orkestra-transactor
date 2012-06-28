@@ -3,6 +3,7 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
 use Orkestra\Common\Entity\EntityBase;
 use Orkestra\Transactor\TransactorInterface;
@@ -53,7 +54,7 @@ class Result extends EntityBase
     /**
      * @var \DateTime $dateTransacted
      *
-     * @ORM\Column(name="date_transacted", type="datetime")
+     * @ORM\Column(name="date_transacted", type="datetime", nullable=true)
      */
     protected $dateTransacted;
 
@@ -197,6 +198,7 @@ class Result extends EntityBase
     {
         if (Result\ResultStatus::UNPROCESSED !== $status->getValue()) {
             $this->transacted = true;
+            $this->dateTransacted = new DateTime();
         }
 
         if (!$this->transaction->isParent())  {

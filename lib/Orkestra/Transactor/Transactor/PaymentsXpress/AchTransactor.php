@@ -71,6 +71,7 @@ class AchTransactor extends AbstractTransactor
         $response = $this->_kernel->handle($request);
 
         $result = $transaction->getResult();
+        $result->setTransactor($this);
 
         $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
             ? json_decode($response->getContent())
