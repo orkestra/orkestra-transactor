@@ -30,7 +30,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Result\ResultStatus::APPROVED, $parent->getStatus()->getValue());
     }
 
-    public function testSettingErrorStatusDoesNotChangeParentStatus()
+    public function testSettingErrorOrUnprocessedStatusDoesNotChangeParentStatus()
     {
         $parent = new Transaction();
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::SALE));
@@ -42,6 +42,11 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
         $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
 
+        $this->assertEquals(Result\ResultStatus::PENDING, $parent->getStatus()->getValue());
+
+        $result->setStatus(new Result\ResultStatus(Result\ResultStatus::UNPROCESSED));
+
+        $this->assertEquals(Result\ResultStatus::UNPROCESSED, $transaction->getStatus()->getValue());
         $this->assertEquals(Result\ResultStatus::PENDING, $parent->getStatus()->getValue());
 
         $result->setStatus(new Result\ResultStatus(Result\ResultStatus::ERROR));
