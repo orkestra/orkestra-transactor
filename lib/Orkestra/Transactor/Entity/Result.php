@@ -201,7 +201,7 @@ class Result extends EntityBase
             $this->dateTransacted = new DateTime();
         }
 
-        if (!$this->transaction->isParent())  {
+        if (!$this->transaction->isParent() && Result\ResultStatus::ERROR !== $status->getValue())  {
             $this->transaction->getParent()->setStatus($status);
         }
 
