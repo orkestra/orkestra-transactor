@@ -16,7 +16,8 @@ use Orkestra\Transactor\Exception\ValidationException;
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
  *   "BankAccount" = "Orkestra\Transactor\Entity\Account\BankAccount",
- *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount"
+ *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount",
+ *   "SimpleAccount" = "Orkestra\Transactor\Entity\Account\SimpleAccount"
  * })
  */
 abstract class AbstractAccount extends EntityBase
