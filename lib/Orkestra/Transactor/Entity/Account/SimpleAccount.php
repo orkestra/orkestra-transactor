@@ -14,5 +14,10 @@ use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
  */
 class SimpleAccount extends AbstractAccount
 {
+    protected $accountNumber = '';
 
+    public function setAccountNumber($accountNumber)
+    {
+        $this->accountNumber = (string)$accountNumber;
+    }
 }
