@@ -25,4 +25,14 @@ class NetworkType extends Enum
      * A special type of ACH transaction for Master Funding Accounts
      */
     const MFA = 'MFA';
+
+    /**
+     * A cash transaction
+     */
+    const CASH = 'Cash';
+
+    /**
+     * A paper check transaction
+     */
+    const CHECK = 'Check';
 }
