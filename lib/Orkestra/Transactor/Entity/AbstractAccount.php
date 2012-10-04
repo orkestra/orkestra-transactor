@@ -39,6 +39,13 @@ abstract class AbstractAccount extends EntityBase
     /**
      * @var string
      *
+     * @ORM\Column(name="alias", type="string")
+     */
+    protected $alias = '';
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string")
      */
     protected $name = '';
@@ -98,6 +105,11 @@ abstract class AbstractAccount extends EntityBase
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return (string)$this->alias;
     }
 
     /**
@@ -301,5 +313,25 @@ abstract class AbstractAccount extends EntityBase
     public function getCountry()
     {
         return $this->country;
+    }
+
+    /**
+     * Sets the alias for this account
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    /**
+     * Gets the alias for this account
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
     }
 }
