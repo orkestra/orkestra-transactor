@@ -73,7 +73,7 @@ class GenericTransactor extends AbstractTransactor
      */
     function getType()
     {
-        return 'generic.generic';
+        return 'orkestra.generic';
     }
 
     /**
