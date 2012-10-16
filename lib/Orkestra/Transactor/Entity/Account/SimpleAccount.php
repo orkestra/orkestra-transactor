@@ -20,4 +20,14 @@ class SimpleAccount extends AbstractAccount
     {
         $this->accountNumber = (string)$accountNumber;
     }
+
+    /**
+     * Return a printable type name
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Cash or Check';
+    }
 }

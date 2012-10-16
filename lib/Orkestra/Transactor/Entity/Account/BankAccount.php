@@ -67,4 +67,14 @@ class BankAccount extends AbstractAccount
 	{
 		$this->accountType = $accountType;
 	}
+
+    /**
+     * Return a printable type name
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Bank Account';
+    }
 }

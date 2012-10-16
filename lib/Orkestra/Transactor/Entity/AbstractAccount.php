@@ -17,6 +17,7 @@ use Orkestra\Transactor\Exception\ValidationException;
  * @ORM\DiscriminatorMap({
  *   "BankAccount" = "Orkestra\Transactor\Entity\Account\BankAccount",
  *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount",
+ *   "PointsAccount" = "Orkestra\Transactor\Entity\Account\PointsAccount",
  *   "SimpleAccount" = "Orkestra\Transactor\Entity\Account\SimpleAccount"
  * })
  */
@@ -111,6 +112,13 @@ abstract class AbstractAccount extends EntityBase
     {
         return (string)$this->alias;
     }
+
+    /**
+     * Return a printable type name
+     *
+     * @return string
+     */
+    abstract public function getType();
 
     /**
      * Set Account Number

@@ -35,4 +35,9 @@ class NetworkType extends Enum
      * A paper check transaction
      */
     const CHECK = 'Check';
+
+    /**
+     * A point transaction
+     */
+    const POINTS = 'Points';
 }

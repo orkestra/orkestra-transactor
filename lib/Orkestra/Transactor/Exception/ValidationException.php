@@ -1,6 +1,7 @@
 <?php
 
 namespace Orkestra\Transactor\Exception;
+use Orkestra\Transactor\Entity\AbstractAccount;
 
 /**
  * An exception that occurs when a transaction is being validated
@@ -60,5 +61,17 @@ class ValidationException extends \Exception
     public static function missingRequiredParameter($parameter)
     {
         return new self(sprintf('missing required parameter: %s', $parameter));
+    }
+
+    /**
+     * Occurs where an invalid account type is used
+     *
+     * @static
+     * @param \Orkestra\Transactor\Entity\AbstractAccount $account
+     * @return ValidationException
+     */
+    public static function invalidAccountType(AbstractAccount $account)
+    {
+        return new self(sprintf('invalid account type: %s', $account->getType()));
     }
 }

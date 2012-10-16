@@ -94,4 +94,14 @@ class CardAccount extends AbstractAccount
     {
         return $this->cvv;
     }
+
+    /**
+     * Return a printable type name
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Credit Card';
+    }
 }
