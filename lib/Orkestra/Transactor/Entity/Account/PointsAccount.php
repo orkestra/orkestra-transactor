@@ -14,12 +14,19 @@ use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
  */
 class PointsAccount extends AbstractAccount
 {
+    protected $accountNumber = '';
+
     /**
      * @var int
      *
      * @ORM\Column(name="balance", type="integer")
      */
     protected $balance = 0;
+
+    public function setAccountNumber($accountNumber)
+    {
+        $this->accountNumber = (string)$accountNumber;
+    }
 
     /**
      * Adds $adjustment to the balance
