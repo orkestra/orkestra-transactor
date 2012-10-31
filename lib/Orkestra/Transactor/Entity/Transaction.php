@@ -248,11 +248,11 @@ class Transaction extends EntityBase
      *
      * @return \Orkestra\Transactor\Entity\Transaction
      */
-    public function createChild(Transaction\TransactionType $type, $amount = 0.0)
+    public function createChild(Transaction\TransactionType $type, $amount = null)
     {
         $child = new Transaction($this);
         $child->setType($type);
-        $child->setAmount($amount);
+        $child->setAmount($amount ?: $this->amount);
         $this->children->add($child);
 
         return $child;
@@ -309,7 +309,7 @@ class Transaction extends EntityBase
      */
     public function setCredentials(Credentials $credentials)
     {
-        if ($this->isTransacted()) {
+        if ($this->isTransacted() || $this->parent) {
             return;
         }
 
@@ -324,5 +324,37 @@ class Transaction extends EntityBase
     public function getCredentials()
     {
         return $this->credentials;
+    }
+
+    /**
+     * Returns true if the transaction has been refunded
+     *
+     * @return bool
+     */
+    public function isRefunded()
+    {
+        if ($this->parent) {
+            return $this->parent->isRefunded();
+        }
+
+        return $this->children->exists(function($key, Transaction $child) {
+            return $child->getType() == Transaction\TransactionType::REFUND && $child->getStatus() == Result\ResultStatus::APPROVED;
+        });
+    }
+
+    /**
+     * Returns true if the transaction has been voided
+     *
+     * @return bool
+     */
+    public function isVoided()
+    {
+        if ($this->parent) {
+            return $this->parent->isRefunded();
+        }
+
+        return $this->children->exists(function($key, Transaction $child) {
+            return $child->getType() == Transaction\TransactionType::VOID && $child->getStatus() == Result\ResultStatus::APPROVED;
+        });
     }
 }
