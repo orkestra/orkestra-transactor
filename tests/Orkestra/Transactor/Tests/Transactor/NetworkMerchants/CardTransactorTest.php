@@ -2,9 +2,6 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\NetworkMerchants;
 
-use Orkestra\Common\Kernel\HttpKernel;
-use Symfony\Component\HttpFoundation\Response;
-
 use Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Transaction;
@@ -12,6 +9,9 @@ use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Type\Month;
 use Orkestra\Transactor\Type\Year;
+use Guzzle\Http\Client;
+use Guzzle\Plugin\Mock\MockPlugin;
+use Guzzle\Http\Message\Response;
 
 /**
  * Unit tests for the Network Merchants Card Transactor
@@ -23,7 +23,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 {
     public function testSupportsCorrectNetworks()
     {
-        $transactor = $this->_getTransactor();
+        $transactor = new CardTransactor();
 
         // Supported
         $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
@@ -35,7 +35,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testSupportsCorrectTypes()
     {
-        $transactor = $this->_getTransactor();
+        $transactor = new CardTransactor();
 
         // Supported
         $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
@@ -52,18 +52,8 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testCardSaleSuccess()
     {
-        $response = new Response(
-            'response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100',
-            200
-        );
-
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100');
+        $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
 
@@ -73,18 +63,8 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testCardSaleError()
     {
-        $response = new Response(
-            'response=3&responsetext=Invalid Credit Card Number REFID:330352367&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=300',
-            200
-        );
-
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('response=3&responsetext=Invalid Credit Card Number REFID:330352367&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=300');
+        $transaction = $this->getTransaction();
         $transaction->setAmount(.5);
 
         $result = $transactor->transact($transaction);
@@ -96,18 +76,8 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testCardSaleDecline()
     {
-        $response = new Response(
-            'response=2&responsetext=DECLINE&authcode=&transactionid=54321&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=200',
-            200
-        );
-
-        $kernel = $this->_getMockKernel();
-        $kernel->expects($this->once())
-            ->method('handle')
-            ->will($this->returnValue($response));
-
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('response=2&responsetext=DECLINE&authcode=&transactionid=54321&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=200');
+        $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
 
@@ -116,34 +86,32 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('54321', $result->getExternalId());
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Orkestra\Common\Kernel\HttpKernel
-     */
-    protected function _getMockKernel()
+    public function testHttpError()
     {
-        $mockKernel = $this->getMock('Orkestra\Common\Kernel\HttpKernel');
+        $transactor = $this->getTransactor('', 503);
+        $transaction = $this->getTransaction();
 
-        return $mockKernel;
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
+        $this->assertEquals('503 Service Unavailable', $result->getMessage());
+        $this->assertEmpty($result->getExternalId());
     }
 
-    /**
-     * @return \Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor
-     */
-    protected function _getTransactor($kernel = null)
+    protected function getTransactor($expectedResponse, $code = 200)
     {
-        if (!$kernel) {
-            $kernel = new HttpKernel();
-        }
+        $client = new Client();
+        $plugin = new MockPlugin();
+        $plugin->addResponse(new Response($code, null, $expectedResponse));
+        $client->addSubscriber($plugin);
 
-        $transactor = new CardTransactor($kernel);
-
-        return $transactor;
+        return new CardTransactor($client);
     }
 
     /**
      * @return \Orkestra\Transactor\Entity\Transaction
      */
-    protected function _getTransaction()
+    protected function getTransaction()
     {
         $account = new CardAccount();
         $account->setAccountNumber('4111111111111111');

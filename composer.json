@@ -10,7 +10,8 @@
     "require" : {
         "php" : ">=5.3.2",
         "symfony/dependency-injection" : ">=2.0.12,<2.2.x-dev",
-        "orkestra/common" : ">=0.1.10"
+        "orkestra/common" : ">=0.1.10",
+        "guzzle/guzzle" : ">=3.0.0"
     },
     "autoload" : {
         "psr-0" : { "Orkestra\\Transactor" : "lib/" }

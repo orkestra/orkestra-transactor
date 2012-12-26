@@ -3,13 +3,13 @@
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
 use Symfony\Component\HttpFoundation\Request;
-use Orkestra\Common\Kernel\HttpKernel;
-
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
+use Guzzle\Http\Client;
+use Guzzle\Http\Exception\BadResponseException;
 
 /**
  * Credit card transactor for the Network Merchants payment processing gateway
@@ -36,18 +36,18 @@ class CardTransactor extends AbstractTransactor
     );
 
     /**
-     * @var \Orkestra\Common\Kernel\HttpKernel
+     * @var \Guzzle\Http\Client
      */
-    protected $_kernel;
+    private $client;
 
     /**
      * Constructor
      *
-     * @param \Orkestra\Common\Kernel\HttpKernel $kernel
+     * @param \Guzzle\Http\Client $client
      */
-    public function __construct(HttpKernel $kernel)
+    public function __construct(Client $client = null)
     {
-        $this->_kernel = $kernel;
+        $this->client = $client;
     }
 
     /**
@@ -62,15 +62,25 @@ class CardTransactor extends AbstractTransactor
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);
-
-        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://secure.networkmerchants.com/api/transact.php';
-        $request = Request::create($postUrl, 'POST', $params);
-        $response = $this->_kernel->handle($request);
-
         $result = $transaction->getResult();
         $result->setTransactor($this);
-        $data = array();
-        parse_str($response->getContent(), $data);
+
+        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://secure.networkmerchants.com/api/transact.php';
+        $client = $this->getClient();
+
+        $request = $client->post($postUrl)
+            ->addPostFields($params);
+        try {
+            $response = $request->send();
+            $data = array();
+            parse_str($response->getBody(true), $data);
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $data = array(
+                'response' => '3',
+                'responsetext' => sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase())
+            );
+        }
 
         if (empty($data['response']) || '1' != $data['response']) {
             $result->setStatus(new Result\ResultStatus('2' == $data['response'] ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
@@ -182,6 +192,18 @@ class CardTransactor extends AbstractTransactor
         }
 
         return $params;
+    }
+
+    /**
+     * @return \Guzzle\Http\Client
+     */
+    private function getClient()
+    {
+        if (null === $this->client) {
+            $this->client = new Client();
+        }
+
+        return $this->client;
     }
 
     /**
