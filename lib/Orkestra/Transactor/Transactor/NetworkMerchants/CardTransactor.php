@@ -75,16 +75,15 @@ class CardTransactor extends AbstractTransactor
             $data = array();
             parse_str($response->getBody(true), $data);
         } catch (BadResponseException $e) {
-            $response = $e->getResponse();
             $data = array(
                 'response' => '3',
-                'responsetext' => sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase())
+                'message' => $e->getMessage()
             );
         }
 
         if (empty($data['response']) || '1' != $data['response']) {
             $result->setStatus(new Result\ResultStatus('2' == $data['response'] ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
-            $result->setMessage(empty($data['responsetext']) ? 'An unknown error occurred.' : $data['responsetext']);
+            $result->setMessage(empty($data['responsetext']) ? 'An error occurred while processing the payment. Please try again.' : $data['responsetext']);
 
             if (!empty($data['transactionid'])) {
                 $result->setExternalId($data['transactionid']);
