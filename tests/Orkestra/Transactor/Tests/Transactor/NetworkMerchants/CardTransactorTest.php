@@ -94,7 +94,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $result = $transactor->transact($transaction);
 
         $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
-        $this->assertEquals('503 Service Unavailable', $result->getMessage());
+        $this->assertEquals('An error occurred while processing the payment. Please try again.', $result->getMessage());
         $this->assertEmpty($result->getExternalId());
     }
 
