@@ -3,7 +3,7 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\TransactorInterface;
 
 /**
@@ -12,7 +12,7 @@ use Orkestra\Transactor\TransactorInterface;
  * @ORM\Table(name="orkestra_credentials")
  * @ORM\Entity
  */
-class Credentials extends EntityBase
+class Credentials extends AbstractEntity
 {
     /**
      * @var array

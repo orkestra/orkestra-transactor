@@ -2,17 +2,17 @@
 
 namespace Orkestra\Transactor\Type;
 
-use Orkestra\Common\Type\TypeBase;
+use Orkestra\Common\Type\AbstractType;
 
 /**
  * Represents a single year
  */
-class Year extends TypeBase
+class Year extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
-    protected function _validate($value)
+    protected function validate($value)
     {
         return ($value > 1000 && $value < 9999) ? true : false;
     }
@@ -38,7 +38,7 @@ class Year extends TypeBase
      */
     public function getLongYear()
     {
-        return (string)$this->_value;
+        return (string)$this->value;
     }
 
     /**
@@ -50,6 +50,6 @@ class Year extends TypeBase
      */
     public function getShortYear()
     {
-        return substr($this->_value, 2);
+        return substr($this->value, 2);
     }
 }

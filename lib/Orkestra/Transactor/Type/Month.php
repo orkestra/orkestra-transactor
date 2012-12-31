@@ -2,17 +2,17 @@
 
 namespace Orkestra\Transactor\Type;
 
-use Orkestra\Common\Type\TypeBase;
+use Orkestra\Common\Type\AbstractType;
 
 /**
  * Represents a single month of the year
  */
-class Month extends TypeBase
+class Month extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
-    protected function _validate($value)
+    protected function validate($value)
     {
         return ($value > 0 && $value < 13) ? true : false;
     }
@@ -36,7 +36,7 @@ class Month extends TypeBase
      */
     public function getShortMonth()
     {
-        return date('n', mktime(0, 0, 0, $this->_value));
+        return date('n', mktime(0, 0, 0, $this->value));
     }
 
     /**
@@ -46,7 +46,7 @@ class Month extends TypeBase
      */
     public function getLongMonth()
     {
-        return date('m', mktime(0, 0, 0, $this->_value));
+        return date('m', mktime(0, 0, 0, $this->value));
     }
 
     /**
@@ -56,7 +56,7 @@ class Month extends TypeBase
      */
     public function getShortName()
     {
-        return date('M', mktime(0, 0, 0, $this->_value));
+        return date('M', mktime(0, 0, 0, $this->value));
     }
 
     /**
@@ -66,6 +66,6 @@ class Month extends TypeBase
      */
     public function getLongName()
     {
-        return date('F', mktime(0, 0, 0, $this->_value));
+        return date('F', mktime(0, 0, 0, $this->value));
     }
 }

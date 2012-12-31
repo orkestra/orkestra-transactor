@@ -3,7 +3,7 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Common\Type\DateTime;
 
 use Orkestra\Transactor\Exception\TransactorException;
@@ -16,7 +16,7 @@ use Orkestra\Transactor\Exception\TransactorException;
  * @ORM\Table(name="orkestra_transactions")
  * @ORM\Entity
  */
-class Transaction extends EntityBase
+class Transaction extends AbstractEntity
 {
     /**
      * @var float $amount

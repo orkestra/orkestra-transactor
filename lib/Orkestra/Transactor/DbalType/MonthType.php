@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\DBAL\Types;
+namespace Orkestra\Transactor\DbalType;
 
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;

@@ -4,7 +4,7 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\Exception\ValidationException;
 
 /**
@@ -21,7 +21,7 @@ use Orkestra\Transactor\Exception\ValidationException;
  *   "SimpleAccount" = "Orkestra\Transactor\Entity\Account\SimpleAccount"
  * })
  */
-abstract class AbstractAccount extends EntityBase
+abstract class AbstractAccount extends AbstractEntity
 {
     /**
      * @var string

@@ -3,8 +3,8 @@
     "description" : "Offers support for interacting with different financial transaction processing platforms",
     "require" : {
         "php" : ">=5.3.2",
-        "orkestra/common" : ">=1.0.0",
-        "guzzle/guzzle" : ">=3.0.0"
+        "orkestra/common" : "1.0.*",
+        "guzzle/guzzle" : "3.0.*"
     },
     "require-dev" : {
         "symfony/dependency-injection" : ">=2.0.12,<2.2.x-dev"
