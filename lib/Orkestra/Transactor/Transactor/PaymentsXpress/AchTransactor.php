@@ -2,10 +2,9 @@
 
 namespace Orkestra\Transactor\Transactor\PaymentsXpress;
 
-use Symfony\Component\HttpFoundation\Request;
-
+use Guzzle\Http\Client;
+use Guzzle\Http\Exception\BadResponseException;
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Common\Kernel\HttpKernel;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Exception\ValidationException;
@@ -39,18 +38,18 @@ class AchTransactor extends AbstractTransactor
     );
 
     /**
-     * @var \Orkestra\Common\Kernel\HttpKernel
+     * @var \Guzzle\Http\Client
      */
-    protected $_kernel;
+    private $client;
 
     /**
      * Constructor
      *
-     * @param \Orkestra\Common\Kernel\HttpKernel $kernel
+     * @param \Guzzle\Http\Client $client
      */
-    public function __construct(HttpKernel $kernel)
+    public function __construct(Client $client = null)
     {
-        $this->_kernel = $kernel;
+        $this->client = $client;
     }
 
     /**
@@ -66,37 +65,44 @@ class AchTransactor extends AbstractTransactor
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction, $options);
 
-        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx';
-        $request = Request::create($postUrl, 'POST', $params);
-        $response = $this->_kernel->handle($request);
-
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
-            ? json_decode($response->getContent())
-            : $this->_normalizeQueryResponse($response->getContent());
+        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx';
+        $client = $this->getClient();
 
-        if (null === $data) {
-            $result->setStatus(new Result\ResultStatus(Result\ResultStatus::ERROR));
-            $result->setMessage('An error occurred while contacting the PaymentsXpress system');
-        } else {
-            if ('Approved' !== $data->CommandStatus) {
-                $result->setStatus(new Result\ResultStatus('Declined' !== $data->CommandStatus ? Result\ResultStatus::ERROR : Result\ResultStatus::DECLINED));
-                $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
+        $request = $client->post($postUrl)
+            ->addPostFields($params);
 
-                if (!empty($data->TransAct_ReferenceID)) {
-                    $result->setExternalId($data->TransAct_ReferenceID);
-                }
-            } else {
-                if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
-                    $this->_handleQueryResponse($transaction, $data);
-                } else {
-                    $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
-                }
+        try {
+            $response = $request->send();
 
+            $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
+                ? json_decode($response->getBody(true))
+                : $this->_normalizeQueryResponse($response->getBody(true));
+        } catch (BadResponseException $e) {
+            $data = new \stdClass();
+            $data->CommandStatus = 'Error';
+            $data->Description = 'Client Error';
+            $data->ErrorInformation = 'An error occurred while contacting the PaymentsXpress system';
+            $data->Exception = $e->getMessage();
+        }
+
+        if ('Approved' !== $data->CommandStatus) {
+            $result->setStatus(new Result\ResultStatus('Declined' !== $data->CommandStatus ? Result\ResultStatus::ERROR : Result\ResultStatus::DECLINED));
+            $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
+
+            if (!empty($data->TransAct_ReferenceID)) {
                 $result->setExternalId($data->TransAct_ReferenceID);
             }
+        } else {
+            if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
+                $this->_handleQueryResponse($transaction, $data);
+            } else {
+                $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
+            }
+
+            $result->setExternalId($data->TransAct_ReferenceID);
         }
 
         $result->setData('request', $params);
@@ -362,6 +368,18 @@ class AchTransactor extends AbstractTransactor
         }
 
         return $result;
+    }
+
+    /**
+     * @return \Guzzle\Http\Client
+     */
+    private function getClient()
+    {
+        if (null === $this->client) {
+            $this->client = new Client();
+        }
+
+        return $this->client;
     }
 
     /**

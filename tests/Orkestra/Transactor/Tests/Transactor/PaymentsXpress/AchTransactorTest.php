@@ -2,8 +2,9 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\PaymentsXpress;
 
-use Orkestra\Common\Kernel\HttpKernel;
-use Symfony\Component\HttpFoundation\Response;
+use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\Mock\MockPlugin;
 
 use Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor;
 use Orkestra\Transactor\Entity\Account\BankAccount;
@@ -24,7 +25,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 {
     public function testSupportsCorrectNetworks()
     {
-        $transactor = $this->_getTransactor();
+        $transactor = new AchTransactor();
 
         // Supported
         $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
@@ -36,7 +37,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testSupportsCorrectTypes()
     {
-        $transactor = $this->_getTransactor();
+        $transactor = new AchTransactor();
 
         // Supported
         $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
@@ -51,31 +52,19 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testResponseError()
     {
-        $response = new Response(
-            '',
-            500
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('', 503);
+        $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
 
         $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
-        $this->assertEquals('An error occurred while contacting the PaymentsXpress system', $result->getMessage());
+        $this->assertEquals('Client Error: An error occurred while contacting the PaymentsXpress system', $result->getMessage());
     }
 
     public function testSaleSuccess()
     {
-        $response = new Response(
-            '{"CommandStatus":"Approved","Description":"","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"56789","ResponseCode":"100"}',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('{"CommandStatus":"Approved","Description":"","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"56789","ResponseCode":"100"}');
+        $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
 
@@ -87,14 +76,8 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testSaleError()
     {
-        $response = new Response(
-            '{"CommandStatus":"Error","Description":"Internal Gateway Error","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"54321","ResponseCode":"100"}',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('{"CommandStatus":"Error","Description":"Internal Gateway Error","ErrorInformation":"","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"54321","ResponseCode":"100"}');
+        $transaction = $this->getTransaction();
         $transaction->setAmount(.5);
 
         $result = $transactor->transact($transaction);
@@ -106,14 +89,8 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
     public function testSaleDecline()
     {
-        $response = new Response(
-            '{"CommandStatus":"Declined","Description":"Invalid Gateway Credentials","ErrorInformation":"Provider_Credentials","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"12345","ResponseCode":"100"}',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
-        $transaction = $this->_getTransaction();
+        $transactor = $this->getTransactor('{"CommandStatus":"Declined","Description":"Invalid Gateway Credentials","ErrorInformation":"Provider_Credentials","ExpressVerify":{"Status":null,"Code":null,"Description":null},"AVS":{"Description":null,"Code":null},"CVN":{"Description":null,"Code":null},"ResponseData":null,"PaymentKey":null,"AuthorizationCode":null,"Provider_TransactionID":null,"TransAct_ReferenceID":"12345","ResponseCode":"100"}');
+        $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
 
@@ -127,13 +104,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
      */
     public function testQueryWithNoUpdateSetsParentStatus(Transaction $parent)
     {
-        $response = new Response(
-            'Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -149,16 +120,10 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
      */
     public function testQueryWithScheduledStatus(Transaction $parent)
     {
-        $response = new Response(
-            '12345,,,Cancelled,02/20/2003 02:59:00,Cancelled,,,,
+        $transactor = $this->getTransactor('12345,,,Cancelled,02/20/2003 02:59:00,Cancelled,,,,
 56789,,,Created,02/20/2003 03:00:00,Scheduled,,,,
 45666,,,Cancelled,02/20/2003 03:01:00,Cancelled,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -172,14 +137,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithCancelledStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Cancelled,02/20/2003 03:00:00,Cancelled,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Cancelled,02/20/2003 03:00:00,Cancelled,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -193,14 +152,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithProcessedStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Submitted,02/20/2003 03:00:00,In-Process,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Submitted,02/20/2003 03:00:00,In-Process,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -214,14 +167,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithApprovedStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Cleared,02/20/2003 03:00:00,Cleared,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Cleared,02/20/2003 03:00:00,Cleared,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -235,14 +182,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithDeclinedStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Rejected,02/20/2003 03:00:00,Failed Verification,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Rejected,02/20/2003 03:00:00,Failed Verification,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -256,14 +197,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithChargedBackStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Charged Back,02/20/2003 03:00:00,Charged Back,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Charged Back,02/20/2003 03:00:00,Charged Back,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -277,14 +212,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
      */
     public function testQueryWithHoldBackStatus(Transaction $parent)
     {
-        $response = new Response(
-            '56789,,,Held by Merchant,02/20/2003 03:00:00,Merchant Hold,,,,
-Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
-            200
-        );
-
-        $kernel = $this->_getMockKernel($response);
-        $transactor = $this->_getTransactor($kernel);
+        $transactor = $this->getTransactor('56789,,,Held by Merchant,02/20/2003 03:00:00,Merchant Hold,,,,
+Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
@@ -294,38 +223,25 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Orkestra\Common\Kernel\HttpKernel
+     * @param string $expectedResponse
+     * @param int $code
+     *
+     * @return \Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor
      */
-    protected function _getMockKernel($response = null)
+    protected function getTransactor($expectedResponse, $code = 200)
     {
-        $mockKernel = $this->getMock('Orkestra\Common\Kernel\HttpKernel');
-        if ($response) {
-            $mockKernel->expects($this->once())
-                ->method('handle')
-                ->will($this->returnValue($response));
-        }
+        $client = new Client();
+        $plugin = new MockPlugin();
+        $plugin->addResponse(new Response($code, null, $expectedResponse));
+        $client->addSubscriber($plugin);
 
-        return $mockKernel;
-    }
-
-    /**
-     * @return \Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor
-     */
-    protected function _getTransactor($kernel = null)
-    {
-        if (!$kernel) {
-            $kernel = new HttpKernel();
-        }
-
-        $transactor = new AchTransactor($kernel);
-
-        return $transactor;
+        return new AchTransactor($client);
     }
 
     /**
      * @return \Orkestra\Transactor\Entity\Transaction
      */
-    protected function _getTransaction()
+    protected function getTransaction()
     {
         $account = new BankAccount();
         $account->setAccountNumber('123456789');
@@ -333,10 +249,10 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,',
         $account->setAccountType(new BankAccount\AccountType(BankAccount\AccountType::PERSONAL_CHECKING));
 
         $credentials = new Credentials();
-        $credentials->setCredential('providerId', '1074');
-        $credentials->setCredential('providerGateId', 'sp-57181796');
-        $credentials->setCredential('providerGateKey', 'p8u-6wb*');
-        $credentials->setCredential('merchantId', '2001');
+        $credentials->setCredential('providerId', '1000');
+        $credentials->setCredential('providerGateId', 'gateid');
+        $credentials->setCredential('providerGateKey', 'gatekey');
+        $credentials->setCredential('merchantId', '2000');
         $credentials->setCredential('merchantGateId', 'test');
         $credentials->setCredential('merchantGateKey', 'test');
 
