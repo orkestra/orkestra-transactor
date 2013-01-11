@@ -12,7 +12,19 @@ The Transactor provides payment processing functionality to any PHP project.
 
 ## Installation
 
-Install via composer.
+The easiest way to add orkestra-transactor to your project is using composer.
+
+Add orkestra-transactor to your `composer.json` file:
+
+``` json
+{
+    "require": {
+        "orkestra/transactor": "dev-master"
+    }
+}
+```
+
+Then run `composer install` or `composer update`.
 
 
 ## Usage
