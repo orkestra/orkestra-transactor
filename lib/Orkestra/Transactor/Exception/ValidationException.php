@@ -1,6 +1,7 @@
 <?php
 
 namespace Orkestra\Transactor\Exception;
+
 use Orkestra\Transactor\Entity\AbstractAccount;
 
 /**
