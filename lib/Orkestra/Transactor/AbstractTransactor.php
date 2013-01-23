@@ -2,6 +2,7 @@
 
 namespace Orkestra\Transactor;
 
+use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 
@@ -40,7 +41,18 @@ abstract class AbstractTransactor implements TransactorInterface
             throw TransactorException::unsupportedTransactionNetwork($transaction->getNetwork());
         }
 
-        return $this->_doTransact($transaction, $options);
+        $result = $transaction->getResult();
+
+        try {
+            $this->_doTransact($transaction, $options);
+        } catch (\Exception $e) {
+            $result->setStatus(new ResultStatus(ResultStatus::ERROR));
+            $result->setMessage('An internal error occurred while processing the transaction.');
+            $result->setData('message', $e->getMessage());
+            $result->setData('trace', $e->getTraceAsString());
+        }
+
+        return $result;
     }
 
     /**
