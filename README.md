@@ -1,6 +1,8 @@
 Orkestra Transactor
 ===================
 
+[![Build Status](https://travis-ci.org/orkestra/orkestra-transactor.png?branch=master)](https://travis-ci.org/orkestra/orkestra-transactor)
+
 The Transactor provides payment processing functionality to any PHP project.
 
 ### Supported payment processors:
