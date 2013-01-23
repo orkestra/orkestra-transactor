@@ -82,6 +82,7 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
         $this->assertEquals('Critical error', $result->getData('message'));
         $this->assertNotEmpty($result->getData('trace'));
+        $this->assertNotEmpty($result->getTransactor());
     }
 }
 

@@ -42,6 +42,7 @@ abstract class AbstractTransactor implements TransactorInterface
         }
 
         $result = $transaction->getResult();
+        $result->setTransactor($this);
 
         try {
             $this->_doTransact($transaction, $options);
