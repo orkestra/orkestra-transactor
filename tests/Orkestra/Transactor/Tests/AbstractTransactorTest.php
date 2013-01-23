@@ -67,6 +67,23 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
 
         $transactor->transact($transaction);
     }
+
+    public function testTransactorCatchesExceptions()
+    {
+        $transactor = new TestTransactor();
+
+        $transaction = new Transaction();
+        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus());
+        $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
+        $this->assertEquals('Critical error', $result->getData('message'));
+        $this->assertNotEmpty($result->getData('trace'));
+        $this->assertNotEmpty($result->getTransactor());
+    }
 }
 
 class TestTransactor extends AbstractTransactor
@@ -81,7 +98,7 @@ class TestTransactor extends AbstractTransactor
 
     protected function _doTransact(Transaction $transaction, $options = array())
     {
-
+        throw new \RuntimeException('Critical error');
     }
 
     function getName()

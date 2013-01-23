@@ -124,7 +124,7 @@ class Result extends AbstractEntity
      */
     public function getTransaction()
     {
-    	return $this->transaction;
+        return $this->transaction;
     }
 
     /**
@@ -239,5 +239,13 @@ class Result extends AbstractEntity
     public function setTransactor($transactor)
     {
         $this->transactor = is_object($transactor) ? $transactor->getType() : $transactor;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateTransacted()
+    {
+        return $this->dateTransacted;
     }
 }
