@@ -5,7 +5,7 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
-use Orkestra\Common\Entity\EntityBase;
+use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\TransactorInterface;
 
 /**
@@ -14,7 +14,7 @@ use Orkestra\Transactor\TransactorInterface;
  * @ORM\Table(name="orkestra_results")
  * @ORM\Entity
  */
-class Result extends EntityBase
+class Result extends AbstractEntity
 {
     /**
      * @var string $externalId
