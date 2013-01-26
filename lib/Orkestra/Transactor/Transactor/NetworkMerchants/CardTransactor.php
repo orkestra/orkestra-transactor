@@ -11,6 +11,7 @@
 
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
+use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Symfony\Component\HttpFoundation\Request;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Transaction;
@@ -30,6 +31,7 @@ class CardTransactor extends AbstractTransactor
      */
     protected static $_supportedNetworks = array(
         Transaction\NetworkType::CARD,
+        Transaction\NetworkType::SWIPED
     );
 
     /**
@@ -93,7 +95,7 @@ class CardTransactor extends AbstractTransactor
         }
 
         if (empty($data['response']) || '1' != $data['response']) {
-            $result->setStatus(new Result\ResultStatus('2' == $data['response'] ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
+            $result->setStatus(new Result\ResultStatus((!empty($data['response']) && '2' == $data['response']) ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
             $result->setMessage(empty($data['responsetext']) ? 'An error occurred while processing the payment. Please try again.' : $data['responsetext']);
 
             if (!empty($data['transactionid'])) {
@@ -133,8 +135,14 @@ class CardTransactor extends AbstractTransactor
 
         $account = $transaction->getAccount();
 
-        if (!$account || !$account instanceof CardAccount) {
+        if (!$account) {
             throw ValidationException::missingAccountInformation();
+        }
+
+        if ((!($account instanceof CardAccount) && !($account instanceof SwipedCardAccount))
+            || (!($account instanceof SwipedCardAccount) && $transaction->getNetwork() == Transaction\NetworkType::SWIPED)
+        ) {
+            throw ValidationException::invalidAccountType($account);
         }
 
         if (null === $account->getAccountNumber()) {
@@ -191,10 +199,18 @@ class CardTransactor extends AbstractTransactor
         }
         else {
             $account = $transaction->getAccount();
-            $params = array_merge($params, array(
-                'ccnumber' => $account->getAccountNumber(),
-                'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
-            ));
+            if ($account instanceof SwipedCardAccount) {
+                $params = array_merge($params, array(
+                    'track_1' => $account->getTrackOne(),
+                    'track_2' => $account->getTrackTwo(),
+                    'track_3' => $account->getTrackThree()
+                ));
+            } else {
+                $params = array_merge($params, array(
+                    'ccnumber' => $account->getAccountNumber(),
+                    'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
+                ));
+            }
         }
 
         if ($transaction->getType()->getValue() != Transaction\TransactionType::VOID) {
