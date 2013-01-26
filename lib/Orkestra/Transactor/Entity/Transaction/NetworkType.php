@@ -21,6 +21,11 @@ use Orkestra\Common\Type\Enum;
 class NetworkType extends Enum
 {
     /**
+     * A swiped credit card transaction
+     */
+    const SWIPED = 'Swiped Card';
+
+    /**
      * A credit card transaction
      */
     const CARD = 'Card';
