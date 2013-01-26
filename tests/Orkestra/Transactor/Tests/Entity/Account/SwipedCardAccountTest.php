@@ -25,7 +25,6 @@ class SwipedCardAccountTest extends \PHPUnit_Framework_TestCase
     {
         $account = new SwipedCardAccount();
         $account->setTrackOne('%B1234567890123445^SOMMER/T.                 ^12011200000000000000**XXX******?*');
-        $account->prePersist();
 
         $this->assertEquals('1234567890123445', $account->getAccountNumber());
         $this->assertEquals('January', $account->getExpMonth()->getLongName());
@@ -36,7 +35,6 @@ class SwipedCardAccountTest extends \PHPUnit_Framework_TestCase
     {
         $account = new SwipedCardAccount();
         $account->setTrackTwo(';1234567890123445=12011200XXXX00000000?*');
-        $account->prePersist();
 
         $this->assertEquals('1234567890123445', $account->getAccountNumber());
         $this->assertEquals('January', $account->getExpMonth()->getLongName());
@@ -47,7 +45,6 @@ class SwipedCardAccountTest extends \PHPUnit_Framework_TestCase
     {
         $account = new SwipedCardAccount();
         $account->setTrackThree(';011234567890123445=724724100000000000030300XXXX040400012010=************************==1=0000000000000000?*');
-        $account->preUpdate();
 
         $this->assertEquals('1234567890123445', $account->getAccountNumber());
         $this->assertEquals('January', $account->getExpMonth()->getLongName());

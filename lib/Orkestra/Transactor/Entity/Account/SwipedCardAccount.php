@@ -19,7 +19,6 @@ use Orkestra\Transactor\Type\Year;
  * A swiped credit card
  *
  * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
  */
 class SwipedCardAccount extends CardAccount
 {
@@ -50,6 +49,7 @@ class SwipedCardAccount extends CardAccount
     public function setTrackOne($trackOne)
     {
         $this->trackOne = $trackOne;
+        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -66,6 +66,7 @@ class SwipedCardAccount extends CardAccount
     public function setTrackThree($trackThree)
     {
         $this->trackThree = $trackThree;
+        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -82,6 +83,7 @@ class SwipedCardAccount extends CardAccount
     public function setTrackTwo($trackTwo)
     {
         $this->trackTwo = $trackTwo;
+        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -100,26 +102,6 @@ class SwipedCardAccount extends CardAccount
     public function getType()
     {
         return 'Swiped Credit Card';
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        parent::prePersist();
-
-        $this->updateInformationFromStripeData();
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function preUpdate()
-    {
-        parent::preUpdate();
-
-        $this->updateInformationFromStripeData();
     }
 
     /**
