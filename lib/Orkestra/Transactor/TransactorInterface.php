@@ -26,7 +26,7 @@ interface TransactorInterface
      * @param  array                                   $options
      * @return Entity\Result
      */
-    public function transact(Transaction $transaction, $options = array());
+    public function transact(Transaction $transaction, array $options = array());
 
     /**
      * Returns true if the Transactor supports the given transaction type

@@ -67,7 +67,7 @@ class CardTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function _doTransact(Transaction $transaction, $options = array())
+    public function _doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction);

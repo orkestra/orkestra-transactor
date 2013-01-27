@@ -69,7 +69,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function _doTransact(Transaction $transaction, $options = array())
+    protected function _doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction, $options);
