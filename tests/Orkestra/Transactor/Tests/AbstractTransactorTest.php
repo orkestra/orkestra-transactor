@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Tests;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Result;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Tests the functionality provided by the AbstractTransactor
@@ -93,6 +94,22 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($result->getData('trace'));
         $this->assertNotEmpty($result->getTransactor());
     }
+
+    public function testOptionsResolverExceptionIsCaught()
+    {
+        $transactor = new TestTransactor();
+
+        $transaction = new Transaction();
+        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+
+        $result = $transactor->transact($transaction, array('test' => 'invalid value'));
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus());
+        $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
+        $this->assertEquals('The option "test" has the value "invalid value", but is expected to be one of "value"', $result->getData('message'));
+        $this->assertNotEmpty($result->getData('trace'));
+        $this->assertNotEmpty($result->getTransactor());
+    }
 }
 
 class TestTransactor extends AbstractTransactor
@@ -108,6 +125,16 @@ class TestTransactor extends AbstractTransactor
     protected function _doTransact(Transaction $transaction, array $options = array())
     {
         throw new \RuntimeException('Critical error');
+    }
+
+    protected function configureResolver(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'test' => 'value'
+        ));
+        $resolver->setAllowedValues(array(
+            'test' => array('value')
+        ));
     }
 
     public function getName()
