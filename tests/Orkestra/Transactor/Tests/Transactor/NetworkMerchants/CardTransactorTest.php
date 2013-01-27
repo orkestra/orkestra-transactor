@@ -107,6 +107,56 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($result->getExternalId());
     }
 
+    public function testAvsAndCvvDisabledByDefault()
+    {
+        $transactor = $this->getTransactor('response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100');
+        $transaction = $this->getTransaction();
+
+        $result = $transactor->transact($transaction);
+
+        $request = $result->getData('request');
+
+        $this->assertArrayNotHasKey('cvv', $request);
+        $this->assertArrayNotHasKey('firstname', $request);
+        $this->assertArrayNotHasKey('lastname', $request);
+        $this->assertArrayNotHasKey('address', $request);
+    }
+
+    public function testEnableAvs()
+    {
+        $transactor = $this->getTransactor('response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100');
+        $transaction = $this->getTransaction();
+
+        $result = $transactor->transact($transaction, array('enable_avs' => true));
+
+        $request = $result->getData('request');
+
+        $this->assertArrayNotHasKey('cvv', $request);
+        $this->assertArrayHasKey('firstname', $request);
+        $this->assertArrayHasKey('lastname', $request);
+        $this->assertArrayHasKey('address', $request);
+        $this->assertArrayHasKey('city', $request);
+        $this->assertArrayHasKey('state', $request);
+        $this->assertArrayHasKey('zip', $request);
+        $this->assertArrayHasKey('country', $request);
+        $this->assertArrayHasKey('ipaddress', $request);
+    }
+
+    public function testEnableCvv()
+    {
+        $transactor = $this->getTransactor('response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100');
+        $transaction = $this->getTransaction();
+
+        $result = $transactor->transact($transaction, array('enable_cvv' => true));
+
+        $request = $result->getData('request');
+
+        $this->assertArrayHasKey('cvv', $request);
+        $this->assertArrayNotHasKey('firstname', $request);
+        $this->assertArrayNotHasKey('lastname', $request);
+        $this->assertArrayNotHasKey('address', $request);
+    }
+
     protected function getTransactor($expectedResponse, $code = 200)
     {
         $client = new Client();
