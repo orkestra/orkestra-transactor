@@ -22,29 +22,29 @@ interface TransactorInterface
      * Transacts a transaction and returns the result
      *
      * @abstract
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  array                                   $options
      * @return Entity\Result
      */
-    function transact(Transaction $transaction, $options = array());
+    public function transact(Transaction $transaction, $options = array());
 
     /**
      * Returns true if the Transactor supports the given transaction type
      *
      * @abstract
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType $type
      * @return boolean
      */
-    function supportsType(Transaction\TransactionType $type = null);
+    public function supportsType(Transaction\TransactionType $type = null);
 
     /**
      * Returns true if the Transactor supports the given network type
      *
      * @abstract
-     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @param  \Orkestra\Transactor\Entity\Transaction\NetworkType $network
      * @return boolean
      */
-    function supportsNetwork(Transaction\NetworkType $network = null);
+    public function supportsNetwork(Transaction\NetworkType $network = null);
 
     /**
      * Returns the internally used type of this Transactor
@@ -52,7 +52,7 @@ interface TransactorInterface
      * @abstract
      * @return string
      */
-    function getType();
+    public function getType();
 
     /**
      * Returns the name of this Transactor
@@ -60,5 +60,5 @@ interface TransactorInterface
      * @abstract
      * @return string
      */
-    function getName();
+    public function getName();
 }

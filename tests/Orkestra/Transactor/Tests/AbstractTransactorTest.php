@@ -110,7 +110,7 @@ class TestTransactor extends AbstractTransactor
         throw new \RuntimeException('Critical error');
     }
 
-    function getName()
+    public function getName()
     {
         return 'Test Transactor';
     }

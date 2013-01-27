@@ -65,7 +65,7 @@ class AchTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
@@ -176,7 +176,7 @@ class AchTransactor extends AbstractTransactor
 
     /**
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @throws \RuntimeException
      * @return array
@@ -270,7 +270,7 @@ class AchTransactor extends AbstractTransactor
      * Handles a query response
      *
      * @param Transaction $transaction
-     * @param object $data
+     * @param object      $data
      */
     protected function _handleQueryResponse(Transaction $transaction, $data)
     {
@@ -396,7 +396,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return string
      */
-    function getType()
+    public function getType()
     {
         return 'orkestra.payments_xpress.ach';
     }
@@ -406,7 +406,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return string
      */
-    function getName()
+    public function getName()
     {
         return 'Payments Xpress ACH Gateway';
     }

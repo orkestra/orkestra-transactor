@@ -53,7 +53,7 @@ class Credentials extends AbstractEntity
      * Sets a property in the stored credentials
      *
      * @param string $property
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($property, $value)
     {
@@ -63,8 +63,8 @@ class Credentials extends AbstractEntity
     /**
      * Set Credential
      *
-     * @param string $key The key of which credential to set
-     * @param mixed $value
+     * @param string $key   The key of which credential to set
+     * @param mixed  $value
      */
     public function setCredential($key, $value)
     {
@@ -74,7 +74,7 @@ class Credentials extends AbstractEntity
     /**
      * Get Credential
      *
-     * @param string $key The key of which credential to get
+     * @param  string $key The key of which credential to get
      * @return mixed
      */
     public function getCredential($key)

@@ -47,8 +47,7 @@ class MonthType extends StringType
 
         try {
             $val = new Month($value);
-        }
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
 

@@ -42,7 +42,7 @@ class GenericTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
@@ -80,7 +80,7 @@ class GenericTransactor extends AbstractTransactor
      *
      * @return string
      */
-    function getType()
+    public function getType()
     {
         return 'orkestra.generic';
     }

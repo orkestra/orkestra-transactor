@@ -77,7 +77,7 @@ class ValidationException extends \Exception
      * Occurs where an invalid account type is used
      *
      * @static
-     * @param \Orkestra\Transactor\Entity\AbstractAccount $account
+     * @param  \Orkestra\Transactor\Entity\AbstractAccount $account
      * @return ValidationException
      */
     public static function invalidAccountType(AbstractAccount $account)

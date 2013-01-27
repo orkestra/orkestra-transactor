@@ -35,7 +35,7 @@ abstract class AbstractTransactor implements TransactorInterface
      *
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @throws \Orkestra\Transactor\Exception\TransactorException
      * @return \Orkestra\Transactor\Entity\Result
@@ -69,7 +69,7 @@ abstract class AbstractTransactor implements TransactorInterface
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
@@ -78,8 +78,8 @@ abstract class AbstractTransactor implements TransactorInterface
     /**
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
-     * @return boolean True if supported
+     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     * @return boolean                                                      True if supported
      */
     public function supportsType(Transaction\TransactionType $type = null)
     {

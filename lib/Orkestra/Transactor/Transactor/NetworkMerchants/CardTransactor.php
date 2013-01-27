@@ -63,7 +63,7 @@ class CardTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
@@ -145,7 +145,7 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
      * @return string
      */
     protected function _getNmiType(Transaction $transaction)
@@ -167,7 +167,7 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
      * @return array
      */
     protected function _buildParams(Transaction $transaction)
@@ -188,8 +188,7 @@ class CardTransactor extends AbstractTransactor
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
             ));
-        }
-        else {
+        } else {
             $account = $transaction->getAccount();
             $params = array_merge($params, array(
                 'ccnumber' => $account->getAccountNumber(),
