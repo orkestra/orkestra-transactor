@@ -47,8 +47,7 @@ class YearType extends StringType
 
         try {
             $val = new Year($value);
-        }
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
 

@@ -46,7 +46,7 @@ class TransactorFactory
     /**
      * Gets a single transactor by name
      *
-     * @param string $name
+     * @param  string                                             $name
      * @return \Orkestra\Transactor\TransactorInterface
      * @throws \Orkestra\Transactor\Exception\TransactorException if there is no Transactor by the given name
      */

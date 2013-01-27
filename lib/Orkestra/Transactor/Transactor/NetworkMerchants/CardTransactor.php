@@ -62,11 +62,11 @@ class CardTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function _doTransact(Transaction $transaction, $options = array())
+    public function _doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction, $options);
@@ -144,7 +144,7 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
      * @return string
      */
     protected function _getNmiType(Transaction $transaction)
@@ -167,7 +167,7 @@ class CardTransactor extends AbstractTransactor
 
     /**
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return array
      */

@@ -14,7 +14,6 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Orkestra\Common\Entity\AbstractEntity;
-use Orkestra\Transactor\Exception\ValidationException;
 
 /**
  * Base class for any Account entity
@@ -119,7 +118,7 @@ abstract class AbstractAccount extends AbstractEntity
 
     public function __toString()
     {
-        return (string)$this->alias;
+        return (string) $this->alias;
     }
 
     /**

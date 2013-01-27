@@ -179,8 +179,8 @@ class Result extends AbstractEntity
     /**
      * Set Data
      *
-     * @param string $key The key of which data to set
-     * @param mixed $value
+     * @param string $key   The key of which data to set
+     * @param mixed  $value
      */
     public function setData($key, $value)
     {
@@ -190,7 +190,7 @@ class Result extends AbstractEntity
     /**
      * Get Data
      *
-     * @param string $key The key of which data to get
+     * @param  string $key The key of which data to get
      * @return mixed
      */
     public function getData($key)
