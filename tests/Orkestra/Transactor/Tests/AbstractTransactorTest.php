@@ -105,12 +105,12 @@ class TestTransactor extends AbstractTransactor
         Transaction\TransactionType::SALE
     );
 
-    protected function _doTransact(Transaction $transaction, $options = array())
+    protected function _doTransact(Transaction $transaction, array $options = array())
     {
         throw new \RuntimeException('Critical error');
     }
 
-    function getName()
+    public function getName()
     {
         return 'Test Transactor';
     }

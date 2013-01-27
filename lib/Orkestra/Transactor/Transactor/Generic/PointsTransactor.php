@@ -42,7 +42,7 @@ class PointsTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
@@ -89,7 +89,7 @@ class PointsTransactor extends AbstractTransactor
             throw ValidationException::invalidAccountType($transaction->getAccount());
         }
 
-        $transaction->setAmount((int)$transaction->getAmount());
+        $transaction->setAmount((int) $transaction->getAmount());
     }
 
     /**
@@ -97,7 +97,7 @@ class PointsTransactor extends AbstractTransactor
      *
      * @return string
      */
-    function getType()
+    public function getType()
     {
         return 'orkestra.generic.points';
     }

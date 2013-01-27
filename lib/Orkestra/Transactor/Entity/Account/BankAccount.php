@@ -37,45 +37,45 @@ class BankAccount extends AbstractAccount
      */
     protected $accountType;
 
-	/**
-	 * Gets the routing number
-	 *
-	 * @return string $routingNumber
-	 */
-	public function getRoutingNumber()
-	{
-		return $this->routingNumber;
-	}
+    /**
+     * Gets the routing number
+     *
+     * @return string $routingNumber
+     */
+    public function getRoutingNumber()
+    {
+        return $this->routingNumber;
+    }
 
-	/**
-	 * Sets the routing number
-	 *
-	 * @param string $routingNumber
-	 */
-	public function setRoutingNumber($routingNumber)
-	{
-		$this->routingNumber = $routingNumber;
-	}
+    /**
+     * Sets the routing number
+     *
+     * @param string $routingNumber
+     */
+    public function setRoutingNumber($routingNumber)
+    {
+        $this->routingNumber = $routingNumber;
+    }
 
-	/**
-	 * Gets the account type
-	 *
-	 * @return Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
-	 */
-	public function getAccountType()
-	{
-		return $this->accountType;
-	}
+    /**
+     * Gets the account type
+     *
+     * @return Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     */
+    public function getAccountType()
+    {
+        return $this->accountType;
+    }
 
-	/**
-	 * Sets the account type
-	 *
-	 * @param Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
-	 */
-	public function setAccountType(AccountType $accountType)
-	{
-		$this->accountType = $accountType;
-	}
+    /**
+     * Sets the account type
+     *
+     * @param Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     */
+    public function setAccountType(AccountType $accountType)
+    {
+        $this->accountType = $accountType;
+    }
 
     /**
      * Return a printable type name

@@ -14,7 +14,6 @@ namespace Orkestra\Transactor\Entity\Account;
 use Doctrine\ORM\Mapping as ORM;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 
 /**
  * Represents a points account, to be used with the Points network
@@ -34,7 +33,7 @@ class PointsAccount extends AbstractAccount
 
     public function setAccountNumber($accountNumber)
     {
-        $this->accountNumber = (string)$accountNumber;
+        $this->accountNumber = (string) $accountNumber;
     }
 
     /**
@@ -44,7 +43,7 @@ class PointsAccount extends AbstractAccount
      */
     public function adjustBalance($adjustment)
     {
-        $this->balance += (int)$adjustment;
+        $this->balance += (int) $adjustment;
     }
 
     /**
@@ -64,7 +63,7 @@ class PointsAccount extends AbstractAccount
      */
     public function setBalance($balance)
     {
-        $this->balance = (int)$balance;
+        $this->balance = (int) $balance;
     }
 
     /**

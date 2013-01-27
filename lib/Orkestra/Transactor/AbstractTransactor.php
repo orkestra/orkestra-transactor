@@ -35,12 +35,12 @@ abstract class AbstractTransactor implements TransactorInterface
      *
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @throws \Orkestra\Transactor\Exception\TransactorException
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function transact(Transaction $transaction, $options = array())
+    public function transact(Transaction $transaction, array $options = array())
     {
         if ($transaction->isTransacted()) {
             throw TransactorException::transactionAlreadyProcessed();
@@ -69,16 +69,17 @@ abstract class AbstractTransactor implements TransactorInterface
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    abstract protected function _doTransact(Transaction $transaction, $options = array());
+    abstract protected function _doTransact(Transaction $transaction, array $options = array());
 
     /**
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     *
      * @return boolean True if supported
      */
     public function supportsType(Transaction\TransactionType $type = null)

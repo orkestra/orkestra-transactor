@@ -47,7 +47,7 @@ class Year extends AbstractType
      */
     public function getLongYear()
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
 
     /**

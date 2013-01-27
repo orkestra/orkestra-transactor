@@ -20,8 +20,6 @@ use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Type\Month;
-use Orkestra\Transactor\Type\Year;
 
 /**
  * Unit tests for the Payments Xpress ACH Transactor
@@ -237,7 +235,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
 
     /**
      * @param string $expectedResponse
-     * @param int $code
+     * @param int    $code
      *
      * @return \Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor
      */

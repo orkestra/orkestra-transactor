@@ -12,7 +12,6 @@
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
 use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
-use Symfony\Component\HttpFoundation\Request;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
@@ -65,14 +64,14 @@ class CardTransactor extends AbstractTransactor
      * Transacts the given transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array $options
+     * @param array                                   $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function _doTransact(Transaction $transaction, $options = array())
+    public function _doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
-        $params = $this->_buildParams($transaction);
+        $params = $this->_buildParams($transaction, $options);
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
@@ -153,7 +152,7 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
      * @return string
      */
     protected function _getNmiType(Transaction $transaction)
@@ -176,9 +175,11 @@ class CardTransactor extends AbstractTransactor
 
     /**
      * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param array                                   $options
+     *
      * @return array
      */
-    protected function _buildParams(Transaction $transaction)
+    protected function _buildParams(Transaction $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
 
@@ -196,8 +197,7 @@ class CardTransactor extends AbstractTransactor
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
             ));
-        }
-        else {
+        } else {
             $account = $transaction->getAccount();
             if ($account instanceof SwipedCardAccount) {
                 $params = array_merge($params, array(
@@ -208,8 +208,29 @@ class CardTransactor extends AbstractTransactor
             } else {
                 $params = array_merge($params, array(
                     'ccnumber' => $account->getAccountNumber(),
-                    'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
+                    'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear()
                 ));
+
+                if (isset($options['enable_cvv']) && true === $options['enable_cvv']) {
+                    $params['cvv'] = $account->getCvv();
+                }
+
+                if (isset($options['enable_avs']) && true === $options['enable_avs']) {
+                    $names = explode(' ', $account->getName(), 2);
+                    $firstName = isset($names[0]) ? $names[0] : '';
+                    $lastName = isset($names[1]) ? $names[1] : '';
+
+                    $params = array_merge($params, array(
+                        'firstname' => $firstName,
+                        'lastname' => $lastName,
+                        'address' => $account->getAddress(),
+                        'city' => $account->getCity(),
+                        'state' => $account->getRegion(),
+                        'zip' => $account->getPostalCode(),
+                        'country' => $account->getCountry(),
+                        'ipaddress' => $account->getIpAddress()
+                    ));
+                }
             }
         }
 

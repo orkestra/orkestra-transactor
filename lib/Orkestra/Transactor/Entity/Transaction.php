@@ -13,9 +13,6 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
-use Orkestra\Common\Type\DateTime;
-
-use Orkestra\Transactor\Exception\TransactorException;
 
 /**
  * Transaction Entity
@@ -92,7 +89,7 @@ class Transaction extends AbstractEntity
      */
     protected $credentials;
 
-	/**
+    /**
      * @var \Orkestra\Transactor\Entity\Result $result
      *
      * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Result", mappedBy="transaction", cascade={"persist"})
@@ -253,7 +250,7 @@ class Transaction extends AbstractEntity
      * Creates a new child transaction
      *
      * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
-     * @param float $amount
+     * @param float                                                   $amount
      *
      * @return \Orkestra\Transactor\Entity\Transaction
      */
