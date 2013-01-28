@@ -114,11 +114,10 @@ abstract class AbstractTransactor implements TransactorInterface
         return $this->resolver;
     }
 
-
     /**
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
      *
      * @return boolean True if supported
      */
