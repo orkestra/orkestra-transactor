@@ -71,8 +71,8 @@ class CardTransactor extends AbstractTransactor
      */
     public function doTransact(Transaction $transaction, array $options = array())
     {
-        $this->_validateTransaction($transaction);
-        $params = $this->_buildParams($transaction, $options);
+        $this->validateTransaction($transaction);
+        $params = $this->buildParams($transaction, $options);
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
@@ -119,7 +119,7 @@ class CardTransactor extends AbstractTransactor
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function _validateTransaction(Transaction $transaction)
+    protected function validateTransaction(Transaction $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CAPTURE, Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))) {
             throw ValidationException::parentTransactionRequired();
@@ -156,7 +156,7 @@ class CardTransactor extends AbstractTransactor
      * @param  \Orkestra\Transactor\Entity\Transaction $transaction
      * @return string
      */
-    protected function _getNmiType(Transaction $transaction)
+    protected function getNmiType(Transaction $transaction)
     {
         switch ($transaction->getType()->getValue()) {
             case Transaction\TransactionType::SALE:
@@ -180,12 +180,12 @@ class CardTransactor extends AbstractTransactor
      *
      * @return array
      */
-    protected function _buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(Transaction $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
 
         $params = array(
-            'type' => $this->_getNmiType($transaction),
+            'type' => $this->getNmiType($transaction),
             'username' => $credentials->getCredential('username'),
             'password' => $credentials->getCredential('password'),
         );

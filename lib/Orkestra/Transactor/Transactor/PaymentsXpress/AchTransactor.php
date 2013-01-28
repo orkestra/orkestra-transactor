@@ -72,8 +72,8 @@ class AchTransactor extends AbstractTransactor
      */
     protected function doTransact(Transaction $transaction, array $options = array())
     {
-        $this->_validateTransaction($transaction);
-        $params = $this->_buildParams($transaction, $options);
+        $this->validateTransaction($transaction);
+        $params = $this->buildParams($transaction, $options);
 
         $result = $transaction->getResult();
         $result->setTransactor($this);
@@ -89,7 +89,7 @@ class AchTransactor extends AbstractTransactor
 
             $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
                 ? json_decode($response->getBody(true))
-                : $this->_normalizeQueryResponse($response->getBody(true));
+                : $this->normalizeQueryResponse($response->getBody(true));
         } catch (BadResponseException $e) {
             $data = new \stdClass();
             $data->CommandStatus = 'Error';
@@ -107,7 +107,7 @@ class AchTransactor extends AbstractTransactor
             }
         } else {
             if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
-                $this->_handleQueryResponse($transaction, $data);
+                $this->handleQueryResponse($transaction, $data);
             } else {
                 $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
             }
@@ -128,7 +128,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function _validateTransaction(Transaction $transaction)
+    protected function validateTransaction(Transaction $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::CAPTURE,
@@ -182,7 +182,7 @@ class AchTransactor extends AbstractTransactor
      * @throws \RuntimeException
      * @return array
      */
-    protected function _buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(Transaction $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
         $account = $transaction->getAccount();
@@ -191,7 +191,7 @@ class AchTransactor extends AbstractTransactor
             'ProviderID' => $credentials->getCredential('providerId'),
             'Provider_GateID' => $credentials->getCredential('providerGateId'),
             'Provider_GateKey' => $credentials->getCredential('providerGateKey'),
-            'Command' => $this->_getCommand($transaction),
+            'Command' => $this->getCommand($transaction),
             'CommandVersion' => '1.0',
             'TestMode' => !empty($options['test_mode']) ? 'On' : 'Off',
             'MerchantID' => $credentials->getCredential('merchantId'),
@@ -241,7 +241,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return string
      */
-    protected function _getCommand(Transaction $transaction)
+    protected function getCommand(Transaction $transaction)
     {
         switch ($transaction->getType()->getValue()) {
             case Transaction\TransactionType::SALE:
@@ -273,7 +273,7 @@ class AchTransactor extends AbstractTransactor
      * @param Transaction $transaction
      * @param object      $data
      */
-    protected function _handleQueryResponse(Transaction $transaction, $data)
+    protected function handleQueryResponse(Transaction $transaction, $data)
     {
         $result = $transaction->getResult();
         $parentResult = $transaction->getParent()->getResult();
@@ -334,7 +334,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return null|object
      */
-    protected function _normalizeQueryResponse($content)
+    protected function normalizeQueryResponse($content)
     {
         $result = new \stdClass();
         $result->Results = array();
