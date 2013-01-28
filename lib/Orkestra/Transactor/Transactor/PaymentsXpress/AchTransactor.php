@@ -19,6 +19,7 @@ use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * ACH transactor for the PaymentsXpress payment processing gateway
@@ -77,7 +78,7 @@ class AchTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx';
+        $postUrl = $options['postUrl'];
         $client = $this->getClient();
 
         $request = $client->post($postUrl)
@@ -181,7 +182,7 @@ class AchTransactor extends AbstractTransactor
      * @throws \RuntimeException
      * @return array
      */
-    protected function _buildParams(Transaction $transaction, $options)
+    protected function _buildParams(Transaction $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
         $account = $transaction->getAccount();
@@ -377,6 +378,18 @@ class AchTransactor extends AbstractTransactor
         }
 
         return $result;
+    }
+
+    /**
+     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     */
+    protected function configureResolver(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'testMode'   => false,
+            'date'       => null,
+            'postUrl'    => 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx',
+        ));
     }
 
     /**
