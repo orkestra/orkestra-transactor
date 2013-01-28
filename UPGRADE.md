@@ -7,3 +7,4 @@
     * `postUrl` option changed to `post_url`, `testMode` to `test_mode`
 * `AbstractTransactor` no longer disables the OptionsResolver by default
 * `TransactorFactory::$_transactors` was renamed to `TransactorFactory::$transactors` and made private.
+* `AbstractTransactor::$_supportedNetworks` and `$_supportedTypes` are now `$supportedNetworks` and `$supportedTypes`.

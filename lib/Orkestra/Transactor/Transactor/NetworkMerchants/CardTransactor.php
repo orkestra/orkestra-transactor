@@ -29,7 +29,7 @@ class CardTransactor extends AbstractTransactor
     /**
      * @var array
      */
-    protected static $_supportedNetworks = array(
+    protected static $supportedNetworks = array(
         Transaction\NetworkType::CARD,
         Transaction\NetworkType::SWIPED
     );
@@ -37,7 +37,7 @@ class CardTransactor extends AbstractTransactor
     /**
      * @var array
      */
-    protected static $_supportedTypes = array(
+    protected static $supportedTypes = array(
         Transaction\TransactionType::SALE,
         Transaction\TransactionType::AUTH,
         Transaction\TransactionType::CAPTURE,
@@ -69,7 +69,7 @@ class CardTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function _doTransact(Transaction $transaction, array $options = array())
+    public function doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction, $options);

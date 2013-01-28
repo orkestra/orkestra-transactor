@@ -29,14 +29,14 @@ class AchTransactor extends AbstractTransactor
     /**
      * @var array
      */
-    protected static $_supportedNetworks = array(
+    protected static $supportedNetworks = array(
         Transaction\NetworkType::ACH,
     );
 
     /**
      * @var array
      */
-    protected static $_supportedTypes = array(
+    protected static $supportedTypes = array(
         Transaction\TransactionType::SALE,
         // Transaction\TransactionType::CREDIT,
         // Transaction\TransactionType::AUTH,
@@ -70,7 +70,7 @@ class AchTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function _doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
         $params = $this->_buildParams($transaction, $options);

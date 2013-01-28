@@ -24,7 +24,7 @@ class GenericTransactor extends AbstractTransactor
     /**
      * @var array
      */
-    protected static $_supportedNetworks = array(
+    protected static $supportedNetworks = array(
         Transaction\NetworkType::CASH,
         Transaction\NetworkType::CHECK
     );
@@ -32,7 +32,7 @@ class GenericTransactor extends AbstractTransactor
     /**
      * @var array
      */
-    protected static $_supportedTypes = array(
+    protected static $supportedTypes = array(
         Transaction\TransactionType::SALE,
         Transaction\TransactionType::CREDIT,
         Transaction\TransactionType::REFUND,
@@ -46,7 +46,7 @@ class GenericTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function _doTransact(Transaction $transaction, $options = array())
+    protected function doTransact(Transaction $transaction, $options = array())
     {
         $this->_validateTransaction($transaction);
 

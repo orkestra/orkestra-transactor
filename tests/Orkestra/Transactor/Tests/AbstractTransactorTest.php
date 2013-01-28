@@ -114,15 +114,15 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
 
 class TestTransactor extends AbstractTransactor
 {
-    protected static $_supportedNetworks = array(
+    protected static $supportedNetworks = array(
         Transaction\NetworkType::CARD
     );
 
-    protected static $_supportedTypes = array(
+    protected static $supportedTypes = array(
         Transaction\TransactionType::SALE
     );
 
-    protected function _doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(Transaction $transaction, array $options = array())
     {
         throw new \RuntimeException('Critical error');
     }
