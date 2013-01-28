@@ -19,6 +19,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Credit card transactor for the Network Merchants payment processing gateway
@@ -75,7 +76,7 @@ class CardTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://secure.networkmerchants.com/api/transact.php';
+        $postUrl = $options['postUrl'];
         $client = $this->getClient();
 
         $request = $client->post($postUrl)
@@ -199,6 +200,7 @@ class CardTransactor extends AbstractTransactor
             ));
         } else {
             $account = $transaction->getAccount();
+
             if ($account instanceof SwipedCardAccount) {
                 $params = array_merge($params, array(
                     'track_1' => $account->getTrackOne(),
@@ -239,6 +241,18 @@ class CardTransactor extends AbstractTransactor
         }
 
         return $params;
+    }
+
+    /**
+     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     */
+    protected function configureResolver(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'enable_avs' => false,
+            'enable_cvv' => false,
+            'postUrl'    => 'https://secure.networkmerchants.com/api/transact.php',
+        ));
     }
 
     /**

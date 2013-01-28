@@ -14,6 +14,8 @@ namespace Orkestra\Transactor;
 use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Base class for any Transactor
@@ -29,6 +31,11 @@ abstract class AbstractTransactor implements TransactorInterface
      * @var array $_supportedTypes An array of TransactionType constants
      */
     protected static $_supportedTypes = array();
+
+    /**
+     * @var \Symfony\Component\OptionsResolver\OptionsResolverInterface
+     */
+    private $resolver;
 
     /**
      * Transacts the given transaction
@@ -54,6 +61,10 @@ abstract class AbstractTransactor implements TransactorInterface
         $result->setTransactor($this);
 
         try {
+            if (false !== $this->getResolver()) {
+                $options = $this->getResolver()->resolve($options);
+            }
+
             $this->_doTransact($transaction, $options);
         } catch (\Exception $e) {
             $result->setStatus(new ResultStatus(ResultStatus::ERROR));
@@ -74,6 +85,48 @@ abstract class AbstractTransactor implements TransactorInterface
      * @return \Orkestra\Transactor\Entity\Result
      */
     abstract protected function _doTransact(Transaction $transaction, array $options = array());
+
+    /**
+     * Configures the transactors OptionsResolver
+     *
+     * Override this method to tell the resolver what options are available.
+     * This resolver will be used to validate the options passed to the
+     * transact method.
+     *
+     * @see transact
+     *
+     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     *
+     * @return void
+     */
+    protected function configureResolver(OptionsResolverInterface $resolver)
+    {
+        $this->disableResolver();
+    }
+
+    /**
+     * Disable the OptionsResolver from validating options
+     *
+     * @deprecated will be removed in 1.1
+     */
+    protected function disableResolver()
+    {
+        $this->resolver = false;
+    }
+
+    /**
+     * @return \Symfony\Component\OptionsResolver\OptionsResolverInterface
+     */
+    private function getResolver()
+    {
+        if (null === $this->resolver) {
+            $this->resolver = new OptionsResolver();
+            $this->configureResolver($this->resolver);
+        }
+
+        return $this->resolver;
+    }
+
 
     /**
      * Returns true if this Transactor supports a given Transaction type
