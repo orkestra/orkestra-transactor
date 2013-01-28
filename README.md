@@ -7,7 +7,7 @@ The Transactor provides payment processing functionality to any PHP project.
 
 ### Supported payment processors:
 
-* Network Merchants credit card processing API
+* Network Merchants credit card processing API supporting swiped and keyed transactions
 * Payments Xpress ACH processing API
 * Cash and check transactions for brick and mortar stores
 * Points, or account credit

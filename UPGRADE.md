@@ -1,5 +1,7 @@
 # Upgrade from 1.0 to 1.1
 
+1.1 features Swiped credit card transactions and changes to make the API more consistent with other PSR projects.
+
 ### BC breaks
 * NMI Card Transactor
     * `postUrl` option changed to `post_url`
