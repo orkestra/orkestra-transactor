@@ -5,3 +5,4 @@
     * `postUrl` option changed to `post_url`
 * PaymentsXpress ACH Transactor
     * `postUrl` option changed to `post_url`, `testMode` to `test_mode`
+* `AbstractTransactor` no longer disables the OptionsResolver by default
