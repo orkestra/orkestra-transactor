@@ -76,7 +76,7 @@ class CardTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $postUrl = $options['postUrl'];
+        $postUrl = $options['post_url'];
         $client = $this->getClient();
 
         $request = $client->post($postUrl)

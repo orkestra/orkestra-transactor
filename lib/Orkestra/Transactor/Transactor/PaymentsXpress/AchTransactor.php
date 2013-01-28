@@ -78,7 +78,7 @@ class AchTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $postUrl = $options['postUrl'];
+        $postUrl = $options['post_url'];
         $client = $this->getClient();
 
         $request = $client->post($postUrl)
@@ -193,7 +193,7 @@ class AchTransactor extends AbstractTransactor
             'Provider_GateKey' => $credentials->getCredential('providerGateKey'),
             'Command' => $this->_getCommand($transaction),
             'CommandVersion' => '1.0',
-            'TestMode' => !empty($options['testMode']) ? 'On' : 'Off',
+            'TestMode' => !empty($options['test_mode']) ? 'On' : 'Off',
             'MerchantID' => $credentials->getCredential('merchantId'),
             'Merchant_GateID' => $credentials->getCredential('merchantGateId'),
             'Merchant_GateKey' => $credentials->getCredential('merchantGateKey'),
