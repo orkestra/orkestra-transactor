@@ -16,12 +16,12 @@ use Orkestra\Transactor\Exception\TransactorException;
 /**
  * Responsible for managing available Transactors
  */
-class TransactorFactory
+class TransactorFactory implements TransactorFactoryInterface
 {
     /**
      * @var array
      */
-    protected $_transactors = array();
+    private $transactors = array();
 
     /**
      * Registers a Transactor with the factory
@@ -30,7 +30,7 @@ class TransactorFactory
      */
     public function registerTransactor(TransactorInterface $transactor)
     {
-        $this->_transactors[$transactor->getType()] = $transactor;
+        $this->transactors[$transactor->getType()] = $transactor;
     }
 
     /**
@@ -40,22 +40,24 @@ class TransactorFactory
      */
     public function getTransactors()
     {
-        return array_values($this->_transactors);
+        return array_values($this->transactors);
     }
 
     /**
      * Gets a single transactor by name
      *
-     * @param  string                                             $name
+     * @param  string  $name
+     *
      * @return \Orkestra\Transactor\TransactorInterface
+     *
      * @throws \Orkestra\Transactor\Exception\TransactorException if there is no Transactor by the given name
      */
     public function getTransactor($name)
     {
-        if (!array_key_exists($name, $this->_transactors)) {
+        if (!array_key_exists($name, $this->transactors)) {
             throw TransactorException::transactorNotRegistered($name);
         }
 
-        return $this->_transactors[$name];
+        return $this->transactors[$name];
     }
 }
