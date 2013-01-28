@@ -18,6 +18,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Credit card transactor for the Network Merchants payment processing gateway
@@ -73,7 +74,7 @@ class CardTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $postUrl = !empty($options['postUrl']) ? $options['postUrl'] : 'https://secure.networkmerchants.com/api/transact.php';
+        $postUrl = $options['postUrl'];
         $client = $this->getClient();
 
         $request = $client->post($postUrl)
@@ -196,11 +197,11 @@ class CardTransactor extends AbstractTransactor
                 'ccexp' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear()
             ));
 
-            if (isset($options['enable_cvv']) && true === $options['enable_cvv']) {
+            if (true === $options['enable_cvv']) {
                 $params['cvv'] = $account->getCvv();
             }
 
-            if (isset($options['enable_avs']) && true === $options['enable_avs']) {
+            if (true === $options['enable_avs']) {
                 $names = explode(' ', $account->getName(), 2);
                 $firstName = isset($names[0]) ? $names[0] : '';
                 $lastName = isset($names[1]) ? $names[1] : '';
@@ -223,6 +224,18 @@ class CardTransactor extends AbstractTransactor
         }
 
         return $params;
+    }
+
+    /**
+     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     */
+    protected function configureResolver(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'enable_avs' => false,
+            'enable_cvv' => false,
+            'postUrl'    => 'https://secure.networkmerchants.com/api/transact.php',
+        ));
     }
 
     /**
