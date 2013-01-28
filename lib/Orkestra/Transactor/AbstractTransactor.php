@@ -23,12 +23,12 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 abstract class AbstractTransactor implements TransactorInterface
 {
     /**
-     * @var array $_supportedNetworks An array of NetworkType constants
+     * @var array $supportedNetworks An array of NetworkType constants
      */
     protected static $supportedNetworks = array();
 
     /**
-     * @var array $_supportedTypes An array of TransactionType constants
+     * @var array $supportedTypes An array of TransactionType constants
      */
     protected static $supportedTypes = array();
 
