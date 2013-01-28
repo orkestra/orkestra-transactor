@@ -61,7 +61,9 @@ abstract class AbstractTransactor implements TransactorInterface
         $result->setTransactor($this);
 
         try {
-            $options = $this->getResolver()->resolve($options);
+            if (false !== $this->getResolver()) {
+                $options = $this->getResolver()->resolve($options);
+            }
 
             $this->_doTransact($transaction, $options);
         } catch (\Exception $e) {
@@ -99,6 +101,17 @@ abstract class AbstractTransactor implements TransactorInterface
      */
     protected function configureResolver(OptionsResolverInterface $resolver)
     {
+        $this->disableResolver();
+    }
+
+    /**
+     * Disable the OptionsResolver from validating options
+     *
+     * @deprecated will be removed in 1.1
+     */
+    protected function disableResolver()
+    {
+        $this->resolver = false;
     }
 
     /**
@@ -106,7 +119,7 @@ abstract class AbstractTransactor implements TransactorInterface
      */
     private function getResolver()
     {
-        if (!$this->resolver) {
+        if (null === $this->resolver) {
             $this->resolver = new OptionsResolver();
             $this->configureResolver($this->resolver);
         }
