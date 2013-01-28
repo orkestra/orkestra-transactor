@@ -11,6 +11,7 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\NetworkMerchants;
 
+use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Transaction;
@@ -36,10 +37,14 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         // Supported
         $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
+        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED)));
 
         // Unsupported
         $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
         $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
+        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CASH)));
+        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::POINTS)));
+        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CHECK)));
     }
 
     public function testSupportsCorrectTypes()
@@ -68,6 +73,9 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
+        $this->assertArrayNotHasKey('track_1', $result->getData('request'));
+        $this->assertArrayNotHasKey('track_2', $result->getData('request'));
+        $this->assertArrayNotHasKey('track_3', $result->getData('request'));
     }
 
     public function testCardSaleError()
@@ -105,6 +113,36 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('An error occurred while processing the payment. Please try again.', $result->getMessage());
         $this->assertEmpty($result->getExternalId());
+    }
+
+    public function testNonSwipeOnSwipeNetworkValidation()
+    {
+        $transaction = $this->getTransaction();
+        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED));
+
+        $transactor = $this->getTransactor();
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
+        $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
+        $this->assertEmpty($result->getExternalId());
+        $this->assertEquals('Validation failed: invalid account type: Credit Card', $result->getData('message'));
+    }
+
+    public function testSwipedSalesSuccess()
+    {
+        $transactor = $this->getTransactor('response=1&responsetext=SUCCESS&authcode=123456&transactionid=12345&avsresponse=&cvvresponse=&orderid=&type=sale&response_code=100');
+        $transaction = $this->getSwipedTransaction();
+
+        $result = $transactor->transact($transaction);
+
+        $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
+        $this->assertEquals('12345', $result->getExternalId());
+        $this->assertInternalType('array', $result->getData('request'));
+        $this->assertArrayHasKey('track_1', $result->getData('request'));
+        $this->assertArrayHasKey('track_2', $result->getData('request'));
+        $this->assertArrayHasKey('track_3', $result->getData('request'));
     }
 
     public function testAvsAndCvvDisabledByDefault()
@@ -157,7 +195,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('address', $request);
     }
 
-    protected function getTransactor($expectedResponse, $code = 200)
+    protected function getTransactor($expectedResponse = '', $code = 200)
     {
         $client = new Client();
         $plugin = new MockPlugin();
@@ -184,6 +222,25 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $transaction = new Transaction();
         $transaction->setAmount(10);
         $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setCredentials($credentials);
+        $transaction->setAccount($account);
+
+        return $transaction;
+    }
+
+    protected function getSwipedTransaction()
+    {
+        $account = new SwipedCardAccount();
+        $account->setTrackOne('%4111111111111111^SOMMER/T.                 ^12011200000000000000**XXX******?*');
+
+        $credentials = new Credentials();
+        $credentials->setCredential('username', 'demo');
+        $credentials->setCredential('password', 'password');
+
+        $transaction = new Transaction();
+        $transaction->setAmount(10);
+        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED));
         $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
         $transaction->setCredentials($credentials);
         $transaction->setAccount($account);

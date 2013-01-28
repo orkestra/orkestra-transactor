@@ -23,10 +23,11 @@ use Orkestra\Common\Entity\AbstractEntity;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "BankAccount" = "Orkestra\Transactor\Entity\Account\BankAccount",
- *   "CardAccount" = "Orkestra\Transactor\Entity\Account\CardAccount",
- *   "PointsAccount" = "Orkestra\Transactor\Entity\Account\PointsAccount",
- *   "SimpleAccount" = "Orkestra\Transactor\Entity\Account\SimpleAccount"
+ *   "BankAccount"       = "Orkestra\Transactor\Entity\Account\BankAccount",
+ *   "CardAccount"       = "Orkestra\Transactor\Entity\Account\CardAccount",
+ *   "PointsAccount"     = "Orkestra\Transactor\Entity\Account\PointsAccount",
+ *   "SimpleAccount"     = "Orkestra\Transactor\Entity\Account\SimpleAccount",
+ *   "SwipedCardAccount" = "Orkestra\Transactor\Entity\Account\SwipedCardAccount"
  * })
  */
 abstract class AbstractAccount extends AbstractEntity
@@ -116,6 +117,9 @@ abstract class AbstractAccount extends AbstractEntity
         $this->transactions = new ArrayCollection();
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->alias;
@@ -175,8 +179,9 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function addTransaction(Transaction $transaction)
     {
-        if ($transaction->getAccount() !== $this)
+        if ($transaction->getAccount() !== $this) {
             $transaction->setAccount($this);
+        }
 
         $this->transactions[] = $transaction;
     }

@@ -23,14 +23,14 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 abstract class AbstractTransactor implements TransactorInterface
 {
     /**
-     * @var array $_supportedNetworks An array of NetworkType constants
+     * @var array $supportedNetworks An array of NetworkType constants
      */
-    protected static $_supportedNetworks = array();
+    protected static $supportedNetworks = array();
 
     /**
-     * @var array $_supportedTypes An array of TransactionType constants
+     * @var array $supportedTypes An array of TransactionType constants
      */
-    protected static $_supportedTypes = array();
+    protected static $supportedTypes = array();
 
     /**
      * @var \Symfony\Component\OptionsResolver\OptionsResolverInterface
@@ -61,11 +61,9 @@ abstract class AbstractTransactor implements TransactorInterface
         $result->setTransactor($this);
 
         try {
-            if (false !== $this->getResolver()) {
-                $options = $this->getResolver()->resolve($options);
-            }
+            $options = $this->getResolver()->resolve($options);
 
-            $this->_doTransact($transaction, $options);
+            $this->doTransact($transaction, $options);
         } catch (\Exception $e) {
             $result->setStatus(new ResultStatus(ResultStatus::ERROR));
             $result->setMessage('An internal error occurred while processing the transaction.');
@@ -84,7 +82,7 @@ abstract class AbstractTransactor implements TransactorInterface
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    abstract protected function _doTransact(Transaction $transaction, array $options = array());
+    abstract protected function doTransact(Transaction $transaction, array $options = array());
 
     /**
      * Configures the transactors OptionsResolver
@@ -101,17 +99,6 @@ abstract class AbstractTransactor implements TransactorInterface
      */
     protected function configureResolver(OptionsResolverInterface $resolver)
     {
-        $this->disableResolver();
-    }
-
-    /**
-     * Disable the OptionsResolver from validating options
-     *
-     * @deprecated will be removed in 1.1
-     */
-    protected function disableResolver()
-    {
-        $this->resolver = false;
     }
 
     /**
@@ -127,17 +114,16 @@ abstract class AbstractTransactor implements TransactorInterface
         return $this->resolver;
     }
 
-
     /**
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
      *
      * @return boolean True if supported
      */
     public function supportsType(Transaction\TransactionType $type = null)
     {
-        return in_array((null === $type ? null : $type->getValue()), static::$_supportedTypes);
+        return in_array((null === $type ? null : $type->getValue()), static::$supportedTypes);
     }
 
     /**
@@ -149,7 +135,7 @@ abstract class AbstractTransactor implements TransactorInterface
      */
     public function supportsNetwork(Transaction\NetworkType $network = null)
     {
-        return in_array((null === $network ? null : $network->getValue()), static::$_supportedNetworks);
+        return in_array((null === $network ? null : $network->getValue()), static::$supportedNetworks);
     }
 
     /**
