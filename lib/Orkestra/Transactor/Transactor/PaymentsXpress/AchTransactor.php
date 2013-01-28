@@ -386,9 +386,9 @@ class AchTransactor extends AbstractTransactor
     protected function configureResolver(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'testMode'   => false,
+            'test_mode'  => false,
             'date'       => null,
-            'postUrl'    => 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx',
+            'post_url'   => 'https://www.paymentsxpress.com/pxgateway/datalinks/transact.aspx',
         ));
     }
 

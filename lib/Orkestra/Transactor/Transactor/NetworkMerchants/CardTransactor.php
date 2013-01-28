@@ -251,7 +251,7 @@ class CardTransactor extends AbstractTransactor
         $resolver->setDefaults(array(
             'enable_avs' => false,
             'enable_cvv' => false,
-            'postUrl'    => 'https://secure.networkmerchants.com/api/transact.php',
+            'post_url'   => 'https://secure.networkmerchants.com/api/transact.php',
         ));
     }
 

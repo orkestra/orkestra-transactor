@@ -1,0 +1,7 @@
+# Upgrade from 1.0 to 1.1
+
+### BC breaks
+* NMI Card Transactor
+    * `postUrl` option changed to `post_url`
+* PaymentsXpress ACH Transactor
+    * `postUrl` option changed to `post_url`, `testMode` to `test_mode`
