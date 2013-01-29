@@ -80,8 +80,8 @@ class ValidationException extends \Exception
      * @param  \Orkestra\Transactor\Entity\AbstractAccount $account
      * @return ValidationException
      */
-    public static function invalidAccountType(AbstractAccount $account)
+    public static function invalidAccountType(AbstractAccount $account = null)
     {
-        return new self(sprintf('invalid account type: %s', $account->getType()));
+        return new self(sprintf('invalid account type: %s', $account ? $account->getType() : 'null'));
     }
 }

@@ -46,7 +46,7 @@ class GenericTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, $options = array())
+    protected function doTransact(Transaction $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
 

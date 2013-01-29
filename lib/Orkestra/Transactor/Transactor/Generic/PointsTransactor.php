@@ -46,9 +46,9 @@ class PointsTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, $options = array())
+    protected function doTransact(Transaction $transaction, array $options = array())
     {
-        $this->_validateTransaction($transaction);
+        $this->validateTransaction($transaction);
 
         $account = $transaction->getAccount();
         $result = $transaction->getResult();
@@ -79,7 +79,7 @@ class PointsTransactor extends AbstractTransactor
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function _validateTransaction(Transaction $transaction)
+    protected function validateTransaction(Transaction $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::REFUND
