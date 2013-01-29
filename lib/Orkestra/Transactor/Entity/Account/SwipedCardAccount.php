@@ -32,14 +32,14 @@ class SwipedCardAccount extends CardAccount
     /**
      * @var string
      *
-     * @ORM\Column(name="track_one", type="string")
+     * @ORM\Column(name="track_two", type="string")
      */
     protected $trackTwo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="track_one", type="string")
+     * @ORM\Column(name="track_three", type="string")
      */
     protected $trackThree;
 
