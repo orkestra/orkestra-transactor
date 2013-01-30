@@ -1,5 +1,5 @@
-Contributing
-============
+Contributing Guidelines
+=======================
 
 This document details the process you should follow when contributing code.
 
@@ -19,7 +19,7 @@ Fork the repository on GitHub.
 ### 2. Clone the repository and checkout the master branch
 
 ``` bash
-git clone https://github.com/orkestra/orkestra-transactor
+git clone git@github.com/<your username>/orkestra-transactor
 cd orkestra-transactor
 git checkout master
 ```
@@ -50,5 +50,5 @@ the master branch of orkestra-transactor is selected.
 Additional Info
 ---------------
 
-This project follows [Semantic Version](http://semver.org) for the most part. See [UPGRADE.md](UPGRADE.md) for details on backwards
+This project tries to follow [Semantic Version](http://semver.org). See [UPGRADE.md](UPGRADE.md) for details on backwards
 compatibilty breaks.
