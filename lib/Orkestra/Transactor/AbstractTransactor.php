@@ -147,4 +147,17 @@ abstract class AbstractTransactor implements TransactorInterface
     {
         return sprintf('%s (%s)', $this->getName(), $this->getType());
     }
+
+    /**
+     * Creates a new, empty Credentials
+     *
+     * @return Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = new Entity\Credentials();
+        $credentials->setTransactor($this);
+
+        return $credentials;
+    }
 }

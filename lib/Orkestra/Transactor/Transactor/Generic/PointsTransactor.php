@@ -13,6 +13,7 @@ namespace Orkestra\Transactor\Transactor\Generic;
 
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Account\PointsAccount;
+use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Exception\ValidationException;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
@@ -90,6 +91,19 @@ class PointsTransactor extends AbstractTransactor
         }
 
         $transaction->setAmount((int) $transaction->getAmount());
+    }
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = new Credentials();
+        $credentials->setTransactor($this);
+
+        return $credentials;
     }
 
     /**

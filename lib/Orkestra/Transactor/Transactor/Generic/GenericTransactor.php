@@ -12,6 +12,7 @@
 namespace Orkestra\Transactor\Transactor\Generic;
 
 use Orkestra\Transactor\AbstractTransactor;
+use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Exception\ValidationException;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
@@ -73,6 +74,19 @@ class GenericTransactor extends AbstractTransactor
         ))) {
             throw ValidationException::parentTransactionRequired();
         }
+    }
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = new Credentials();
+        $credentials->setTransactor($this);
+
+        return $credentials;
     }
 
     /**

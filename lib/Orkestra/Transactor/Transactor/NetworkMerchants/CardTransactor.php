@@ -13,6 +13,7 @@ namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
 use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Orkestra\Transactor\AbstractTransactor;
+use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Account\CardAccount;
@@ -145,10 +146,12 @@ class CardTransactor extends AbstractTransactor
             throw ValidationException::invalidAccountType($account);
         }
 
-        if (null === $account->getAccountNumber()) {
-            throw ValidationException::missingRequiredParameter('account number');
-        } elseif (null === $account->getExpMonth() || null === $account->getExpYear()) {
-            throw ValidationException::missingRequiredParameter('card expiration');
+        if (!$account instanceof SwipedCardAccount) {
+            if (null === $account->getAccountNumber()) {
+                throw ValidationException::missingRequiredParameter('account number');
+            } elseif (null === $account->getExpMonth() || null === $account->getExpYear()) {
+                throw ValidationException::missingRequiredParameter('card expiration');
+            }
         }
     }
 
@@ -265,6 +268,23 @@ class CardTransactor extends AbstractTransactor
         }
 
         return $this->client;
+    }
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = new Credentials();
+        $credentials->setTransactor($this);
+        $credentials->setCredentials(array(
+            'username' => null,
+            'password' => null,
+        ));
+
+        return $credentials;
     }
 
     /**
