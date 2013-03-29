@@ -1,3 +1,15 @@
+# Upgrade from 1.1 to 1.2
+
+1.2 brought support for common payment processors and extended support for swiped card information decoding.
+
+### BC breaks
+* `TransactorInterface` gained an additional method `createCredentials` that all Transactors must implement.
+    * This method is intended to create a default set of credentials for the given transactor.
+* An additional account entity, `EncryptedSwipedCardAccount`, was introduced.
+* A `SwipedCardAccount` no longer populates account information when track data is set.
+    * Instead, use an appropriate Track Decoder implementation.
+
+
 # Upgrade from 1.0 to 1.1
 
 1.1 features Swiped credit card transactions and changes to make the API more consistent with other PSR projects.
