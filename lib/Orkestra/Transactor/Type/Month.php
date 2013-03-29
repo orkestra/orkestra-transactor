@@ -45,7 +45,7 @@ class Month extends AbstractType
      */
     public function getShortMonth()
     {
-        return date('n', mktime(0, 0, 0, $this->value));
+        return date('n', mktime(0, 0, 0, $this->value, 1));
     }
 
     /**
@@ -55,7 +55,7 @@ class Month extends AbstractType
      */
     public function getLongMonth()
     {
-        return date('m', mktime(0, 0, 0, $this->value));
+        return date('m', mktime(0, 0, 0, $this->value, 1));
     }
 
     /**
@@ -65,7 +65,7 @@ class Month extends AbstractType
      */
     public function getShortName()
     {
-        return date('M', mktime(0, 0, 0, $this->value));
+        return date('M', mktime(0, 0, 0, $this->value, 1));
     }
 
     /**
@@ -75,6 +75,6 @@ class Month extends AbstractType
      */
     public function getLongName()
     {
-        return date('F', mktime(0, 0, 0, $this->value));
+        return date('F', mktime(0, 0, 0, $this->value, 1));
     }
 }

@@ -23,11 +23,12 @@ use Orkestra\Common\Entity\AbstractEntity;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *   "BankAccount"       = "Orkestra\Transactor\Entity\Account\BankAccount",
- *   "CardAccount"       = "Orkestra\Transactor\Entity\Account\CardAccount",
- *   "PointsAccount"     = "Orkestra\Transactor\Entity\Account\PointsAccount",
- *   "SimpleAccount"     = "Orkestra\Transactor\Entity\Account\SimpleAccount",
- *   "SwipedCardAccount" = "Orkestra\Transactor\Entity\Account\SwipedCardAccount"
+ *   "BankAccount"                = "Orkestra\Transactor\Entity\Account\BankAccount",
+ *   "CardAccount"                = "Orkestra\Transactor\Entity\Account\CardAccount",
+ *   "PointsAccount"              = "Orkestra\Transactor\Entity\Account\PointsAccount",
+ *   "SimpleAccount"              = "Orkestra\Transactor\Entity\Account\SimpleAccount",
+ *   "SwipedCardAccount"          = "Orkestra\Transactor\Entity\Account\SwipedCardAccount",
+ *   "EncryptedSwipedCardAccount" = "Orkestra\Transactor\Entity\Account\EncryptedSwipedCardAccount"
  * })
  */
 abstract class AbstractAccount extends AbstractEntity
@@ -37,7 +38,14 @@ abstract class AbstractAccount extends AbstractEntity
      *
      * @ORM\Column(name="account_number", type="string")
      */
-    protected $accountNumber;
+    protected $accountNumber = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email_address", type="string")
+     */
+    protected $emailAddress = '';
 
     /**
      * @var string
@@ -139,7 +147,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setAccountNumber($accountNumber)
     {
-        $this->accountNumber = $accountNumber;
+        $this->accountNumber = (string) $accountNumber;
     }
 
     /**
@@ -159,7 +167,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setIpAddress($ipAddress)
     {
-        $this->ipAddress = $ipAddress;
+        $this->ipAddress = (string) $ipAddress;
     }
 
     /**
@@ -203,7 +211,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setPhoneNumber($phoneNumber)
     {
-        $this->phoneNumber = $phoneNumber;
+        $this->phoneNumber = (string) $phoneNumber;
     }
 
     /**
@@ -223,7 +231,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = (string) $name;
     }
 
     /**
@@ -243,7 +251,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setAddress($address)
     {
-        $this->address = $address;
+        $this->address = (string) $address;
     }
 
     /**
@@ -263,7 +271,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setCity($city)
     {
-        $this->city = $city;
+        $this->city = (string) $city;
     }
 
     /**
@@ -283,7 +291,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setPostalCode($postalCode)
     {
-        $this->postalCode = $postalCode;
+        $this->postalCode = (string) $postalCode;
     }
 
     /**
@@ -303,7 +311,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setRegion($region)
     {
-        $this->region = $region;
+        $this->region = (string) $region;
     }
 
     /**
@@ -323,7 +331,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setCountry($country)
     {
-        $this->country = $country;
+        $this->country = (string) $country;
     }
 
     /**
@@ -343,7 +351,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function setAlias($alias)
     {
-        $this->alias = $alias;
+        $this->alias = (string) $alias;
     }
 
     /**
@@ -354,5 +362,21 @@ abstract class AbstractAccount extends AbstractEntity
     public function getAlias()
     {
         return $this->alias;
+    }
+
+    /**
+     * @param string $emailAddress
+     */
+    public function setEmailAddress($emailAddress)
+    {
+        $this->emailAddress = (string) $emailAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmailAddress()
+    {
+        return $this->emailAddress;
     }
 }

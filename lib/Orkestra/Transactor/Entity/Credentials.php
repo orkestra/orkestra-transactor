@@ -79,7 +79,7 @@ class Credentials extends AbstractEntity
      */
     public function getCredential($key)
     {
-        return empty($this->credentials[$key]) ? null : $this->credentials[$key];
+        return !isset($this->credentials[$key]) ? null : $this->credentials[$key];
     }
 
     /**

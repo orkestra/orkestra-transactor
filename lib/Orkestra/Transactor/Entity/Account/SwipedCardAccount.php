@@ -12,8 +12,6 @@
 namespace Orkestra\Transactor\Entity\Account;
 
 use Doctrine\ORM\Mapping as ORM;
-use Orkestra\Transactor\Type\Month;
-use Orkestra\Transactor\Type\Year;
 
 /**
  * A swiped credit card
@@ -49,7 +47,6 @@ class SwipedCardAccount extends CardAccount
     public function setTrackOne($trackOne)
     {
         $this->trackOne = $trackOne;
-        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -66,7 +63,6 @@ class SwipedCardAccount extends CardAccount
     public function setTrackThree($trackThree)
     {
         $this->trackThree = $trackThree;
-        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -83,7 +79,6 @@ class SwipedCardAccount extends CardAccount
     public function setTrackTwo($trackTwo)
     {
         $this->trackTwo = $trackTwo;
-        $this->updateInformationFromStripeData();
     }
 
     /**
@@ -102,31 +97,5 @@ class SwipedCardAccount extends CardAccount
     public function getType()
     {
         return 'Swiped Credit Card';
-    }
-
-    /**
-     * Updates the Card's account information using the track data
-     */
-    private function updateInformationFromStripeData()
-    {
-        if ($this->trackOne) {
-            $parts = explode('^', $this->trackOne);
-
-            $this->setAccountNumber(substr($parts[0], 2));
-            $this->setExpMonth(new Month(substr($parts[2], 2, 2)));
-            $this->setExpYear(new Year('20' . substr($parts[2], 0, 2)));
-        } elseif ($this->trackTwo) {
-            $parts = explode('=', $this->trackTwo);
-
-            $this->setAccountNumber(substr($parts[0], 1));
-            $this->setExpMonth(new Month(substr($parts[1], 2, 2)));
-            $this->setExpYear(new Year('20' . substr($parts[1], 0, 2)));
-        } elseif ($this->trackThree) {
-            $parts = explode('=', $this->trackThree);
-
-            $this->setAccountNumber(substr($parts[0], 3));
-            $this->setExpMonth(new Month(substr($parts[1], -3, 2)));
-            $this->setExpYear(new Year('20' . substr($parts[1], -5, 2)));
-        }
     }
 }

@@ -8,9 +8,6 @@
         "guzzle/guzzle" : "3.*",
         "symfony/options-resolver": ">=2.1-dev,<2.3"
     },
-    "require-dev" : {
-        "symfony/dependency-injection" : ">=2.1-dev,<2.3"
-    },
     "autoload" : {
         "psr-0" : { "Orkestra\\Transactor" : "lib/" }
     },

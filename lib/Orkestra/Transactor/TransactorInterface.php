@@ -61,4 +61,13 @@ interface TransactorInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * This method should set the appropriate fields to their initial value
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials();
 }

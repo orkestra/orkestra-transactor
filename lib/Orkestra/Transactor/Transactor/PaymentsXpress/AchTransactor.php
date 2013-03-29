@@ -16,6 +16,7 @@ use Guzzle\Http\Exception\BadResponseException;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Entity\Account\BankAccount;
+use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Exception\ValidationException;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
@@ -173,6 +174,27 @@ class AchTransactor extends AbstractTransactor
         } elseif (null === $account->getAccountType()) {
             throw ValidationException::missingRequiredParameter('account type');
         }
+    }
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = new Credentials();
+        $credentials->setTransactor($this);
+        $credentials->setCredentials(array(
+            'providerId' => null,
+            'providerGateId' => null,
+            'providerGateKey' => null,
+            'merchantId' => null,
+            'merchantGateId' => null,
+            'merchantGateKey' => null
+        ));
+
+        return $credentials;
     }
 
     /**
