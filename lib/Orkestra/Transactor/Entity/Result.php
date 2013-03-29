@@ -143,7 +143,7 @@ class Result extends AbstractEntity
      */
     public function setExternalId($externalId)
     {
-        $this->externalId = $externalId;
+        $this->externalId = (string) $externalId;
     }
 
     /**
@@ -163,7 +163,7 @@ class Result extends AbstractEntity
      */
     public function setMessage($message)
     {
-        $this->message = $message;
+        $this->message = (string) $message;
     }
 
     /**
