@@ -70,7 +70,7 @@ class CardTransactor extends AbstractTransactor
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(Transaction $transaction, array $options = array())
     {
         $this->validateTransaction($transaction);
         $params = $this->buildParams($transaction, $options);
@@ -261,7 +261,7 @@ class CardTransactor extends AbstractTransactor
     /**
      * @return \Guzzle\Http\Client
      */
-    private function getClient()
+    protected function getClient()
     {
         if (null === $this->client) {
             $this->client = new Client();

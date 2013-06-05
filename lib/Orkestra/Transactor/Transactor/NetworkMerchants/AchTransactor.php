@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 /**
  * ACH transactor for the NetworkMerchants payment processing gateway
  */
-class AchTransactor extends AbstractTransactor
+class AchTransactor extends CardTransactor
 {
     /**
      * @var array
@@ -39,80 +39,8 @@ class AchTransactor extends AbstractTransactor
      */
     protected static $supportedTypes = array(
         Transaction\TransactionType::SALE,
-        // Transaction\TransactionType::CREDIT,
-        // Transaction\TransactionType::AUTH,
-        // Transaction\TransactionType::CAPTURE,
-         Transaction\TransactionType::REFUND,
-        // Transaction\TransactionType::VOID,
-        //Transaction\TransactionType::QUERY,
-        // Transaction\TransactionType::UPDATE,
+        Transaction\TransactionType::REFUND
     );
-
-    /**
-     * @var \Guzzle\Http\Client
-     */
-    private $client;
-
-    /**
-     * Constructor
-     *
-     * @param \Guzzle\Http\Client $client
-     */
-    public function __construct(Client $client = null)
-    {
-        $this->client = $client;
-    }
-
-    /**
-     * Transacts the given transaction
-     *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
-     *
-     * @return \Orkestra\Transactor\Entity\Result
-     */
-    protected function doTransact(Transaction $transaction, array $options = array())
-    {
-        $this->validateTransaction($transaction);
-        $params = $this->buildParams($transaction, $options);
-        $result = $transaction->getResult();
-        $result->setTransactor($this);
-
-        $postUrl = $options['post_url'];
-        $client = $this->getClient();
-
-        $request = $client->post($postUrl)
-            ->addPostFields($params);
-        $request->getCurlOptions()->set(CURLOPT_SSLVERSION, 3);
-
-        try {
-            $response = $request->send();
-            $data = array();
-            parse_str($response->getBody(true), $data);
-        } catch (BadResponseException $e) {
-            $data = array(
-                'response' => '3',
-                'message' => $e->getMessage()
-            );
-        }
-
-        if (empty($data['response']) || '1' != $data['response']) {
-            $result->setStatus(new Result\ResultStatus((!empty($data['response']) && '2' == $data['response']) ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
-            $result->setMessage(empty($data['responsetext']) ? 'An error occurred while processing the payment. Please try again.' : $data['responsetext']);
-
-            if (!empty($data['transactionid'])) {
-                $result->setExternalId($data['transactionid']);
-            }
-        } else {
-            $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
-            $result->setExternalId($data['transactionid']);
-        }
-
-        $result->setData('request', $params);
-        $result->setData('response', $data);
-
-        return $result;
-    }
 
     /**
      * Validates the given transaction
@@ -149,45 +77,6 @@ class AchTransactor extends AbstractTransactor
             throw ValidationException::missingRequiredParameter('routing number');
         } elseif (null === $account->getAccountType()) {
             throw ValidationException::missingRequiredParameter('account type');
-        }
-    }
-
-    /**
-     * Creates a new, empty Credentials entity
-     *
-     * @return \Orkestra\Transactor\Entity\Credentials
-     */
-    public function createCredentials()
-    {
-        $credentials = new Credentials();
-        $credentials->setTransactor($this);
-        $credentials->setCredentials(array(
-            'username' => null,
-            'password' => null,
-        ));
-
-        return $credentials;
-    }
-
-    /**
-     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
-     * @return string
-     */
-    protected function getNmiType(Transaction $transaction)
-    {
-        switch ($transaction->getType()->getValue()) {
-            case Transaction\TransactionType::SALE:
-                return 'sale';
-            case Transaction\TransactionType::AUTH:
-                return 'auth';
-            case Transaction\TransactionType::CAPTURE:
-                return 'capture';
-            case Transaction\TransactionType::CREDIT:
-                return 'credit';
-            case Transaction\TransactionType::REFUND:
-                return 'refund';
-            case Transaction\TransactionType::VOID:
-                return 'void';
         }
     }
 
@@ -240,7 +129,7 @@ class AchTransactor extends AbstractTransactor
                     AccountType::BUSINESS_SAVINGS
                 )) ? 'savings' : 'checking',
                 'amount' => $transaction->getAmount(),
-                'checkname' => $firstName . ' ' . $lastName,
+                'checkname' => $account->getName(),
                 'checkaba' => $account->getRoutingNumber(),
                 'checkaccount' => $account->getAccountNumber()
             ));
@@ -257,18 +146,6 @@ class AchTransactor extends AbstractTransactor
         $resolver->setDefaults(array(
             'post_url'   => 'https://secure.networkmerchants.com/api/transact.php',
         ));
-    }
-
-    /**
-     * @return \Guzzle\Http\Client
-     */
-    private function getClient()
-    {
-        if (null === $this->client) {
-            $this->client = new Client();
-        }
-
-        return $this->client;
     }
 
     /**
