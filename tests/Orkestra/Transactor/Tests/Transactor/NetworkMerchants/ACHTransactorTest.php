@@ -27,12 +27,12 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
 
 /**
- * Unit tests for the Network Merchants Card Transactor
+ * Unit tests for the Network Merchants Ach Transactor
  *
  * @group orkestra
  * @group transactor
  */
-class ACHTransactorTest extends \PHPUnit_Framework_TestCase
+class AchTransactorTest extends \PHPUnit_Framework_TestCase
 {
     public function testSupportsCorrectNetworks()
     {
