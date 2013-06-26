@@ -119,7 +119,7 @@ class AchTransactor extends CardTransactor
                 'country' => $account->getCountry(),
                 'ipaddress' => $account->getIpAddress(),
                 'payment' => 'check',
-                'sec_code' => 'WEB',
+                'sec_code' => $credentials->getCredential('secCode') ?: 'WEB',
                 'account_holder_type' => in_array($account->getAccountType()->getValue(), array(
                     AccountType::PERSONAL_SAVINGS,
                     AccountType::PERSONAL_CHECKING
@@ -166,5 +166,18 @@ class AchTransactor extends CardTransactor
     public function getName()
     {
         return 'Network Merchants ACH Gateway';
+    }
+
+    /**
+     * Creates a new, empty Credentials entity
+     *
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function createCredentials()
+    {
+        $credentials = parent::createCredentials();
+        $credentials->setCredential('secCode', 'WEB');
+
+        return $credentials;
     }
 }
