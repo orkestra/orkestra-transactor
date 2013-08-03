@@ -1,19 +1,19 @@
 {
-    "name" : "orkestra/transactor",
-    "description" : "Offers support for interacting with different financial transaction processing platforms",
-    "license" : "MIT",
-    "require" : {
-        "php" : ">=5.3.2",
-        "orkestra/common" : "1.0.*",
-        "guzzle/guzzle" : "3.*",
-        "symfony/options-resolver": ">=2.1-dev,<2.3"
-    },
-    "autoload" : {
-        "psr-0" : { "Orkestra\\Transactor" : "lib/" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.2-dev"
-        }
+  "name" : "orkestra/transactor",
+  "description" : "Offers support for interacting with different financial transaction processing platforms",
+  "license" : "MIT",
+  "require" : {
+    "php" : ">=5.3.2",
+    "orkestra/common" : "1.0.*",
+    "guzzle/guzzle" : "3.*",
+    "symfony/options-resolver": "~2.3"
+  },
+  "autoload" : {
+    "psr-0" : { "Orkestra\\Transactor" : "lib/" }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.2-dev"
     }
+  }
 }
