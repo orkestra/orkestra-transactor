@@ -356,7 +356,7 @@ class Transaction extends AbstractEntity
     public function isVoided()
     {
         if ($this->parent) {
-            return $this->parent->isRefunded();
+            return $this->parent->isVoided();
         }
 
         return $this->children->exists(function($key, Transaction $child) {
