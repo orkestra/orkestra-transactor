@@ -112,11 +112,35 @@ abstract class AbstractAccount extends AbstractEntity
     protected $phoneNumber = '';
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="external_person_id", type="string")
+     */
+    protected $externalPersonId = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="external_account_id", type="string")
+     */
+    protected $externalAccountId = '';
+
+    /**
      * @var \Orkestra\Transactor\Entity\Transaction
      *
      * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="account", cascade={"persist"})
      */
     protected $transactions;
+
+    /**
+     * @var \Orkestra\Transactor\Entity\Credentials $credentials
+     *
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Credentials")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="credentials_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    protected $credentials;
 
     /**
      * Constructor
@@ -379,5 +403,53 @@ abstract class AbstractAccount extends AbstractEntity
     public function getEmailAddress()
     {
         return $this->emailAddress;
+    }
+
+    /**
+     * @param string $externalAccountId
+     */
+    public function setExternalAccountId($externalAccountId)
+    {
+        $this->externalAccountId = (string) $externalAccountId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExternalAccountId()
+    {
+        return $this->externalAccountId;
+    }
+
+    /**
+     * @param string $externalPersonId
+     */
+    public function setExternalPersonId($externalPersonId)
+    {
+        $this->externalPersonId = (string) $externalPersonId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExternalPersonId()
+    {
+        return $this->externalPersonId;
+    }
+
+    /**
+     * @param \Orkestra\Transactor\Entity\Credentials $credentials
+     */
+    public function setCredentials(Credentials $credentials = null)
+    {
+        $this->credentials = $credentials;
+    }
+
+    /**
+     * @return \Orkestra\Transactor\Entity\Credentials
+     */
+    public function getCredentials()
+    {
+        return $this->credentials;
     }
 }
