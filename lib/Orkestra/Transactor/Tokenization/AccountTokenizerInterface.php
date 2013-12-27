@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Transactor\Token;
+namespace Orkestra\Transactor\Tokenization;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Entity\Credentials;
