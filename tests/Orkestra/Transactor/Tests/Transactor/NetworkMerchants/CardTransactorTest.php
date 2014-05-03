@@ -190,6 +190,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $request = $result->getData('request');
 
         $this->assertArrayHasKey('cvv', $request);
+        $this->assertEquals('123', $request['cvv']);
         $this->assertArrayNotHasKey('firstname', $request);
         $this->assertArrayNotHasKey('lastname', $request);
         $this->assertArrayNotHasKey('address', $request);
@@ -214,6 +215,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $account->setAccountNumber('4111111111111111');
         $account->setExpMonth(new Month(10));
         $account->setExpYear(new Year(2010));
+        $account->setCvv('123');
 
         $credentials = new Credentials();
         $credentials->setCredential('username', 'demo');
