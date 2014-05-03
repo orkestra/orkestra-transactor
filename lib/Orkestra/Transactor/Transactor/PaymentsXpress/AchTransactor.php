@@ -415,6 +415,27 @@ class AchTransactor extends AbstractTransactor
     }
 
     /**
+     * Filter the given result
+     *
+     * @param Result $result
+     *
+     * @return Result
+     */
+    protected function filterResult(Result $result)
+    {
+        $request = $result->getData('request') ?: array();
+        foreach (array('AccountNumber', 'RoutingNumber') as $key) {
+            if (array_key_exists($key, $request)) {
+                $request[$key] = '[filtered]';
+            }
+        }
+
+        $result->setData('request', $request);
+
+        return $result;
+    }
+
+    /**
      * @return \Guzzle\Http\Client
      */
     private function getClient()

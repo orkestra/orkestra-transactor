@@ -78,9 +78,16 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
+        $request = $result->getData('request');
 
         $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals('56789', $result->getExternalId());
+
+        $this->assertInternalType('array', $request);
+        $this->assertArrayHasKey('AccountNumber', $request);
+        $this->assertEquals('[filtered]', $request['AccountNumber']);
+        $this->assertArrayHasKey('RoutingNumber', $request);
+        $this->assertEquals('[filtered]', $request['RoutingNumber']);
 
         return $transaction;
     }
