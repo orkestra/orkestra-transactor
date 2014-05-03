@@ -247,6 +247,27 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
+     * Filter the given result
+     *
+     * @param Result $result
+     *
+     * @return Result
+     */
+    protected function filterResult(Result $result)
+    {
+        $request = $result->getData('request') ?: array();
+        foreach (array('ccnumber', 'cvv', 'track_1', 'track_2', 'track_3') as $key) {
+            if (array_key_exists($key, $request)) {
+                $request[$key] = '[filtered]';
+            }
+        }
+        
+        $result->setData('request', $request);
+        
+        return $result;
+    }
+
+    /**
      * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
      */
     protected function configureResolver(OptionsResolverInterface $resolver)

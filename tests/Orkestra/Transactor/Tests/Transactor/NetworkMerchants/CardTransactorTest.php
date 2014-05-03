@@ -70,12 +70,15 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $transaction = $this->getTransaction();
 
         $result = $transactor->transact($transaction);
+        $request = $result->getData('request');
 
         $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
-        $this->assertArrayNotHasKey('track_1', $result->getData('request'));
-        $this->assertArrayNotHasKey('track_2', $result->getData('request'));
-        $this->assertArrayNotHasKey('track_3', $result->getData('request'));
+        $this->assertArrayNotHasKey('track_1', $request);
+        $this->assertArrayNotHasKey('track_2', $request);
+        $this->assertArrayNotHasKey('track_3', $request);
+        $this->assertArrayHasKey('ccnumber', $request);
+        $this->assertEquals('[filtered]', $request['ccnumber']);
     }
 
     public function testCardSaleError()
@@ -136,13 +139,17 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $transaction = $this->getSwipedTransaction();
 
         $result = $transactor->transact($transaction);
+        $request = $result->getData('request');
 
         $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
-        $this->assertInternalType('array', $result->getData('request'));
-        $this->assertArrayHasKey('track_1', $result->getData('request'));
-        $this->assertArrayHasKey('track_2', $result->getData('request'));
-        $this->assertArrayHasKey('track_3', $result->getData('request'));
+        $this->assertInternalType('array', $request);
+        $this->assertArrayHasKey('track_1', $request);
+        $this->assertEquals('[filtered]', $request['track_1']);
+        $this->assertArrayHasKey('track_2', $request);
+        $this->assertEquals('[filtered]', $request['track_2']);
+        $this->assertArrayHasKey('track_3', $request);
+        $this->assertEquals('[filtered]', $request['track_3']);
     }
 
     public function testAvsAndCvvDisabledByDefault()
@@ -190,7 +197,7 @@ class CardTransactorTest extends \PHPUnit_Framework_TestCase
         $request = $result->getData('request');
 
         $this->assertArrayHasKey('cvv', $request);
-        $this->assertEquals('123', $request['cvv']);
+        $this->assertEquals('[filtered]', $request['cvv']);
         $this->assertArrayNotHasKey('firstname', $request);
         $this->assertArrayNotHasKey('lastname', $request);
         $this->assertArrayNotHasKey('address', $request);
