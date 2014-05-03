@@ -12,6 +12,7 @@
 namespace Orkestra\Transactor;
 
 use Orkestra\Transactor\Entity\Result\ResultStatus;
+use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -71,7 +72,7 @@ abstract class AbstractTransactor implements TransactorInterface
             $result->setData('trace', $e->getTraceAsString());
         }
 
-        return $result;
+        return $this->filterResult($result);
     }
 
     /**
@@ -99,6 +100,18 @@ abstract class AbstractTransactor implements TransactorInterface
      */
     protected function configureResolver(OptionsResolverInterface $resolver)
     {
+    }
+
+    /**
+     * Filter the given result
+     * 
+     * @param Result $result
+     *
+     * @return Result
+     */
+    protected function filterResult(Result $result)
+    {
+        return $result;
     }
 
     /**
