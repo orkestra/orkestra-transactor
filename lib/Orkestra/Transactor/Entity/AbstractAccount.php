@@ -45,7 +45,7 @@ abstract class AbstractAccount extends AbstractEntity
      *
      * @ORM\Column(name="last_four", type="string")
      */
-    protected  $lastFour;
+    protected $lastFour;
 
     /**
      * @var string
@@ -179,7 +179,7 @@ abstract class AbstractAccount extends AbstractEntity
     public function setAccountNumber($accountNumber)
     {
         $this->accountNumber = (string) $accountNumber;
-        $this->lastFour = substr((string)$accountNumber,-4);
+        $this->lastFour = substr((string) $accountNumber,-4);
     }
 
     /**
