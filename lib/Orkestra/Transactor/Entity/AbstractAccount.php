@@ -43,6 +43,13 @@ abstract class AbstractAccount extends AbstractEntity
     /**
      * @var string
      *
+     * @ORM\Column(name="last_four", type="string")
+     */
+    protected $lastFour;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="email_address", type="string")
      */
     protected $emailAddress = '';
@@ -172,6 +179,7 @@ abstract class AbstractAccount extends AbstractEntity
     public function setAccountNumber($accountNumber)
     {
         $this->accountNumber = (string) $accountNumber;
+        $this->lastFour = substr((string) $accountNumber,-4);
     }
 
     /**
@@ -450,5 +458,13 @@ abstract class AbstractAccount extends AbstractEntity
     public function getCredentials()
     {
         return $this->credentials;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastFour()
+    {
+        return $this->lastFour;
     }
 }
