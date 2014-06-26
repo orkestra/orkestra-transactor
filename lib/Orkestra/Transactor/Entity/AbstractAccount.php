@@ -43,7 +43,7 @@ abstract class AbstractAccount extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="last_four", type="string", nullable=true)
+     * @ORM\Column(name="last_four", type="string")
      */
     protected  $lastFour;
 
