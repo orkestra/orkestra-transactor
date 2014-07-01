@@ -14,13 +14,14 @@ namespace Orkestra\Transactor\Entity\Account;
 use Doctrine\ORM\Mapping as ORM;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
+use Orkestra\Transactor\Model\Account\PointsAccountInterface;
 
 /**
  * Represents a points account, to be used with the Points network
  *
  * @ORM\Entity
  */
-class PointsAccount extends AbstractAccount
+class PointsAccount extends AbstractAccount implements PointsAccountInterface
 {
     protected $accountNumber = '';
 

@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Entity\Account;
 use Doctrine\ORM\Mapping as ORM;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
+use Orkestra\Transactor\Model\Account\CardAccountInterface;
 use Orkestra\Transactor\Type\Month;
 use Orkestra\Transactor\Type\Year;
 
@@ -22,7 +23,7 @@ use Orkestra\Transactor\Type\Year;
  *
  * @ORM\Entity
  */
-class CardAccount extends AbstractAccount
+class CardAccount extends AbstractAccount implements CardAccountInterface
 {
     /**
      * @var \Orkestra\Transactor\Type\Month

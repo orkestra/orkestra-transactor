@@ -12,6 +12,7 @@
 namespace Orkestra\Transactor\Entity\Account;
 
 use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Transactor\Model\Account\EncryptedSwipedCardAccountInterface;
 
 /**
  * An encrypted swiped credit card
@@ -20,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Entity
  */
-class EncryptedSwipedCardAccount extends SwipedCardAccount
+class EncryptedSwipedCardAccount extends SwipedCardAccount implements EncryptedSwipedCardAccountInterface
 {
     /**
      * @var string

@@ -12,13 +12,14 @@
 namespace Orkestra\Transactor\Entity\Account;
 
 use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Transactor\Model\Account\SwipedCardAccountInterface;
 
 /**
  * A swiped credit card
  *
  * @ORM\Entity
  */
-class SwipedCardAccount extends CardAccount
+class SwipedCardAccount extends CardAccount implements SwipedCardAccountInterface
 {
     /**
      * @var string

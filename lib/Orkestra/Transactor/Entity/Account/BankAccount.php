@@ -15,13 +15,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Account\BankAccountInterface;
 
 /**
  * Represents a Bank Account
  *
  * @ORM\Entity
  */
-class BankAccount extends AbstractAccount
+class BankAccount extends AbstractAccount implements BankAccountInterface
 {
     /**
      * @var string
