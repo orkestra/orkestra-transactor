@@ -14,7 +14,7 @@ namespace Orkestra\Transactor\Tests\Transactor\PaymentsXpress;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
-
+use Orkestra\Transactor\Model\TransactionInterface;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
@@ -120,7 +120,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithNoUpdateSetsParentStatus(Transaction $parent)
+    public function testQueryWithNoUpdateSetsParentStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
@@ -136,7 +136,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithScheduledStatus(Transaction $parent)
+    public function testQueryWithScheduledStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('12345,,,Cancelled,02/20/2003 02:59:00,Cancelled,,,,
 56789,,,Created,02/20/2003 03:00:00,Scheduled,,,,
@@ -153,7 +153,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithCancelledStatus(Transaction $parent)
+    public function testQueryWithCancelledStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Cancelled,02/20/2003 03:00:00,Cancelled,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -168,7 +168,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithProcessedStatus(Transaction $parent)
+    public function testQueryWithProcessedStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Submitted,02/20/2003 03:00:00,In-Process,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -183,7 +183,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithApprovedStatus(Transaction $parent)
+    public function testQueryWithApprovedStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Cleared,02/20/2003 03:00:00,Cleared,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -198,7 +198,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithDeclinedStatus(Transaction $parent)
+    public function testQueryWithDeclinedStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Rejected,02/20/2003 03:00:00,Failed Verification,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -213,7 +213,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithChargedBackStatus(Transaction $parent)
+    public function testQueryWithChargedBackStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Charged Back,02/20/2003 03:00:00,Charged Back,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -228,7 +228,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     /**
      * @depends testSaleSuccess
      */
-    public function testQueryWithHoldBackStatus(Transaction $parent)
+    public function testQueryWithHoldBackStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('56789,,,Held by Merchant,02/20/2003 03:00:00,Merchant Hold,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
@@ -257,7 +257,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     }
 
     /**
-     * @return \Orkestra\Transactor\Entity\Transaction
+     * @return TransactionInterface
      */
     protected function getTransaction()
     {

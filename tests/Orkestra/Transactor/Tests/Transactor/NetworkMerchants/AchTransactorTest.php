@@ -16,15 +16,11 @@ use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
-use Orkestra\Transactor\Entity\Account\CardAccount;
-use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
+use Orkestra\Transactor\Model\TransactionInterface;
+use Orkestra\Transactor\Transactor\NetworkMerchants\AchTransactor;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
-use Orkestra\Transactor\Transactor\NetworkMerchants\AchTransactor;
-use Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor;
-use Orkestra\Transactor\Type\Month;
-use Orkestra\Transactor\Type\Year;
 
 /**
  * Unit tests for the Network Merchants Ach Transactor
@@ -131,7 +127,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Orkestra\Transactor\Entity\Transaction
+     * @return TransactionInterface
      */
     protected function getTransaction()
     {

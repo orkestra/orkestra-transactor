@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
-use Orkestra\Transactor\TransactorInterface;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Represents the result of a transaction
@@ -75,9 +75,9 @@ class Result extends AbstractEntity
     protected $transactor;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Transaction
+     * @var TransactionInterface
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="result", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Model\TransactionInterface", inversedBy="result", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
      * })
@@ -87,9 +87,9 @@ class Result extends AbstractEntity
     /**
      * Constructor
      *
-     * @param \Orkestra\Transactor\Entity\Transaction
+     * @param TransactionInterface $transaction
      */
-    public function __construct(Transaction $transaction)
+    public function __construct(TransactionInterface $transaction)
     {
         $this->transaction = $transaction;
         $this->dateTransacted = new NullDateTime();
@@ -119,9 +119,9 @@ class Result extends AbstractEntity
     /**
      * Sets the associated Transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param TransactionInterface $transaction
      */
-    public function setTransaction(Transaction $transaction)
+    public function setTransaction(TransactionInterface $transaction)
     {
         $this->transaction = $transaction;
     }
@@ -129,7 +129,7 @@ class Result extends AbstractEntity
     /**
      * Gets the associated Transaction
      *
-     * @return \Orkestra\Transactor\Entity\Transaction
+     * @return TransactionInterface
      */
     public function getTransaction()
     {
@@ -233,7 +233,7 @@ class Result extends AbstractEntity
     /**
      * Gets the transactor
      *
-     * @param string $transactor
+     * @return string
      */
     public function getTransactor()
     {

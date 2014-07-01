@@ -15,6 +15,7 @@ use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * ACH transactor for the Authorize.net payment processing gateway
@@ -39,11 +40,11 @@ class AchTransactor extends CardTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param \Orkestra\Transactor\Model\TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function validateTransaction(Transaction $transaction)
+    protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::REFUND))

@@ -12,10 +12,10 @@
 namespace Orkestra\Transactor\Tests;
 
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Tests the functionality provided by the AbstractTransactor
@@ -123,7 +123,7 @@ class TestTransactor extends AbstractTransactor
         Transaction\TransactionType::SALE
     );
 
-    protected function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
         throw new \RuntimeException('Critical error');
     }

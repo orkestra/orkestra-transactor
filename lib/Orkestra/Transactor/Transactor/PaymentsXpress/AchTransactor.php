@@ -21,6 +21,7 @@ use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * ACH transactor for the PaymentsXpress payment processing gateway
@@ -66,12 +67,12 @@ class AchTransactor extends AbstractTransactor
     /**
      * Transacts the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
         $this->validateTransaction($transaction);
         $params = $this->buildParams($transaction, $options);
@@ -125,11 +126,11 @@ class AchTransactor extends AbstractTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function validateTransaction(Transaction $transaction)
+    protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::CAPTURE,
@@ -198,13 +199,13 @@ class AchTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @throws \RuntimeException
      * @return array
      */
-    protected function buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(TransactionInterface $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
         $account = $transaction->getAccount();
@@ -259,11 +260,11 @@ class AchTransactor extends AbstractTransactor
     }
 
     /**
-     * @param Transaction $transaction
+     * @param TransactionInterface $transaction
      *
      * @return string
      */
-    protected function getCommand(Transaction $transaction)
+    protected function getCommand(TransactionInterface $transaction)
     {
         switch ($transaction->getType()->getValue()) {
             case Transaction\TransactionType::SALE:
@@ -292,10 +293,10 @@ class AchTransactor extends AbstractTransactor
     /**
      * Handles a query response
      *
-     * @param Transaction $transaction
-     * @param object      $data
+     * @param TransactionInterface $transaction
+     * @param object               $data
      */
-    protected function handleQueryResponse(Transaction $transaction, $data)
+    protected function handleQueryResponse(TransactionInterface $transaction, $data)
     {
         $result = $transaction->getResult();
         $parentResult = $transaction->getParent()->getResult();

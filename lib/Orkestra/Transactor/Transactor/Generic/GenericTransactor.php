@@ -16,6 +16,7 @@ use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Handles in person cash or check transactions
@@ -42,12 +43,12 @@ class GenericTransactor extends AbstractTransactor
     /**
      * Transacts the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
         $this->_validateTransaction($transaction);
 
@@ -62,11 +63,11 @@ class GenericTransactor extends AbstractTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function _validateTransaction(Transaction $transaction)
+    protected function _validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::CAPTURE,

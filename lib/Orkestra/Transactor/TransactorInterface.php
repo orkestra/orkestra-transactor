@@ -13,6 +13,7 @@ namespace Orkestra\Transactor;
 
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Defines the contract any Transactor must follow
@@ -23,11 +24,13 @@ interface TransactorInterface
      * Transacts a transaction and returns the result
      *
      * @abstract
-     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param  array                                   $options
+     *
+     * @param  TransactionInterface $transaction
+     * @param  array                $options
+     *
      * @return Entity\Result
      */
-    public function transact(Transaction $transaction, array $options = array());
+    public function transact(TransactionInterface $transaction, array $options = array());
 
     /**
      * Returns true if the Transactor supports the given transaction type

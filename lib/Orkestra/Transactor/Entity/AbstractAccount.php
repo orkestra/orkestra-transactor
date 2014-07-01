@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Base class for any Account entity
@@ -132,7 +133,7 @@ abstract class AbstractAccount extends AbstractEntity
     protected $externalAccountId = '';
 
     /**
-     * @var \Orkestra\Transactor\Entity\Transaction
+     * @var TransactionInterface
      *
      * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="account", cascade={"persist"})
      */
@@ -217,7 +218,7 @@ abstract class AbstractAccount extends AbstractEntity
      *
      * @param \Orkestra\Transactor\Entity\Transaction
      */
-    public function addTransaction(Transaction $transaction)
+    public function addTransaction(TransactionInterface $transaction)
     {
         if ($transaction->getAccount() !== $this) {
             $transaction->setAccount($this);

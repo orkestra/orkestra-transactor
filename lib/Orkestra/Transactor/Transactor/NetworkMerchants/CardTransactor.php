@@ -20,6 +20,7 @@ use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -65,12 +66,12 @@ class CardTransactor extends AbstractTransactor
     /**
      * Transacts the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
         $this->validateTransaction($transaction);
         $params = $this->buildParams($transaction, $options);
@@ -115,11 +116,11 @@ class CardTransactor extends AbstractTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function validateTransaction(Transaction $transaction)
+    protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CAPTURE, Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))) {
             throw ValidationException::parentTransactionRequired();
@@ -155,10 +156,11 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param  \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param  TransactionInterface $transaction
+     *
      * @return string
      */
-    protected function getNmiType(Transaction $transaction)
+    protected function getNmiType(TransactionInterface $transaction)
     {
         switch ($transaction->getType()->getValue()) {
             case Transaction\TransactionType::SALE:
@@ -177,12 +179,12 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return array
      */
-    protected function buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(TransactionInterface $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
 

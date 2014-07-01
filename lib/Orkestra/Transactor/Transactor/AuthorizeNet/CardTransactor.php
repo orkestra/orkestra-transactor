@@ -20,6 +20,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
+use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -74,12 +75,12 @@ class CardTransactor extends AbstractTransactor
     /**
      * Transacts the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param \Orkestra\Transactor\Model\TransactionInterface $transaction
+     * @param array                                           $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    protected function doTransact(Transaction $transaction, array $options = array())
+    protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
         $this->validateTransaction($transaction);
         $params = $this->buildParams($transaction, $options);
@@ -154,11 +155,11 @@ class CardTransactor extends AbstractTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param \Orkestra\Transactor\Model\TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function validateTransaction(Transaction $transaction)
+    protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CAPTURE, Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))) {
             throw ValidationException::parentTransactionRequired();
@@ -194,12 +195,12 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param \Orkestra\Transactor\Model\TransactionInterface $transaction
+     * @param array                                           $options
      *
      * @return array
      */
-    protected function buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(TransactionInterface $transaction, array $options = array())
     {
         return $this->serializer->serialize($transaction, 'xml', $options);
     }

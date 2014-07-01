@@ -11,16 +11,13 @@
 
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Exception\BadResponseException;
-use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
-use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * ACH transactor for the NetworkMerchants payment processing gateway
@@ -45,11 +42,11 @@ class AchTransactor extends CardTransactor
     /**
      * Validates the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
+     * @param TransactionInterface $transaction
      *
      * @throws \Orkestra\Transactor\Exception\ValidationException
      */
-    protected function validateTransaction(Transaction $transaction)
+    protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::REFUND))
@@ -81,12 +78,12 @@ class AchTransactor extends CardTransactor
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return array
      */
-    protected function buildParams(Transaction $transaction, array $options = array())
+    protected function buildParams(TransactionInterface $transaction, array $options = array())
     {
         $credentials = $transaction->getCredentials();
 

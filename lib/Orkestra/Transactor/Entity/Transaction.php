@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
  * Transaction Entity
@@ -23,7 +24,7 @@ use Orkestra\Transactor\Model\CredentialsInterface;
  * @ORM\Table(name="orkestra_transactions")
  * @ORM\Entity
  */
-class Transaction extends AbstractEntity
+class Transaction extends AbstractEntity implements TransactionInterface
 {
     /**
      * @var float $amount
@@ -54,7 +55,7 @@ class Transaction extends AbstractEntity
     protected $status;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Transaction $parent
+     * @var TransactionInterface $parent
      *
      * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"}, fetch="EAGER")
      * @ORM\JoinColumns({
@@ -100,9 +101,9 @@ class Transaction extends AbstractEntity
     /**
      * Constructor
      *
-     * @param \Orkestra\Transactor\Entity\Transaction|null $parent
+     * @param TransactionInterface|null $parent
      */
-    public function __construct(Transaction $parent = null)
+    public function __construct(TransactionInterface $parent = null)
     {
         if ($parent) {
             $this->parent = $parent;
@@ -240,7 +241,7 @@ class Transaction extends AbstractEntity
     /**
      * Gets the parent transaction
      *
-     * @return \Orkestra\Transactor\Entity\Transaction
+     * @return TransactionInterface
      */
     public function getParent()
     {
@@ -253,7 +254,7 @@ class Transaction extends AbstractEntity
      * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
      * @param float                                                   $amount
      *
-     * @return \Orkestra\Transactor\Entity\Transaction
+     * @return TransactionInterface
      */
     public function createChild(Transaction\TransactionType $type, $amount = null)
     {
@@ -344,7 +345,7 @@ class Transaction extends AbstractEntity
             return $this->parent->isRefunded();
         }
 
-        return $this->children->exists(function($key, Transaction $child) {
+        return $this->children->exists(function($key, TransactionInterface $child) {
             return $child->getType() == Transaction\TransactionType::REFUND && $child->getStatus() == Result\ResultStatus::APPROVED;
         });
     }
@@ -360,7 +361,7 @@ class Transaction extends AbstractEntity
             return $this->parent->isVoided();
         }
 
-        return $this->children->exists(function($key, Transaction $child) {
+        return $this->children->exists(function($key, TransactionInterface $child) {
             return $child->getType() == Transaction\TransactionType::VOID && $child->getStatus() == Result\ResultStatus::APPROVED;
         });
     }

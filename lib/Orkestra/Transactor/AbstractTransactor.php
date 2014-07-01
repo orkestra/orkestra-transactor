@@ -16,6 +16,7 @@ use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -42,13 +43,13 @@ abstract class AbstractTransactor implements TransactorInterface
      * Transacts the given transaction
      *
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @throws \Orkestra\Transactor\Exception\TransactorException
      * @return \Orkestra\Transactor\Entity\Result
      */
-    public function transact(Transaction $transaction, array $options = array())
+    public function transact(TransactionInterface $transaction, array $options = array())
     {
         if ($transaction->isTransacted()) {
             throw TransactorException::transactionAlreadyProcessed();
@@ -78,12 +79,12 @@ abstract class AbstractTransactor implements TransactorInterface
     /**
      * Transacts the given transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction $transaction
-     * @param array                                   $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return \Orkestra\Transactor\Entity\Result
      */
-    abstract protected function doTransact(Transaction $transaction, array $options = array());
+    abstract protected function doTransact(TransactionInterface $transaction, array $options = array());
 
     /**
      * Configures the transactors OptionsResolver
