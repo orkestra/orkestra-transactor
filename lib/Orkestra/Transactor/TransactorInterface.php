@@ -13,6 +13,7 @@ namespace Orkestra\Transactor;
 
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -28,7 +29,7 @@ interface TransactorInterface
      * @param  TransactionInterface $transaction
      * @param  array                $options
      *
-     * @return Entity\Result
+     * @return ResultInterface
      */
     public function transact(TransactionInterface $transaction, array $options = array());
 

@@ -20,6 +20,7 @@ use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -69,7 +70,7 @@ class CardTransactor extends AbstractTransactor
      * @param TransactionInterface $transaction
      * @param array                $options
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
@@ -250,11 +251,11 @@ class CardTransactor extends AbstractTransactor
     /**
      * Filter the given result
      *
-     * @param Result $result
+     * @param ResultInterface $result
      *
-     * @return Result
+     * @return ResultInterface
      */
-    protected function filterResult(Result $result)
+    protected function filterResult(ResultInterface $result)
     {
         $request = $result->getData('request') ?: array();
         foreach (array('ccnumber', 'cvv', 'track_1', 'track_2', 'track_3') as $key) {

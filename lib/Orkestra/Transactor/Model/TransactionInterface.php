@@ -128,7 +128,7 @@ interface TransactionInterface
     /**
      * Gets the associated result
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     public function getResult();
 

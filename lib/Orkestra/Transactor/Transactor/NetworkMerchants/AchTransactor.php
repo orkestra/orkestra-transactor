@@ -13,11 +13,11 @@ namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
-use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * ACH transactor for the NetworkMerchants payment processing gateway
@@ -148,11 +148,11 @@ class AchTransactor extends CardTransactor
     /**
      * Filter the given result
      *
-     * @param Result $result
+     * @param ResultInterface $result
      *
-     * @return Result
+     * @return ResultInterface
      */
-    protected function filterResult(Result $result)
+    protected function filterResult(ResultInterface $result)
     {
         $request = $result->getData('request') ?: array();
         foreach (array('checkaccount', 'checkaba') as $key) {

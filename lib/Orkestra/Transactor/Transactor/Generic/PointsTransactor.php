@@ -17,6 +17,7 @@ use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -46,7 +47,7 @@ class PointsTransactor extends AbstractTransactor
      * @param TransactionInterface $transaction
      * @param array                $options
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     protected function doTransact(TransactionInterface $transaction, array $options = array())
     {

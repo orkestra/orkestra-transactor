@@ -21,6 +21,7 @@ use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -70,7 +71,7 @@ class AchTransactor extends AbstractTransactor
      * @param TransactionInterface $transaction
      * @param array                $options
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
@@ -418,11 +419,11 @@ class AchTransactor extends AbstractTransactor
     /**
      * Filter the given result
      *
-     * @param Result $result
+     * @param ResultInterface $result
      *
-     * @return Result
+     * @return ResultInterface
      */
-    protected function filterResult(Result $result)
+    protected function filterResult(ResultInterface $result)
     {
         $request = $result->getData('request') ?: array();
         foreach (array('AccountNumber', 'RoutingNumber') as $key) {

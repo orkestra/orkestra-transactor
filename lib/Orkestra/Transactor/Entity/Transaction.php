@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -57,7 +58,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * @var TransactionInterface $parent
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Transaction", inversedBy="children", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Model\TransactionInterface", inversedBy="children", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      * })
@@ -67,7 +68,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * @var \Doctrine\Common\Collections\Collection $children
      *
-     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="parent", cascade={"persist"}, fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Model\TransactionInterface", mappedBy="parent", cascade={"persist"})
      */
     protected $children;
 
@@ -92,9 +93,9 @@ class Transaction extends AbstractEntity implements TransactionInterface
     protected $credentials;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Result $result
+     * @var ResultInterface $result
      *
-     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Entity\Result", mappedBy="transaction", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Orkestra\Transactor\Model\ResultInterface", mappedBy="transaction", cascade={"persist"})
      */
     protected $result;
 
@@ -303,7 +304,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the associated result
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     public function getResult()
     {

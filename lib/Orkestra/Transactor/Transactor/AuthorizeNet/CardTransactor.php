@@ -20,6 +20,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -78,7 +79,7 @@ class CardTransactor extends AbstractTransactor
      * @param \Orkestra\Transactor\Model\TransactionInterface $transaction
      * @param array                                           $options
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return \Orkestra\Transactor\Model\ResultInterface
      */
     protected function doTransact(TransactionInterface $transaction, array $options = array())
     {
@@ -212,11 +213,11 @@ class CardTransactor extends AbstractTransactor
     /**
      * Filter the given result
      *
-     * @param Result $result
+     * @param ResultInterface $result
      *
-     * @return Result
+     * @return ResultInterface
      */
-    protected function filterResult(Result $result)
+    protected function filterResult(ResultInterface $result)
     {
         $request = $result->getData('request') ?: array();
         if (!is_array($request)) {

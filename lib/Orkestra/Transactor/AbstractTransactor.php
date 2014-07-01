@@ -16,6 +16,7 @@ use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -47,7 +48,7 @@ abstract class AbstractTransactor implements TransactorInterface
      * @param array                $options
      *
      * @throws \Orkestra\Transactor\Exception\TransactorException
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     public function transact(TransactionInterface $transaction, array $options = array())
     {
@@ -82,7 +83,7 @@ abstract class AbstractTransactor implements TransactorInterface
      * @param TransactionInterface $transaction
      * @param array                $options
      *
-     * @return \Orkestra\Transactor\Entity\Result
+     * @return ResultInterface
      */
     abstract protected function doTransact(TransactionInterface $transaction, array $options = array());
 
@@ -105,12 +106,12 @@ abstract class AbstractTransactor implements TransactorInterface
 
     /**
      * Filter the given result
-     * 
-     * @param Result $result
      *
-     * @return Result
+     * @param ResultInterface $result
+     *
+     * @return ResultInterface
      */
-    protected function filterResult(Result $result)
+    protected function filterResult(ResultInterface $result)
     {
         return $result;
     }

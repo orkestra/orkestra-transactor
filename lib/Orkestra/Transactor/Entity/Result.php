@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
+use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -23,7 +24,7 @@ use Orkestra\Transactor\Model\TransactionInterface;
  * @ORM\Table(name="orkestra_results")
  * @ORM\Entity
  */
-class Result extends AbstractEntity
+class Result extends AbstractEntity implements ResultInterface
 {
     /**
      * @var string $externalId
