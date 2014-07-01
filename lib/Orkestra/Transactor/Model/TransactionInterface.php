@@ -114,14 +114,14 @@ interface TransactionInterface
     /**
      * Sets the associated account
      *
-     * @param \Orkestra\Transactor\Entity\AbstractAccount $account
+     * @param AccountInterface $account
      */
-    public function setAccount(AbstractAccount $account);
+    public function setAccount(AccountInterface $account);
 
     /**
      * Gets the associated account
      *
-     * @return \Orkestra\Transactor\Entity\AbstractAccount
+     * @return AccountInterface
      */
     public function getAccount();
 

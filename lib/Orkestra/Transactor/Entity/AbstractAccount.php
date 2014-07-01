@@ -14,6 +14,8 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\AccountInterface;
+use Orkestra\Transactor\Model\CredentialsInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -32,7 +34,7 @@ use Orkestra\Transactor\Model\TransactionInterface;
  *   "EncryptedSwipedCardAccount" = "Orkestra\Transactor\Entity\Account\EncryptedSwipedCardAccount"
  * })
  */
-abstract class AbstractAccount extends AbstractEntity
+abstract class AbstractAccount extends AbstractEntity implements AccountInterface
 {
     /**
      * @var string
@@ -216,7 +218,7 @@ abstract class AbstractAccount extends AbstractEntity
     /**
      * Add Transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction
+     * @param TransactionInterface $transaction
      */
     public function addTransaction(TransactionInterface $transaction)
     {
@@ -446,15 +448,15 @@ abstract class AbstractAccount extends AbstractEntity
     }
 
     /**
-     * @param \Orkestra\Transactor\Entity\Credentials $credentials
+     * @param CredentialsInterface $credentials
      */
-    public function setCredentials(Credentials $credentials = null)
+    public function setCredentials(CredentialsInterface $credentials = null)
     {
         $this->credentials = $credentials;
     }
 
     /**
-     * @return \Orkestra\Transactor\Entity\Credentials
+     * @return CredentialsInterface
      */
     public function getCredentials()
     {

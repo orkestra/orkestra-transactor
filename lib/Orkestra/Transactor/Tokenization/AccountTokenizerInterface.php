@@ -4,6 +4,7 @@ namespace Orkestra\Transactor\Tokenization;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Entity\Credentials;
+use Orkestra\Transactor\Model\AccountInterface;
 
 /**
  * Defines the contract any account tokenizer must follow.
@@ -15,11 +16,11 @@ interface AccountTokenizerInterface
 {
     /**
      * Tokenizes an account using the given Credentials
-     * 
-     * @param AbstractAccount $account
-     * @param Credentials     $credentials
      *
-     * @return AbstractAccount
+     * @param AccountInterface $account
+     * @param Credentials      $credentials
+     *
+     * @return AccountInterface
      */
-    public function tokenizeAccount(AbstractAccount $account, Credentials $credentials);
+    public function tokenizeAccount(AccountInterface $account, Credentials $credentials);
 }

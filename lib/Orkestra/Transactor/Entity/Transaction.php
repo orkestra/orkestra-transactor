@@ -13,6 +13,7 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\AccountInterface;
 use Orkestra\Transactor\Model\CredentialsInterface;
 use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
@@ -73,7 +74,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     protected $children;
 
     /**
-     * @var \Orkestra\Transactor\Entity\AbstractAccount $account
+     * @var AccountInterface $account
      *
      * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumns({
@@ -280,9 +281,9 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Sets the associated account
      *
-     * @param \Orkestra\Transactor\Entity\AbstractAccount $account
+     * @param AccountInterface $account
      */
-    public function setAccount(AbstractAccount $account)
+    public function setAccount(AccountInterface $account)
     {
         if ($this->isTransacted() || $this->parent) {
             return;
@@ -294,7 +295,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the associated account
      *
-     * @return \Orkestra\Transactor\Entity\AbstractAccount
+     * @return AccountInterface
      */
     public function getAccount()
     {

@@ -12,6 +12,7 @@
 namespace Orkestra\Transactor\Exception;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
+use Orkestra\Transactor\Model\AccountInterface;
 
 /**
  * An exception that occurs when a transaction is being validated
@@ -77,10 +78,12 @@ class ValidationException extends \Exception
      * Occurs where an invalid account type is used
      *
      * @static
-     * @param  \Orkestra\Transactor\Entity\AbstractAccount $account
+     *
+     * @param  AccountInterface $account
+     *
      * @return ValidationException
      */
-    public static function invalidAccountType(AbstractAccount $account = null)
+    public static function invalidAccountType(AccountInterface $account = null)
     {
         return new self(sprintf('invalid account type: %s', $account ? $account->getType() : 'null'));
     }
