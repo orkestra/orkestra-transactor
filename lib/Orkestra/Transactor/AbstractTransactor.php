@@ -15,6 +15,7 @@ use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
+use Orkestra\Transactor\Model\CredentialsInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -163,7 +164,7 @@ abstract class AbstractTransactor implements TransactorInterface
     /**
      * Creates a new, empty Credentials
      *
-     * @return Entity\Credentials
+     * @return CredentialsInterface
      */
     public function createCredentials()
     {

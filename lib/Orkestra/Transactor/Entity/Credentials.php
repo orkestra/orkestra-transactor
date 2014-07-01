@@ -13,6 +13,7 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\CredentialsInterface;
 use Orkestra\Transactor\TransactorInterface;
 
 /**
@@ -21,7 +22,7 @@ use Orkestra\Transactor\TransactorInterface;
  * @ORM\Table(name="orkestra_credentials")
  * @ORM\Entity
  */
-class Credentials extends AbstractEntity
+class Credentials extends AbstractEntity implements CredentialsInterface
 {
     /**
      * @var array

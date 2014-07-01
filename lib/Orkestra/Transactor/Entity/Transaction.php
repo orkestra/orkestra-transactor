@@ -13,6 +13,7 @@ namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\CredentialsInterface;
 
 /**
  * Transaction Entity
@@ -80,9 +81,9 @@ class Transaction extends AbstractEntity
     protected $account;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Credentials $credentials
+     * @var CredentialsInterface $credentials
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Credentials")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Model\CredentialsInterface")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="credentials_id", referencedColumnName="id")
      * })
@@ -311,9 +312,9 @@ class Transaction extends AbstractEntity
     /**
      * Sets the associated credentials
      *
-     * @param \Orkestra\Transactor\Entity\Credentials $credentials
+     * @param CredentialsInterface $credentials
      */
-    public function setCredentials(Credentials $credentials)
+    public function setCredentials(CredentialsInterface $credentials)
     {
         if ($this->isTransacted() || $this->parent) {
             return;
@@ -325,7 +326,7 @@ class Transaction extends AbstractEntity
     /**
      * Gets the associated credentials
      *
-     * @return \Orkestra\Transactor\Entity\Credentials
+     * @return CredentialsInterface
      */
     public function getCredentials()
     {

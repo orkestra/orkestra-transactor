@@ -12,6 +12,7 @@
 namespace Orkestra\Transactor;
 
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\CredentialsInterface;
 
 /**
  * Defines the contract any Transactor must follow
@@ -67,7 +68,7 @@ interface TransactorInterface
      *
      * This method should set the appropriate fields to their initial value
      *
-     * @return \Orkestra\Transactor\Entity\Credentials
+     * @return CredentialsInterface
      */
     public function createCredentials();
 }
