@@ -8,13 +8,6 @@ namespace Orkestra\Transactor\Model;
 interface CredentialsInterface
 {
     /**
-     * Is Active
-     *
-     * @return boolean
-     */
-    public function isActive();
-
-    /**
      * Set Credential
      *
      * @param string $key The key of which credential to set

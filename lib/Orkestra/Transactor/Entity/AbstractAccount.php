@@ -14,6 +14,7 @@ namespace Orkestra\Transactor\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
+use Orkestra\Transactor\Model\Account\ExternalAccountInterface;
 use Orkestra\Transactor\Model\AccountInterface;
 use Orkestra\Transactor\Model\CredentialsInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
@@ -34,7 +35,7 @@ use Orkestra\Transactor\Model\TransactionInterface;
  *   "EncryptedSwipedCardAccount" = "Orkestra\Transactor\Entity\Account\EncryptedSwipedCardAccount"
  * })
  */
-abstract class AbstractAccount extends AbstractEntity implements AccountInterface
+abstract class AbstractAccount extends AbstractEntity implements AccountInterface, ExternalAccountInterface
 {
     /**
      * @var string

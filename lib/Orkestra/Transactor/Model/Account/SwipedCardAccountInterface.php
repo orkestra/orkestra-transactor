@@ -1,4 +1,5 @@
 <?php
+
 namespace Orkestra\Transactor\Model\Account;
 
 /**
@@ -17,16 +18,6 @@ interface SwipedCardAccountInterface extends CardAccountInterface
     public function getTrackOne();
 
     /**
-     * @param string $trackThree
-     */
-    public function setTrackThree($trackThree);
-
-    /**
-     * @return string
-     */
-    public function getTrackThree();
-
-    /**
      * @param string $trackTwo
      */
     public function setTrackTwo($trackTwo);
@@ -35,4 +26,14 @@ interface SwipedCardAccountInterface extends CardAccountInterface
      * @return string
      */
     public function getTrackTwo();
+
+    /**
+     * @param string $trackThree
+     */
+    public function setTrackThree($trackThree);
+
+    /**
+     * @return string
+     */
+    public function getTrackThree();
 }

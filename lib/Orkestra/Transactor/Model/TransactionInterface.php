@@ -14,13 +14,6 @@ use Orkestra\Transactor\Model\Transaction\TransactionType;
 interface TransactionInterface
 {
     /**
-     * Is Active
-     *
-     * @return boolean
-     */
-    public function isActive();
-
-    /**
      * Returns true if this transaction is a parent transaction
      *
      * @return boolean
@@ -28,16 +21,16 @@ interface TransactionInterface
     public function isParent();
 
     /**
-     * Sets the amount
+     * Sets the amount, in cents
      *
-     * @param float $amount
+     * @param int $amount
      */
     public function setAmount($amount);
 
     /**
-     * Gets the amount
+     * Gets the amount, in cents
      *
-     * @return float
+     * @return int
      */
     public function getAmount();
 
@@ -101,7 +94,7 @@ interface TransactionInterface
      * Creates a new child transaction
      *
      * @param TransactionType $type
-     * @param float           $amount
+     * @param int|null        $amount The child transaction amount, in cents
      *
      * @return TransactionInterface
      */

@@ -1,4 +1,5 @@
 <?php
+
 namespace Orkestra\Transactor\Model\Account;
 
 /**

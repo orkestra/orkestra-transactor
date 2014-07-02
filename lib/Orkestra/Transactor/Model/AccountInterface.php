@@ -178,26 +178,6 @@ interface AccountInterface
     public function getEmailAddress();
 
     /**
-     * @param string $externalAccountId
-     */
-    public function setExternalAccountId($externalAccountId);
-
-    /**
-     * @return string
-     */
-    public function getExternalAccountId();
-
-    /**
-     * @param string $externalPersonId
-     */
-    public function setExternalPersonId($externalPersonId);
-
-    /**
-     * @return string
-     */
-    public function getExternalPersonId();
-
-    /**
      * @param CredentialsInterface $credentials
      */
     public function setCredentials(CredentialsInterface $credentials = null);
@@ -211,11 +191,4 @@ interface AccountInterface
      * @return string
      */
     public function getLastFour();
-
-    /**
-     * Is Active
-     *
-     * @return boolean
-     */
-    public function isActive();
 }

@@ -9,13 +9,6 @@ use Orkestra\Transactor\Model\Result\ResultStatus;
 interface ResultInterface
 {
     /**
-     * Is Active
-     *
-     * @return boolean
-     */
-    public function isActive();
-
-    /**
      * Returns true if the transaction has been transacted
      *
      * @return bool

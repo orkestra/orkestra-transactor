@@ -32,9 +32,9 @@ use Orkestra\Transactor\Model\TransactionInterface;
 class Transaction extends AbstractEntity implements TransactionInterface
 {
     /**
-     * @var float $amount
+     * @var int $amount
      *
-     * @ORM\Column(name="amount", type="decimal", precision=12, scale=2)
+     * @ORM\Column(name="amount", type="integer")
      */
     protected $amount;
 
@@ -134,7 +134,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Sets the amount
      *
-     * @param float $amount
+     * @param int $amount
      */
     public function setAmount($amount)
     {
@@ -148,7 +148,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the amount
      *
-     * @return float
+     * @return int
      */
     public function getAmount()
     {
@@ -257,7 +257,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
      * Creates a new child transaction
      *
      * @param TransactionType $type
-     * @param float           $amount
+     * @param int|null        $amount
      *
      * @return TransactionInterface
      */
@@ -274,7 +274,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the transaction's children
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return TransactionInterface[]
      */
     public function getChildren()
     {
