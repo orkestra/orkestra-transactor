@@ -138,14 +138,14 @@ abstract class AbstractAccount extends AbstractEntity implements AccountInterfac
     /**
      * @var TransactionInterface
      *
-     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Entity\Transaction", mappedBy="account", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Orkestra\Transactor\Model\TransactionInterface", mappedBy="account", cascade={"persist"})
      */
     protected $transactions;
 
     /**
      * @var \Orkestra\Transactor\Entity\Credentials $credentials
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\Credentials")
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Model\CredentialsInterface")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="credentials_id", referencedColumnName="id", nullable=true)
      * })
@@ -183,7 +183,7 @@ abstract class AbstractAccount extends AbstractEntity implements AccountInterfac
     public function setAccountNumber($accountNumber)
     {
         $this->accountNumber = (string) $accountNumber;
-        $this->lastFour = substr((string) $accountNumber,-4);
+        $this->lastFour = substr($this->accountNumber, -4);
     }
 
     /**
@@ -233,7 +233,7 @@ abstract class AbstractAccount extends AbstractEntity implements AccountInterfac
     /**
      * Get Transactions
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return TransactionInterface[]
      */
     public function getTransactions()
     {

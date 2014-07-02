@@ -79,7 +79,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * @var AccountInterface $account
      *
-     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Entity\AbstractAccount", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Orkestra\Transactor\Model\AccountInterface", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account_id", referencedColumnName="id")
      * })

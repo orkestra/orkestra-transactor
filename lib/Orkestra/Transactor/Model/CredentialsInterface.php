@@ -12,7 +12,7 @@
 namespace Orkestra\Transactor\Model;
 
 /**
- * Represents credentials used to authenticate with a transactor
+ * Credentials used to authenticate with a transactor
  */
 interface CredentialsInterface
 {
