@@ -1,3 +1,14 @@
+# Upgrading to 2.0
+
+2.0 attempts to solve many architectural problems that 1.x faced.
+
+### BC breaks
+* Transaction amounts are now expected to be integers representing the amount in cents.
+    * A new component, the `CurrencyConverter` provides the correct, automatic conversion and formatting
+      according to the given currency.
+* The default entity implementations now require configuring a Doctrine `ResolveTargetEntityListener` to
+  set the appropriate implementation.
+
 # Upgrade from 1.1 to 1.2
 
 1.2 brought support for Symfony 2.3+ and 3.0+. Additionally, the Authorize.Net payment transactor was implemented and support for swiped card information decoding was improved.

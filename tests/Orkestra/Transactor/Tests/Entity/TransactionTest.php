@@ -21,16 +21,16 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
     public function testCreateChild()
     {
         $parent = new Transaction();
-        $parent->setAmount(10.00);
+        $parent->setAmount(1000);
         $parent->setNetwork(new NetworkType(NetworkType::CARD));
         $parent->setType(new TransactionType(TransactionType::AUTH));
 
         $parentResult = $parent->getResult();
         $parentResult->setStatus(new ResultStatus(ResultStatus::CANCELLED));
 
-        $child = $parent->createChild(new TransactionType(TransactionType::CAPTURE), 12.50);
+        $child = $parent->createChild(new TransactionType(TransactionType::CAPTURE), 1250);
 
-        $this->assertEquals(12.50, $child->getAmount());
+        $this->assertEquals(1250, $child->getAmount());
         $this->assertEquals(NetworkType::CARD, $child->getNetwork());
         $this->assertEquals(TransactionType::CAPTURE, $child->getType());
         $this->assertEquals(ResultStatus::UNPROCESSED, $child->getResult()->getStatus());
