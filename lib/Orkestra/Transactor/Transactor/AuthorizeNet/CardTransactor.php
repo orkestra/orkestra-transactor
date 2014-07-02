@@ -11,16 +11,16 @@
 
 namespace Orkestra\Transactor\Transactor\AuthorizeNet;
 
-use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
-use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Transaction;
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Account\CardAccount;
-use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
+use Orkestra\Transactor\AbstractTransactor;
+use Orkestra\Transactor\Entity\Account\CardAccount;
+use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
+use Orkestra\Transactor\Entity\Credentials;
+use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\Result;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;

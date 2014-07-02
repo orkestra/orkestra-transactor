@@ -15,7 +15,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\Model\AccountInterface;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -36,21 +39,21 @@ class Transaction extends AbstractEntity implements TransactionInterface
     protected $amount;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @var TransactionType $type
      *
      * @ORM\Column(name="type", type="enum.orkestra.transaction_type")
      */
     protected $type;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @var NetworkType $network
      *
      * @ORM\Column(name="network", type="enum.orkestra.network_type")
      */
     protected $network;
 
     /**
-     * @var \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @var ResultStatus
      *
      * @ORM\Column(name="status", type="enum.orkestra.result_status")
      */
@@ -175,9 +178,9 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Sets the transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @param TransactionType $type
      */
-    public function setType(Transaction\TransactionType $type)
+    public function setType(TransactionType $type)
     {
         if ($this->isTransacted()) {
             return;
@@ -189,7 +192,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the transaction type
      *
-     * @return \Orkestra\Transactor\Entity\Transaction\TransactionType
+     * @return TransactionType
      */
     public function getType()
     {
@@ -199,9 +202,9 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Sets the network
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @param NetworkType $network
      */
-    public function setNetwork(Transaction\NetworkType $network)
+    public function setNetwork(NetworkType $network)
     {
         if ($this->isTransacted() || $this->parent) {
             return;
@@ -213,7 +216,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the network
      *
-     * @return \Orkestra\Transactor\Entity\Transaction\NetworkType
+     * @return NetworkType
      */
     public function getNetwork()
     {
@@ -223,9 +226,9 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Sets the status
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
+     * @param ResultStatus $status
      */
-    public function setStatus(Result\ResultStatus $status)
+    public function setStatus(ResultStatus $status)
     {
         $this->status = $status;
     }
@@ -233,7 +236,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Gets the status
      *
-     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @return ResultStatus
      */
     public function getStatus()
     {
@@ -253,12 +256,12 @@ class Transaction extends AbstractEntity implements TransactionInterface
     /**
      * Creates a new child transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
-     * @param float                                                   $amount
+     * @param TransactionType $type
+     * @param float           $amount
      *
      * @return TransactionInterface
      */
-    public function createChild(Transaction\TransactionType $type, $amount = null)
+    public function createChild(TransactionType $type, $amount = null)
     {
         $child = new Transaction($this);
         $child->setType($type);
@@ -348,7 +351,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
         }
 
         return $this->children->exists(function($key, TransactionInterface $child) {
-            return $child->getType() == Transaction\TransactionType::REFUND && $child->getStatus() == Result\ResultStatus::APPROVED;
+            return $child->getType() == TransactionType::REFUND && $child->getStatus() == ResultStatus::APPROVED;
         });
     }
 
@@ -364,7 +367,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
         }
 
         return $this->children->exists(function($key, TransactionInterface $child) {
-            return $child->getType() == Transaction\TransactionType::VOID && $child->getStatus() == Result\ResultStatus::APPROVED;
+            return $child->getType() == TransactionType::VOID && $child->getStatus() == ResultStatus::APPROVED;
         });
     }
 }

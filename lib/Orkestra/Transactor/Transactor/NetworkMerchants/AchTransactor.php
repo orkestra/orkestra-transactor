@@ -11,11 +11,12 @@
 
 namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 
-use Orkestra\Transactor\Entity\Account\BankAccount;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Account\BankAccountInterface;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -28,15 +29,15 @@ class AchTransactor extends CardTransactor
      * @var array
      */
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::ACH,
+        NetworkType::ACH,
     );
 
     /**
      * @var array
      */
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE,
-        Transaction\TransactionType::REFUND
+        TransactionType::SALE,
+        TransactionType::REFUND
     );
 
     /**
@@ -49,7 +50,7 @@ class AchTransactor extends CardTransactor
     protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::REFUND))
+            TransactionType::REFUND))
         ) {
             throw ValidationException::parentTransactionRequired();
         }
@@ -64,7 +65,7 @@ class AchTransactor extends CardTransactor
 
         $account = $transaction->getAccount();
 
-        if (!$account || !$account instanceof BankAccount) {
+        if (!$account || !$account instanceof BankAccountInterface) {
             throw ValidationException::missingAccountInformation();
         }
 
@@ -94,7 +95,7 @@ class AchTransactor extends CardTransactor
         );
 
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::REFUND))
+            TransactionType::REFUND))
         ) {
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),

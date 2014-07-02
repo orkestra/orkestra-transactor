@@ -13,10 +13,11 @@ namespace Orkestra\Transactor\Transactor\Generic;
 
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -28,17 +29,17 @@ class GenericTransactor extends AbstractTransactor
      * @var array
      */
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::CASH,
-        Transaction\NetworkType::CHECK
+        NetworkType::CASH,
+        NetworkType::CHECK
     );
 
     /**
      * @var array
      */
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE,
-        Transaction\TransactionType::CREDIT,
-        Transaction\TransactionType::REFUND,
+        TransactionType::SALE,
+        TransactionType::CREDIT,
+        TransactionType::REFUND,
     );
 
     /**
@@ -56,7 +57,7 @@ class GenericTransactor extends AbstractTransactor
         $result = $transaction->getResult();
         $result->setTransactor($this);
 
-        $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
+        $result->setStatus(new ResultStatus(ResultStatus::APPROVED));
 
         return $result;
     }
@@ -71,8 +72,8 @@ class GenericTransactor extends AbstractTransactor
     protected function _validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CAPTURE,
-            Transaction\TransactionType::REFUND
+            TransactionType::CAPTURE,
+            TransactionType::REFUND
         ))) {
             throw ValidationException::parentTransactionRequired();
         }

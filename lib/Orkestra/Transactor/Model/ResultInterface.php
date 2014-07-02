@@ -1,7 +1,7 @@
 <?php
 namespace Orkestra\Transactor\Model;
 
-use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 
 /**
  * A transaction result
@@ -84,14 +84,14 @@ interface ResultInterface
     /**
      * Sets the result type
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
+     * @param ResultStatus $status
      */
-    public function setStatus(Result\ResultStatus $status);
+    public function setStatus(ResultStatus $status);
 
     /**
      * Gets the result type
      *
-     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @return ResultStatus
      */
     public function getStatus();
 

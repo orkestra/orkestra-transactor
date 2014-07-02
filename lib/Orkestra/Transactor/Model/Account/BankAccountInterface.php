@@ -1,7 +1,7 @@
 <?php
 namespace Orkestra\Transactor\Model\Account;
 
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
 
 /**
  * A bank account
@@ -39,14 +39,14 @@ interface BankAccountInterface
     /**
      * Gets the account type
      *
-     * @return \Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     * @return AccountType $accountType
      */
     public function getAccountType();
 
     /**
      * Sets the account type
      *
-     * @param \Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     * @param AccountType $accountType
      */
     public function setAccountType(AccountType $accountType);
 }

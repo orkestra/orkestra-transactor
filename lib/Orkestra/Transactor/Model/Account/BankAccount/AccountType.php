@@ -9,7 +9,7 @@
  * that was distributed with this source code.
  */
 
-namespace Orkestra\Transactor\Entity\Account\BankAccount;
+namespace Orkestra\Transactor\Model\Account\BankAccount;
 
 use Orkestra\Common\Type\Enum;
 

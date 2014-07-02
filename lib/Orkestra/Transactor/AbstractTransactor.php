@@ -11,12 +11,12 @@
 
 namespace Orkestra\Transactor;
 
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Result\ResultStatus;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 use Orkestra\Transactor\Model\CredentialsInterface;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -132,11 +132,11 @@ abstract class AbstractTransactor implements TransactorInterface
     /**
      * Returns true if this Transactor supports a given Transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType|null $type
+     * @param TransactionType|null $type
      *
      * @return boolean True if supported
      */
-    public function supportsType(Transaction\TransactionType $type = null)
+    public function supportsType(TransactionType $type = null)
     {
         return in_array((null === $type ? null : $type->getValue()), static::$supportedTypes);
     }
@@ -144,11 +144,11 @@ abstract class AbstractTransactor implements TransactorInterface
     /**
      * Returns true if this Transactor supports a given Network type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType|null $network
+     * @param NetworkType|null $network
      *
      * @return boolean True if supported
      */
-    public function supportsNetwork(Transaction\NetworkType $network = null)
+    public function supportsNetwork(NetworkType $network = null)
     {
         return in_array((null === $network ? null : $network->getValue()), static::$supportedNetworks);
     }

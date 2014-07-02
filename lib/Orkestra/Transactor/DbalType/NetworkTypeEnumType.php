@@ -28,5 +28,5 @@ class NetworkTypeEnumType extends AbstractEnumType
     /**
      * @var string The fully qualified class name of the Enum that this class wraps
      */
-    protected $class = 'Orkestra\Transactor\Entity\Transaction\NetworkType';
+    protected $class = 'Orkestra\Transactor\Model\Transaction\NetworkType';
 }

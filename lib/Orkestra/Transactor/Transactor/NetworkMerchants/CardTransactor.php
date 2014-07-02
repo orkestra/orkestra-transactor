@@ -14,13 +14,14 @@ namespace Orkestra\Transactor\Transactor\NetworkMerchants;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Account\CardAccount;
-use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\Account\CardAccountInterface;
+use Orkestra\Transactor\Model\Account\SwipedCardAccountInterface;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -33,20 +34,20 @@ class CardTransactor extends AbstractTransactor
      * @var array
      */
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::CARD,
-        Transaction\NetworkType::SWIPED
+        NetworkType::CARD,
+        NetworkType::SWIPED
     );
 
     /**
      * @var array
      */
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE,
-        Transaction\TransactionType::AUTH,
-        Transaction\TransactionType::CAPTURE,
-        Transaction\TransactionType::CREDIT,
-        Transaction\TransactionType::REFUND,
-        Transaction\TransactionType::VOID,
+        TransactionType::SALE,
+        TransactionType::AUTH,
+        TransactionType::CAPTURE,
+        TransactionType::CREDIT,
+        TransactionType::REFUND,
+        TransactionType::VOID,
     );
 
     /**
@@ -97,14 +98,14 @@ class CardTransactor extends AbstractTransactor
         }
 
         if (empty($data['response']) || '1' != $data['response']) {
-            $result->setStatus(new Result\ResultStatus((!empty($data['response']) && '2' == $data['response']) ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
+            $result->setStatus(new ResultStatus((!empty($data['response']) && '2' == $data['response']) ? ResultStatus::DECLINED : ResultStatus::ERROR));
             $result->setMessage(empty($data['responsetext']) ? 'An error occurred while processing the payment. Please try again.' : $data['responsetext']);
 
             if (!empty($data['transactionid'])) {
                 $result->setExternalId($data['transactionid']);
             }
         } else {
-            $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
+            $result->setStatus(new ResultStatus(ResultStatus::APPROVED));
             $result->setExternalId($data['transactionid']);
         }
 
@@ -123,7 +124,7 @@ class CardTransactor extends AbstractTransactor
      */
     protected function validateTransaction(TransactionInterface $transaction)
     {
-        if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::CAPTURE, Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))) {
+        if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(TransactionType::CAPTURE, TransactionType::REFUND, TransactionType::VOID))) {
             throw ValidationException::parentTransactionRequired();
         }
 
@@ -141,13 +142,13 @@ class CardTransactor extends AbstractTransactor
             throw ValidationException::missingAccountInformation();
         }
 
-        if ((!($account instanceof CardAccount) && !($account instanceof SwipedCardAccount))
-            || (!($account instanceof SwipedCardAccount) && $transaction->getNetwork() == Transaction\NetworkType::SWIPED)
+        if ((!($account instanceof CardAccountInterface) && !($account instanceof SwipedCardAccountInterface))
+            || (!($account instanceof SwipedCardAccountInterface) && $transaction->getNetwork() == NetworkType::SWIPED)
         ) {
             throw ValidationException::invalidAccountType($account);
         }
 
-        if (!$account instanceof SwipedCardAccount) {
+        if (!$account instanceof SwipedCardAccountInterface) {
             if (null === $account->getAccountNumber()) {
                 throw ValidationException::missingRequiredParameter('account number');
             } elseif (null === $account->getExpMonth() || null === $account->getExpYear()) {
@@ -164,17 +165,17 @@ class CardTransactor extends AbstractTransactor
     protected function getNmiType(TransactionInterface $transaction)
     {
         switch ($transaction->getType()->getValue()) {
-            case Transaction\TransactionType::SALE:
+            case TransactionType::SALE:
                 return 'sale';
-            case Transaction\TransactionType::AUTH:
+            case TransactionType::AUTH:
                 return 'auth';
-            case Transaction\TransactionType::CAPTURE:
+            case TransactionType::CAPTURE:
                 return 'capture';
-            case Transaction\TransactionType::CREDIT:
+            case TransactionType::CREDIT:
                 return 'credit';
-            case Transaction\TransactionType::REFUND:
+            case TransactionType::REFUND:
                 return 'refund';
-            case Transaction\TransactionType::VOID:
+            case TransactionType::VOID:
                 return 'void';
         }
     }
@@ -196,9 +197,9 @@ class CardTransactor extends AbstractTransactor
         );
 
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CAPTURE,
-            Transaction\TransactionType::REFUND,
-            Transaction\TransactionType::VOID))
+            TransactionType::CAPTURE,
+            TransactionType::REFUND,
+            TransactionType::VOID))
         ) {
             $params = array_merge($params, array(
                 'transactionid' => $transaction->getParent()->getResult()->getExternalId(),
@@ -206,7 +207,7 @@ class CardTransactor extends AbstractTransactor
         } else {
             $account = $transaction->getAccount();
 
-            if ($account instanceof SwipedCardAccount) {
+            if ($account instanceof SwipedCardAccountInterface) {
                 $params = array_merge($params, array(
                     'track_1' => $account->getTrackOne(),
                     'track_2' => $account->getTrackTwo(),
@@ -241,7 +242,7 @@ class CardTransactor extends AbstractTransactor
             }
         }
 
-        if ($transaction->getType()->getValue() != Transaction\TransactionType::VOID) {
+        if ($transaction->getType()->getValue() != TransactionType::VOID) {
             $params['amount'] = $transaction->getAmount();
         }
 

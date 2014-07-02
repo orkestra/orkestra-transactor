@@ -12,12 +12,14 @@
 namespace Orkestra\Transactor\Tests\Transactor\AuthorizeNet;
 
 use Orkestra\Transactor\Entity\Account\BankAccount;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Serializer\AuthorizeNet\Card\TransactionNormalizer;
 use Orkestra\Transactor\Transactor\AuthorizeNet\AchTransactor;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Transaction;
-use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Result;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
@@ -35,15 +37,15 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = $this->getTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
+        $this->assertTrue($transactor->supportsNetwork(new NetworkType(NetworkType::ACH)));
 
         // Unsupported
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CASH)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::POINTS)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CHECK)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CARD)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::SWIPED)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::MFA)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CASH)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::POINTS)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CHECK)));
     }
 
     public function testSupportsCorrectTypes()
@@ -51,14 +53,14 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = $this->getTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::QUERY)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::SALE)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::AUTH)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::CAPTURE)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::CREDIT)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::REFUND)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::VOID)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::QUERY)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::UPDATE)));
     }
 
     public function testSaleSuccess()
@@ -133,7 +135,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $account = new BankAccount();
         $account->setAccountNumber('123123123');
         $account->setRoutingNumber('123123123');
-        $account->setAccountType(new AccountType(BankAccount\AccountType::PERSONAL_CHECKING));
+        $account->setAccountType(new AccountType(AccountType::PERSONAL_CHECKING));
 
         $credentials = new Credentials();
         $credentials->setCredential('username', 'demo');
@@ -141,8 +143,8 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $transaction = new Transaction();
         $transaction->setAmount(10);
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH));
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::ACH));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
         $transaction->setCredentials($credentials);
         $transaction->setAccount($account);
 

@@ -14,7 +14,7 @@ namespace Orkestra\Transactor\Entity\Account;
 use Doctrine\ORM\Mapping as ORM;
 
 use Orkestra\Transactor\Entity\AbstractAccount;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Model\Account\BankAccountInterface;
 
 /**
@@ -32,7 +32,7 @@ class BankAccount extends AbstractAccount implements BankAccountInterface
     protected $routingNumber;
 
     /**
-     * @var Orkestra\Transactor\Entity\Account\BankAccount\AccountType
+     * @var AccountType
      *
      * @ORM\Column(name="account_type", type="enum.orkestra.bank_account_type", nullable=true)
      */
@@ -61,7 +61,7 @@ class BankAccount extends AbstractAccount implements BankAccountInterface
     /**
      * Gets the account type
      *
-     * @return Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     * @return AccountType $accountType
      */
     public function getAccountType()
     {
@@ -71,7 +71,7 @@ class BankAccount extends AbstractAccount implements BankAccountInterface
     /**
      * Sets the account type
      *
-     * @param Orkestra\Transactor\Entity\Account\BankAccount\AccountType $accountType
+     * @param AccountType $accountType
      */
     public function setAccountType(AccountType $accountType)
     {

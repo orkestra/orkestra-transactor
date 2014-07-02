@@ -14,6 +14,8 @@ namespace Orkestra\Transactor;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Model\CredentialsInterface;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -37,19 +39,19 @@ interface TransactorInterface
      * Returns true if the Transactor supports the given transaction type
      *
      * @abstract
-     * @param  \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @param  TransactionType $type
      * @return boolean
      */
-    public function supportsType(Transaction\TransactionType $type = null);
+    public function supportsType(TransactionType $type = null);
 
     /**
      * Returns true if the Transactor supports the given network type
      *
      * @abstract
-     * @param  \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @param  NetworkType $network
      * @return boolean
      */
-    public function supportsNetwork(Transaction\NetworkType $network = null);
+    public function supportsNetwork(NetworkType $network = null);
 
     /**
      * Returns the internally used type of this Transactor

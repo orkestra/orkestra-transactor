@@ -13,9 +13,8 @@ namespace Orkestra\Transactor\Transactor\AuthorizeNet;
 
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Exception\ValidationException;
-use Orkestra\Transactor\Entity\Transaction;
-use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**

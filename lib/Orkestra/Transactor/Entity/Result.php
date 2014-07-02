@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
 use Orkestra\Transactor\Model\TransactionInterface;
 
@@ -48,7 +49,7 @@ class Result extends AbstractEntity implements ResultInterface
     protected $data = array();
 
     /**
-     * @var \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @var \Orkestra\Transactor\Model\Result\ResultStatus
      *
      * @ORM\Column(name="status", type="enum.orkestra.result_status")
      */
@@ -94,7 +95,7 @@ class Result extends AbstractEntity implements ResultInterface
     {
         $this->transaction = $transaction;
         $this->dateTransacted = new NullDateTime();
-        $this->setStatus(new Result\ResultStatus(Result\ResultStatus::UNPROCESSED));
+        $this->setStatus(new ResultStatus(ResultStatus::UNPROCESSED));
     }
 
     /**
@@ -202,18 +203,18 @@ class Result extends AbstractEntity implements ResultInterface
     /**
      * Sets the result type
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
+     * @param ResultStatus $status
      */
-    public function setStatus(Result\ResultStatus $status)
+    public function setStatus(ResultStatus $status)
     {
-        if (Result\ResultStatus::UNPROCESSED !== $status->getValue()) {
+        if (ResultStatus::UNPROCESSED !== $status->getValue()) {
             $this->transacted = true;
             $this->dateTransacted = new DateTime();
         }
 
         if (!$this->transaction->isParent()
-            && Result\ResultStatus::ERROR !== $status->getValue()
-            && Result\ResultStatus::UNPROCESSED !== $status->getValue())  {
+            && ResultStatus::ERROR !== $status->getValue()
+            && ResultStatus::UNPROCESSED !== $status->getValue())  {
             $this->transaction->getParent()->setStatus($status);
         }
 
@@ -224,7 +225,7 @@ class Result extends AbstractEntity implements ResultInterface
     /**
      * Gets the result type
      *
-     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @return ResultStatus
      */
     public function getStatus()
     {

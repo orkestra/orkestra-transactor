@@ -28,5 +28,5 @@ class AccountTypeEnumType extends AbstractEnumType
     /**
      * @var string The fully qualified class name of the Enum that this class wraps
      */
-    protected $class = 'Orkestra\Transactor\Entity\Account\BankAccount\AccountType';
+    protected $class = 'Orkestra\Transactor\Model\Account\BankAccount\AccountType';
 }

@@ -11,8 +11,10 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\Generic;
 
-use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Result\ResultStatus;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Transactor\Generic\GenericTransactor;
 
 /**
@@ -28,15 +30,15 @@ class GenericTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new GenericTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CASH)));
-        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CHECK)));
+        $this->assertTrue($transactor->supportsNetwork(new NetworkType(NetworkType::CASH)));
+        $this->assertTrue($transactor->supportsNetwork(new NetworkType(NetworkType::CHECK)));
 
         // Unsupported
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::POINTS)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::ACH)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::MFA)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CARD)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::POINTS)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::SWIPED)));
     }
 
     public function testSupportsCorrectTypes()
@@ -44,23 +46,23 @@ class GenericTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new GenericTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::SALE)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::CREDIT)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::REFUND)));
 
         // Unsupported
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::QUERY)));
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::AUTH)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::CAPTURE)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::VOID)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::QUERY)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::UPDATE)));
     }
 
     public function testApproval()
     {
         $transaction = new Transaction();
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CASH));
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::CASH));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
 
         $transactor = new GenericTransactor();
 

@@ -12,12 +12,13 @@
 namespace Orkestra\Transactor\Transactor\Generic;
 
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Account\PointsAccount;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
+use Orkestra\Transactor\Model\Account\PointsAccountInterface;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
 
 /**
@@ -29,16 +30,16 @@ class PointsTransactor extends AbstractTransactor
      * @var array
      */
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::POINTS
+        NetworkType::POINTS
     );
 
     /**
      * @var array
      */
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE,
-        Transaction\TransactionType::CREDIT,
-        Transaction\TransactionType::REFUND,
+        TransactionType::SALE,
+        TransactionType::CREDIT,
+        TransactionType::REFUND,
     );
 
     /**
@@ -58,9 +59,9 @@ class PointsTransactor extends AbstractTransactor
         $result->setTransactor($this);
 
         $adjustment = $transaction->getAmount();
-        if (Transaction\TransactionType::SALE === $transaction->getType()->getValue()) {
+        if (TransactionType::SALE === $transaction->getType()->getValue()) {
             if ($transaction->getAmount() > $account->getBalance()) {
-                $result->setStatus(new Result\ResultStatus(Result\ResultStatus::DECLINED));
+                $result->setStatus(new ResultStatus(ResultStatus::DECLINED));
                 $result->setMessage('Amount exceeds account balance');
 
                 return $result;
@@ -69,7 +70,7 @@ class PointsTransactor extends AbstractTransactor
             $adjustment *= -1; // Negate the adjustment
         }
 
-        $result->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
+        $result->setStatus(new ResultStatus(ResultStatus::APPROVED));
         $account->adjustBalance($adjustment);
 
         return $result;
@@ -85,10 +86,10 @@ class PointsTransactor extends AbstractTransactor
     protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::REFUND
+            TransactionType::REFUND
         ))) {
             throw ValidationException::parentTransactionRequired();
-        } elseif (!$transaction->getAccount() instanceof PointsAccount) {
+        } elseif (!$transaction->getAccount() instanceof PointsAccountInterface) {
             throw ValidationException::invalidAccountType($transaction->getAccount());
         }
 

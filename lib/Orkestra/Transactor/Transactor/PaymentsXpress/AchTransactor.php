@@ -14,15 +14,16 @@ namespace Orkestra\Transactor\Transactor\PaymentsXpress;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Account\BankAccount;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Result;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\ValidationException;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Account\BankAccountInterface;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Model\ResultInterface;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * ACH transactor for the PaymentsXpress payment processing gateway
@@ -33,21 +34,21 @@ class AchTransactor extends AbstractTransactor
      * @var array
      */
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::ACH,
+        NetworkType::ACH,
     );
 
     /**
      * @var array
      */
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE,
-        // Transaction\TransactionType::CREDIT,
-        // Transaction\TransactionType::AUTH,
-        // Transaction\TransactionType::CAPTURE,
-        // Transaction\TransactionType::REFUND,
-        // Transaction\TransactionType::VOID,
-        Transaction\TransactionType::QUERY,
-        // Transaction\TransactionType::UPDATE,
+        TransactionType::SALE,
+        // TransactionType::CREDIT,
+        // TransactionType::AUTH,
+        // TransactionType::CAPTURE,
+        // TransactionType::REFUND,
+        // TransactionType::VOID,
+        TransactionType::QUERY,
+        // TransactionType::UPDATE,
     );
 
     /**
@@ -90,7 +91,7 @@ class AchTransactor extends AbstractTransactor
         try {
             $response = $request->send();
 
-            $data = Transaction\TransactionType::QUERY !== $transaction->getType()->getValue()
+            $data = TransactionType::QUERY !== $transaction->getType()->getValue()
                 ? json_decode($response->getBody(true))
                 : $this->normalizeQueryResponse($response->getBody(true));
         } catch (BadResponseException $e) {
@@ -102,17 +103,17 @@ class AchTransactor extends AbstractTransactor
         }
 
         if ('Approved' !== $data->CommandStatus) {
-            $result->setStatus(new Result\ResultStatus('Declined' !== $data->CommandStatus ? Result\ResultStatus::ERROR : Result\ResultStatus::DECLINED));
+            $result->setStatus(new ResultStatus('Declined' !== $data->CommandStatus ? ResultStatus::ERROR : ResultStatus::DECLINED));
             $result->setMessage(!empty($data->ErrorInformation) ? $data->Description . ': ' . $data->ErrorInformation : $data->Description);
 
             if (!empty($data->TransAct_ReferenceID)) {
                 $result->setExternalId($data->TransAct_ReferenceID);
             }
         } else {
-            if (Transaction\TransactionType::QUERY === $transaction->getType()->getValue()) {
+            if (TransactionType::QUERY === $transaction->getType()->getValue()) {
                 $this->handleQueryResponse($transaction, $data);
             } else {
-                $result->setStatus(new Result\ResultStatus(Result\ResultStatus::PENDING));
+                $result->setStatus(new ResultStatus(ResultStatus::PENDING));
             }
 
             $result->setExternalId($data->TransAct_ReferenceID);
@@ -134,11 +135,11 @@ class AchTransactor extends AbstractTransactor
     protected function validateTransaction(TransactionInterface $transaction)
     {
         if (!$transaction->getParent() && in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CAPTURE,
-            Transaction\TransactionType::REFUND,
-            Transaction\TransactionType::VOID,
-            Transaction\TransactionType::QUERY,
-            Transaction\TransactionType::UPDATE))
+            TransactionType::CAPTURE,
+            TransactionType::REFUND,
+            TransactionType::VOID,
+            TransactionType::QUERY,
+            TransactionType::UPDATE))
         ) {
             throw ValidationException::parentTransactionRequired();
         }
@@ -163,7 +164,7 @@ class AchTransactor extends AbstractTransactor
 
         $account = $transaction->getAccount();
 
-        if (!$account || !$account instanceof BankAccount) {
+        if (!$account || !$account instanceof BankAccountInterface) {
             throw ValidationException::missingAccountInformation();
         }
 
@@ -225,7 +226,7 @@ class AchTransactor extends AbstractTransactor
 
         $transactionType = $transaction->getType()->getValue();
 
-        if (Transaction\TransactionType::SALE === $transactionType) {
+        if (TransactionType::SALE === $transactionType) {
             $params = array_merge($params, array(
                 'ResponseType' => 'JSON',
                 'PaymentDirection' => 'FromCustomer',
@@ -251,7 +252,7 @@ class AchTransactor extends AbstractTransactor
                 'SECCode' => 'WEB',
                 'Customer_IPAddress' => $account->getIpAddress(),
             ));
-        } elseif (Transaction\TransactionType::QUERY === $transactionType) {
+        } elseif (TransactionType::QUERY === $transactionType) {
             $params['TrackingDate'] = !empty($options['date']) ? $options['date'] : date('mdY');
         } else {
             throw new \RuntimeException(sprintf('The transaction type %s is not yet implemented', $transaction->getType()->getValue()));
@@ -268,25 +269,25 @@ class AchTransactor extends AbstractTransactor
     protected function getCommand(TransactionInterface $transaction)
     {
         switch ($transaction->getType()->getValue()) {
-            case Transaction\TransactionType::SALE:
+            case TransactionType::SALE:
                 return 'ECheck.ProcessPayment';
 
-            case Transaction\TransactionType::AUTH:
+            case TransactionType::AUTH:
                 return 'ECheck.Authorize';
 
-            case Transaction\TransactionType::CAPTURE:
+            case TransactionType::CAPTURE:
                 return 'ECheck.Capture';
 
-            case Transaction\TransactionType::REFUND:
+            case TransactionType::REFUND:
                 return 'ECheck.Refund';
 
-            case Transaction\TransactionType::VOID:
+            case TransactionType::VOID:
                 return 'ECheck.Void';
 
-            case Transaction\TransactionType::QUERY:
+            case TransactionType::QUERY:
                 return 'ECheckReports.StatusTrackingQuery';
 
-            case Transaction\TransactionType::UPDATE:
+            case TransactionType::UPDATE:
                 return 'ECheck.Update';
         }
     }
@@ -316,39 +317,39 @@ class AchTransactor extends AbstractTransactor
         if (null !== $eventResult) {
             switch ($eventResult->ResultingStatus) {
                 case 'Scheduled':
-                    $resultType = Result\ResultStatus::PENDING;
+                    $resultType = ResultStatus::PENDING;
                     break;
 
                 case 'Cancelled':
-                    $resultType = Result\ResultStatus::CANCELLED;
+                    $resultType = ResultStatus::CANCELLED;
                     break;
 
                 case 'In-Process':
-                    $resultType = Result\ResultStatus::PROCESSED;
+                    $resultType = ResultStatus::PROCESSED;
                     break;
 
                 case 'Cleared':
-                    $resultType = Result\ResultStatus::APPROVED;
+                    $resultType = ResultStatus::APPROVED;
                     break;
 
                 case 'Failed Verification':
                 case 'Returned-NSF':
                 case 'Returned-Other':
-                    $resultType = Result\ResultStatus::DECLINED;
+                    $resultType = ResultStatus::DECLINED;
                     break;
 
                 case 'Charged Back':
-                    $resultType = Result\ResultStatus::CHARGED_BACK;
+                    $resultType = ResultStatus::CHARGED_BACK;
                     break;
 
                 case 'Merchant Hold':
                 case 'Processor Hold':
-                    $resultType = Result\ResultStatus::HOLD;
+                    $resultType = ResultStatus::HOLD;
                     break;
             }
         }
 
-        $result->setStatus(new Result\ResultStatus($resultType));
+        $result->setStatus(new ResultStatus($resultType));
     }
 
     /**

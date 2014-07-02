@@ -4,6 +4,9 @@ namespace Orkestra\Transactor\Model;
 use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Result\ResultStatus;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 
 /**
  * A single transaction
@@ -48,42 +51,42 @@ interface TransactionInterface
     /**
      * Sets the transaction type
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
+     * @param TransactionType $type
      */
-    public function setType(Transaction\TransactionType $type);
+    public function setType(TransactionType $type);
 
     /**
      * Gets the transaction type
      *
-     * @return \Orkestra\Transactor\Entity\Transaction\TransactionType
+     * @return TransactionType
      */
     public function getType();
 
     /**
      * Sets the network
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\NetworkType $network
+     * @param NetworkType $network
      */
-    public function setNetwork(Transaction\NetworkType $network);
+    public function setNetwork(NetworkType $network);
 
     /**
      * Gets the network
      *
-     * @return \Orkestra\Transactor\Entity\Transaction\NetworkType
+     * @return NetworkType
      */
     public function getNetwork();
 
     /**
      * Sets the status
      *
-     * @param \Orkestra\Transactor\Entity\Result\ResultStatus $status
+     * @param ResultStatus $status
      */
-    public function setStatus(Result\ResultStatus $status);
+    public function setStatus(ResultStatus $status);
 
     /**
      * Gets the status
      *
-     * @return \Orkestra\Transactor\Entity\Result\ResultStatus
+     * @return ResultStatus
      */
     public function getStatus();
 
@@ -97,12 +100,12 @@ interface TransactionInterface
     /**
      * Creates a new child transaction
      *
-     * @param \Orkestra\Transactor\Entity\Transaction\TransactionType $type
-     * @param float                                                   $amount
+     * @param TransactionType $type
+     * @param float           $amount
      *
      * @return TransactionInterface
      */
-    public function createChild(Transaction\TransactionType $type, $amount = null);
+    public function createChild(TransactionType $type, $amount = null);
 
     /**
      * Gets the transaction's children

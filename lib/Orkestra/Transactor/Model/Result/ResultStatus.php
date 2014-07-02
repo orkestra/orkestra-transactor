@@ -9,7 +9,7 @@
  * that was distributed with this source code.
  */
 
-namespace Orkestra\Transactor\Entity\Result;
+namespace Orkestra\Transactor\Model\Result;
 
 use Orkestra\Common\Type\Enum;
 

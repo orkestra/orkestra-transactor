@@ -11,8 +11,10 @@
 
 namespace Orkestra\Transactor\Tests\Entity;
 
-use Orkestra\Transactor\Entity\Result\ResultStatus;
+use Orkestra\Transactor\Model\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 
 class TransactionTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,17 +22,17 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
     {
         $parent = new Transaction();
         $parent->setAmount(10.00);
-        $parent->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
-        $parent->setType(new Transaction\TransactionType(Transaction\TransactionType::AUTH));
+        $parent->setNetwork(new NetworkType(NetworkType::CARD));
+        $parent->setType(new TransactionType(TransactionType::AUTH));
 
         $parentResult = $parent->getResult();
         $parentResult->setStatus(new ResultStatus(ResultStatus::CANCELLED));
 
-        $child = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE), 12.50);
+        $child = $parent->createChild(new TransactionType(TransactionType::CAPTURE), 12.50);
 
         $this->assertEquals(12.50, $child->getAmount());
-        $this->assertEquals(Transaction\NetworkType::CARD, $child->getNetwork());
-        $this->assertEquals(Transaction\TransactionType::CAPTURE, $child->getType());
+        $this->assertEquals(NetworkType::CARD, $child->getNetwork());
+        $this->assertEquals(TransactionType::CAPTURE, $child->getType());
         $this->assertEquals(ResultStatus::UNPROCESSED, $child->getResult()->getStatus());
         $this->assertSame($parent, $child->getParent());
         $this->assertTrue($parent->getChildren()->contains($child));

@@ -12,10 +12,12 @@
 namespace Orkestra\Transactor\Tests;
 
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Orkestra\Transactor\Model\Result\ResultStatus;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Model\TransactionInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Tests the functionality provided by the AbstractTransactor
@@ -29,9 +31,9 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
     {
         $transactor = new TestTransactor();
 
-        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
+        $this->assertTrue($transactor->supportsNetwork(new NetworkType(NetworkType::CARD)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::ACH)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::MFA)));
     }
 
     public function testTransactorTransactUnsupportedNetwork()
@@ -39,8 +41,8 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::ACH));
 
         $this->setExpectedException('Orkestra\Transactor\Exception\TransactorException', 'Transaction network "ACH" is not supported by this Transactor');
 
@@ -52,7 +54,7 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->getResult()->setStatus(new Result\ResultStatus(Result\ResultStatus::APPROVED));
+        $transaction->getResult()->setStatus(new ResultStatus(ResultStatus::APPROVED));
 
         $this->setExpectedException('Orkestra\Transactor\Exception\TransactorException', 'This transaction has already been processed');
 
@@ -63,8 +65,8 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
     {
         $transactor = new TestTransactor();
 
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
-        $this->assertFalse($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::SALE)));
+        $this->assertFalse($transactor->supportsType(new TransactionType(TransactionType::AUTH)));
     }
 
     public function testTransactorTransactUnsupportedType()
@@ -72,7 +74,7 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::AUTH));
+        $transaction->setType(new TransactionType(TransactionType::AUTH));
 
         $this->setExpectedException('Orkestra\Transactor\Exception\TransactorException', 'Transaction type "Auth" is not supported by this Transactor');
 
@@ -84,12 +86,12 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::CARD));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus());
+        $this->assertEquals(ResultStatus::ERROR, $result->getStatus());
         $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
         $this->assertEquals('Critical error', $result->getData('message'));
         $this->assertNotEmpty($result->getData('trace'));
@@ -101,11 +103,11 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new TestTransactor();
 
         $transaction = new Transaction();
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::CARD));
 
         $result = $transactor->transact($transaction, array('test' => 'invalid value'));
-        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus());
+        $this->assertEquals(ResultStatus::ERROR, $result->getStatus());
         $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
         $this->assertContains('value "invalid value"', $result->getData('message'));
         $this->assertNotEmpty($result->getData('trace'));
@@ -116,11 +118,11 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
 class TestTransactor extends AbstractTransactor
 {
     protected static $supportedNetworks = array(
-        Transaction\NetworkType::CARD
+        NetworkType::CARD
     );
 
     protected static $supportedTypes = array(
-        Transaction\TransactionType::SALE
+        TransactionType::SALE
     );
 
     protected function doTransact(TransactionInterface $transaction, array $options = array())

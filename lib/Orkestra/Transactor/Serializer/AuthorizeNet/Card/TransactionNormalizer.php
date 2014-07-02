@@ -7,7 +7,7 @@ use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Orkestra\Transactor\Entity\Transaction;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class TransactionNormalizer implements NormalizerInterface
@@ -41,20 +41,20 @@ class TransactionNormalizer implements NormalizerInterface
             "transactionType" => $this->getTransactionType($transaction)
         );
 
-        if ($transaction->getType()->getValue() != Transaction\TransactionType::VOID) {
+        if ($transaction->getType()->getValue() != TransactionType::VOID) {
             $transactionRequest['amount'] = $transaction->getAmount();
         }
 
         $account = $transaction->getAccount();
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::SALE,
-            Transaction\TransactionType::AUTH,
-            Transaction\TransactionType::REFUND))
+            TransactionType::SALE,
+            TransactionType::AUTH,
+            TransactionType::REFUND))
         ){
             $payment = array();
             if ($account instanceof CardAccount) {
                 if ($account instanceof SwipedCardAccount
-                    && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND
+                    && $transaction->getType()->getValue() != TransactionType::REFUND
                 ){
                     $payment['trackData'] = array();
                     if ($account->getTrackOne()) {
@@ -70,8 +70,9 @@ class TransactionNormalizer implements NormalizerInterface
                         )
                     );
 
-                    if (isset($options['enable_cvv']) && true === $options['enable_cvv']
-                        && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND) {
+                    if (isset($context['enable_cvv'])
+                        && true === $context['enable_cvv']
+                        && $transaction->getType()->getValue() != TransactionType::REFUND) {
                         $payment['creditCard']['cardCode'] = $account->getCvv();
                     }
                 }
@@ -98,17 +99,17 @@ class TransactionNormalizer implements NormalizerInterface
 
 
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CAPTURE,
-            Transaction\TransactionType::REFUND,
-            Transaction\TransactionType::VOID))
+            TransactionType::CAPTURE,
+            TransactionType::REFUND,
+            TransactionType::VOID))
         ) {
             $transactionRequest['refTransId'] = $transaction->getParent()->getResult()->getExternalId();
         }
 
 
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::SALE,
-            Transaction\TransactionType::AUTH))
+            TransactionType::SALE,
+            TransactionType::AUTH))
         ) {
                 $names = explode(' ', $account->getName(), 2);
                 $firstName = isset($names[0]) ? $names[0] : '';
@@ -132,7 +133,7 @@ class TransactionNormalizer implements NormalizerInterface
         }
 
         if ($account instanceof SwipedCardAccount
-            && !in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))
+            && !in_array($transaction->getType()->getValue(), array(TransactionType::REFUND, TransactionType::VOID))
         ){
             $transactionRequest['retail'] = array(
                 'marketType' => 2,
@@ -171,17 +172,17 @@ class TransactionNormalizer implements NormalizerInterface
     private function getTransactionType(Transaction $transaction)
     {
         switch ($transaction->getType()->getValue()) {
-            case Transaction\TransactionType::SALE:
+            case TransactionType::SALE:
                 return 'authCaptureTransaction';
-            case Transaction\TransactionType::AUTH:
+            case TransactionType::AUTH:
                 return 'authOnlyTransaction';
-            case Transaction\TransactionType::CAPTURE:
+            case TransactionType::CAPTURE:
                 return 'priorAuthCaptureTransaction';
-            case Transaction\TransactionType::CREDIT:
+            case TransactionType::CREDIT:
                 return 'creditTransaction';
-            case Transaction\TransactionType::REFUND:
+            case TransactionType::REFUND:
                 return 'refundTransaction';
-            case Transaction\TransactionType::VOID:
+            case TransactionType::VOID:
                 return 'voidTransaction';
         }
     }

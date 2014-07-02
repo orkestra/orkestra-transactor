@@ -14,11 +14,14 @@ namespace Orkestra\Transactor\Tests\Transactor\PaymentsXpress;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
-use Orkestra\Transactor\Model\TransactionInterface;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Account\BankAccount\AccountType;
+use Orkestra\Transactor\Model\Result\ResultStatus;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
+use Orkestra\Transactor\Model\TransactionInterface;
 use Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor;
 
 /**
@@ -35,15 +38,15 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new AchTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH)));
+        $this->assertTrue($transactor->supportsNetwork(new NetworkType(NetworkType::ACH)));
 
         // Unsupported
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::SWIPED)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::MFA)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CASH)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::POINTS)));
-        $this->assertFalse($transactor->supportsNetwork(new Transaction\NetworkType(Transaction\NetworkType::CHECK)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CARD)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::SWIPED)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::MFA)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CASH)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::POINTS)));
+        $this->assertFalse($transactor->supportsNetwork(new NetworkType(NetworkType::CHECK)));
     }
 
     public function testSupportsCorrectTypes()
@@ -51,14 +54,14 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $transactor = new AchTransactor();
 
         // Supported
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::SALE)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::AUTH)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CAPTURE)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::CREDIT)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::REFUND)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::VOID)));
-        $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::QUERY)));
-        // $this->assertTrue($transactor->supportsType(new Transaction\TransactionType(Transaction\TransactionType::UPDATE)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::SALE)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::AUTH)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::CAPTURE)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::CREDIT)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::REFUND)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::VOID)));
+        $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::QUERY)));
+        // $this->assertTrue($transactor->supportsType(new TransactionType(TransactionType::UPDATE)));
     }
 
     public function testResponseError()
@@ -68,7 +71,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('Client Error: An error occurred while contacting the PaymentsXpress system', $result->getMessage());
     }
 
@@ -80,7 +83,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $result = $transactor->transact($transaction);
         $request = $result->getData('request');
 
-        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals('56789', $result->getExternalId());
 
         $this->assertInternalType('array', $request);
@@ -100,7 +103,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::ERROR, $result->getStatus()->getValue());
         $this->assertEquals('Internal Gateway Error', $result->getMessage());
         $this->assertEquals('54321', $result->getExternalId());
     }
@@ -112,7 +115,7 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::DECLINED, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::DECLINED, $result->getStatus()->getValue());
         $this->assertEquals('Invalid Gateway Credentials: Provider_Credentials', $result->getMessage());
         $this->assertEquals('12345', $result->getExternalId());
     }
@@ -123,12 +126,12 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
     public function testQueryWithNoUpdateSetsParentStatus(TransactionInterface $parent)
     {
         $transactor = $this->getTransactor('Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
         $this->assertNotSame($result->getStatus(), $parent->getResult()->getStatus());
-        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals($result->getStatus()->getValue(), $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
@@ -142,11 +145,11 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
 56789,,,Created,02/20/2003 03:00:00,Scheduled,,,,
 45666,,,Cancelled,02/20/2003 03:01:00,Cancelled,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::PENDING, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::PENDING, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -157,11 +160,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Cancelled,02/20/2003 03:00:00,Cancelled,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::CANCELLED, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::CANCELLED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -172,11 +175,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Submitted,02/20/2003 03:00:00,In-Process,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::PROCESSED, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::PROCESSED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -187,11 +190,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Cleared,02/20/2003 03:00:00,Cleared,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::APPROVED, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::APPROVED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -202,11 +205,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Rejected,02/20/2003 03:00:00,Failed Verification,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::DECLINED, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::DECLINED, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -217,11 +220,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Charged Back,02/20/2003 03:00:00,Charged Back,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::CHARGED_BACK, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::CHARGED_BACK, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -232,11 +235,11 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
     {
         $transactor = $this->getTransactor('56789,,,Held by Merchant,02/20/2003 03:00:00,Merchant Hold,,,,
 Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
-        $transaction = $parent->createChild(new Transaction\TransactionType(Transaction\TransactionType::QUERY));
+        $transaction = $parent->createChild(new TransactionType(TransactionType::QUERY));
 
         $result = $transactor->transact($transaction);
 
-        $this->assertEquals(Result\ResultStatus::HOLD, $result->getStatus()->getValue());
+        $this->assertEquals(ResultStatus::HOLD, $result->getStatus()->getValue());
         $this->assertEquals('12345', $result->getExternalId());
     }
 
@@ -264,7 +267,7 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
         $account = new BankAccount();
         $account->setAccountNumber('123456789');
         $account->setRoutingNumber('123123123');
-        $account->setAccountType(new BankAccount\AccountType(BankAccount\AccountType::PERSONAL_CHECKING));
+        $account->setAccountType(new AccountType(AccountType::PERSONAL_CHECKING));
 
         $credentials = new Credentials();
         $credentials->setCredential('providerId', '1000');
@@ -276,8 +279,8 @@ Command Response,Approved,000,Command Successful. Approved.,,12345,,,');
 
         $transaction = new Transaction();
         $transaction->setAmount(10);
-        $transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::ACH));
-        $transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+        $transaction->setNetwork(new NetworkType(NetworkType::ACH));
+        $transaction->setType(new TransactionType(TransactionType::SALE));
         $transaction->setCredentials($credentials);
         $transaction->setAccount($account);
 
