@@ -27,7 +27,7 @@ class FallbackNumberFormatter
     public function formatCurrency($value, $currency = 'USD')
     {
         if ($currency !== 'USD') {
-            throw new \RuntimeException(sprintf('%s only supports does not support currency "%s". Add symfony/intl to your project for improved language support.', get_class($this), $currency));
+            throw new \RuntimeException(sprintf('%s does not support currency "%s". Add symfony/intl to your project for improved language support.', get_class($this), $currency));
         }
         
         return '$' . number_format($value, 2);

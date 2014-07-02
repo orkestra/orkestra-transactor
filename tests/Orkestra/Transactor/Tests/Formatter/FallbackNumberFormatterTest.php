@@ -33,7 +33,7 @@ class FallbackNumberFormatterTest extends \PHPUnit_Framework_TestCase
     {
         $formatter = new FallbackNumberFormatter();
 
-        $this->setExpectedException('RuntimeException', 'Orkestra\Transactor\Formatter\FallbackNumberFormatter only supports does not support currency "EUR". Add symfony/intl to your project for improved language support.');
+        $this->setExpectedException('RuntimeException', 'Orkestra\Transactor\Formatter\FallbackNumberFormatter does not support currency "EUR". Add symfony/intl to your project for improved language support.');
         
         $formatter->formatCurrency(100, 'EUR');
     }
