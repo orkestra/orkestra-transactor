@@ -28,8 +28,8 @@ interface TransactorInterface
      *
      * @abstract
      *
-     * @param  TransactionInterface $transaction
-     * @param  array                $options
+     * @param TransactionInterface $transaction
+     * @param array                $options
      *
      * @return ResultInterface
      */

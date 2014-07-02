@@ -350,7 +350,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
             return $this->parent->isRefunded();
         }
 
-        return $this->children->exists(function($key, TransactionInterface $child) {
+        return $this->children->exists(function ($key, TransactionInterface $child) {
             return $child->getType() == TransactionType::REFUND && $child->getStatus() == ResultStatus::APPROVED;
         });
     }
@@ -366,7 +366,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
             return $this->parent->isVoided();
         }
 
-        return $this->children->exists(function($key, TransactionInterface $child) {
+        return $this->children->exists(function ($key, TransactionInterface $child) {
             return $child->getType() == TransactionType::VOID && $child->getStatus() == ResultStatus::APPROVED;
         });
     }

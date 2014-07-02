@@ -158,7 +158,7 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param  TransactionInterface $transaction
+     * @param TransactionInterface $transaction
      *
      * @return string
      */
@@ -264,9 +264,9 @@ class CardTransactor extends AbstractTransactor
                 $request[$key] = '[filtered]';
             }
         }
-        
+
         $result->setData('request', $request);
-        
+
         return $result;
     }
 

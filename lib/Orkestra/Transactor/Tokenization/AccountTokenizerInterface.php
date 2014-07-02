@@ -2,13 +2,12 @@
 
 namespace Orkestra\Transactor\Tokenization;
 
-use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Model\AccountInterface;
 
 /**
  * Defines the contract any account tokenizer must follow.
- * 
+ *
  * A TokenAccount factory uses some external resource to transform other
  * accounts into a tokenized version.
  */

@@ -11,7 +11,6 @@
 
 namespace Orkestra\Transactor\Exception;
 
-use Orkestra\Transactor\Entity\AbstractAccount;
 use Orkestra\Transactor\Model\AccountInterface;
 
 /**
@@ -79,7 +78,7 @@ class ValidationException extends \Exception
      *
      * @static
      *
-     * @param  AccountInterface $account
+     * @param AccountInterface $account
      *
      * @return ValidationException
      */

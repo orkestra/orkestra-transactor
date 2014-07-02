@@ -117,7 +117,6 @@ class AchTransactorTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($result->getExternalId());
     }
 
-
     protected function getTransactor($expectedResponse = '', $code = 200)
     {
         $client = new Client();
