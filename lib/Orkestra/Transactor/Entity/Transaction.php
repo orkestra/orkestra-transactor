@@ -11,6 +11,7 @@
 
 namespace Orkestra\Transactor\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\Model\AccountInterface;
@@ -117,8 +118,8 @@ class Transaction extends AbstractEntity implements TransactionInterface
             $this->account = $parent->getAccount();
         }
 
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->result = new Result($this);
+        $this->children = new ArrayCollection();
+        $this->result   = new Result($this);
     }
 
     /**
@@ -142,7 +143,7 @@ class Transaction extends AbstractEntity implements TransactionInterface
             return;
         }
 
-        $this->amount = $amount;
+        $this->amount = (int) $amount;
     }
 
     /**
