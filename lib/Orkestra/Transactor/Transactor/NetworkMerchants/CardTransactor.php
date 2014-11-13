@@ -82,7 +82,6 @@ class CardTransactor extends AbstractTransactor
 
         $request = $client->post($postUrl)
             ->addPostFields($params);
-        $request->getCurlOptions()->set(CURLOPT_SSLVERSION, 3);
 
         try {
             $response = $request->send();
