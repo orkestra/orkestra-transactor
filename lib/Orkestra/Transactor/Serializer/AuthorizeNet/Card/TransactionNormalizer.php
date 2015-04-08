@@ -2,6 +2,9 @@
 
 namespace Orkestra\Transactor\Serializer\AuthorizeNet\Card;
 
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Orkestra\Transactor\Entity\Account\BankAccount;
+use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
 use Orkestra\Transactor\Entity\Transaction;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -25,7 +28,9 @@ class TransactionNormalizer implements NormalizerInterface
 
         $createTransactionRequest = array();
 
-        $createTransactionRequest['@xmlns'] = 'AnetApi/xml/v1/schema/AnetApiSchema.xsd';
+        if ($format == 'xml') {
+            $createTransactionRequest['@xmlns'] = 'AnetApi/xml/v1/schema/AnetApiSchema.xsd';
+        }
 
         $merchantAuthentication = array(
             'name' => $credentials->getCredential('username'),
@@ -40,23 +45,22 @@ class TransactionNormalizer implements NormalizerInterface
             $transactionRequest['amount'] = $transaction->getAmount();
         }
 
+        $account = $transaction->getAccount();
         if (in_array($transaction->getType()->getValue(), array(
-            Transaction\TransactionType::CAPTURE,
-            Transaction\TransactionType::REFUND,
-            Transaction\TransactionType::VOID))
-        ) {
-            $transactionRequest = array_merge($transactionRequest, array(
-                'refTransId' => $transaction->getParent()->getResult()->getExternalId(),
-            ));
-        } else {
-            $account = $transaction->getAccount();
-
-            if ($account instanceof SwipedCardAccount) {
-                $transactionRequest = array_merge($transactionRequest, array(
-                    'track1' => $account->getTrackOne(),
-                    'track2' => $account->getTrackTwo(),
-                ));
-            } else {
+            Transaction\TransactionType::SALE,
+            Transaction\TransactionType::AUTH,
+            Transaction\TransactionType::REFUND))
+        ){
+            $payment = array();
+            if ($account instanceof CardAccount) {
+                if ($account instanceof SwipedCardAccount
+                    && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND
+                ){
+                    $payment['trackData'] = array(
+                        'track1' => $account->getTrackOne(),
+                        'track2' => $account->getTrackTwo(),
+                    );
+                }
                 $payment = array(
                     'creditCard' => array(
                         'cardNumber' => $account->getAccountNumber(),
@@ -64,28 +68,54 @@ class TransactionNormalizer implements NormalizerInterface
                     )
                 );
 
-                if (isset($options['enable_cvv']) && true === $options['enable_cvv']) {
+                if (isset($options['enable_cvv']) && true === $options['enable_cvv']
+                    && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND) {
                     $payment['creditCard']['cardCode'] = $account->getCvv();
                 }
+            } elseif ($account instanceof BankAccount) {
+                $payment = array(
+                    'bankAccount' => array(
+                        'accountType' => 'checking',
+                        'routingNumber' => $account->getRoutingNumber(),
+                        'accountNumber' => $account->getAccountNumber(),
+                        'nameOnAccount' => $account->getName()
+                    )
+                );
+            } else {
+                throw new InvalidArgumentException(sprintf("Unsupported Account Type %s", get_class($account)));
+            }
 
-                $transactionRequest['payment'] = $payment;
+            $transactionRequest['payment'] = $payment;
+        }
 
-                if (isset($options['enable_avs']) && true === $options['enable_avs']) {
-                    $names = explode(' ', $account->getName(), 2);
-                    $firstName = isset($names[0]) ? $names[0] : '';
-                    $lastName = isset($names[1]) ? $names[1] : '';
+        if (in_array($transaction->getType()->getValue(), array(
+            Transaction\TransactionType::CAPTURE,
+            Transaction\TransactionType::REFUND,
+            Transaction\TransactionType::VOID))
+        ) {
+            $transactionRequest['refTransId'] = $transaction->getParent()->getResult()->getExternalId();
+        }
 
-                    $transactionRequest['billTo'] = array(
-                        'firstName' => $firstName,
-                        'lastName' => $lastName,
-                        'address' => $account->getAddress(),
-                        'city' => $account->getCity(),
-                        'state' => $account->getRegion(),
-                        'zip' => $account->getPostalCode(),
-                        'country' => $account->getCountry(),
-                    );
-                    $transactionRequest['customerIP'] = $account->getIpAddress();
-                }
+
+        if ( isset($options['enable_avs']) && true === $options['enable_avs']
+            && in_array($transaction->getType()->getValue(), array(
+            Transaction\TransactionType::SALE,
+            Transaction\TransactionType::AUTH))
+        ) {
+            if (isset($options['enable_avs']) && true === $options['enable_avs']) {
+                $names = explode(' ', $account->getName(), 2);
+                $firstName = isset($names[0]) ? $names[0] : '';
+                $lastName = isset($names[1]) ? $names[1] : '';
+
+                $transactionRequest['billTo'] = array(
+                    'firstName' => $firstName,
+                    'lastName' => $lastName,
+                    'address' => $account->getAddress(),
+                    'city' => $account->getCity(),
+                    'state' => $account->getRegion(),
+                    'zip' => $account->getPostalCode(),
+                    'country' => $account->getCountry(),
+                );
             }
         }
 
@@ -98,8 +128,6 @@ class TransactionNormalizer implements NormalizerInterface
 
         $createTransactionRequest['merchantAuthentication'] = $merchantAuthentication;
         $createTransactionRequest['transactionRequest'] = $transactionRequest;
-
-
 
         return $createTransactionRequest;
     }

@@ -45,7 +45,6 @@ class CardTransactor extends AbstractTransactor
         Transaction\TransactionType::SALE,
         Transaction\TransactionType::AUTH,
         Transaction\TransactionType::CAPTURE,
-        Transaction\TransactionType::CREDIT,
         Transaction\TransactionType::REFUND,
         Transaction\TransactionType::VOID,
     );
@@ -58,7 +57,7 @@ class CardTransactor extends AbstractTransactor
     /**
      * @var Serializer
      */
-    private $serializer;
+    protected $serializer;
 
     /**
      * Constructor
@@ -92,8 +91,6 @@ class CardTransactor extends AbstractTransactor
 
         $request = $client->post($postUrl, array('Content-Type' => 'application/xml'), $params);
 
-        $type = $request->getHeader('Content-Type');
-
         try {
             $response = $request->send();
             $data = (string) $response->getBody(true);
@@ -108,7 +105,13 @@ class CardTransactor extends AbstractTransactor
 
         if ($data['messages']['resultCode'] != 'Ok') {
             $result->setStatus(new Result\ResultStatus((!empty($data['response']) && '2' == $data['response']) ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
-            $result->setMessage(empty($data['responsetext']) ? 'An error occurred while processing the payment. Please try again.' : $data['responsetext']);
+            if (isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0) {
+                $error = $data['transactionResponse']['errors']['error'];
+                $result->setMessage(sprintf('Error Code: %d. %s', $error['errorCode'], $error['errorText']));
+            } else {
+                $result->setMessage('An error occurred while processing the payment. Please try again.');
+            }
+
 
             if (isset($data['transactionResponse']) && !empty($data['transactionResponse']['transId'])) {
                 $result->setExternalId($data['transactionResponse']['transId']);
@@ -195,15 +198,7 @@ class CardTransactor extends AbstractTransactor
         $request = $this->removeNS($request);
         $request = $this->serializer->decode($request, 'xml');
 
-        $ccInfo = $request['transactionRequest']['payment']['creditCard'];
-        foreach (array('cardNumber', 'cardCode', 'track1', 'track2') as $key) {
-            if (array_key_exists($key, $ccInfo)) {
-                $ccInfo[$key] = '[filtered]';
-            }
-        }
-
-        $request['transactionRequest']['payment']['creditCard'] = $ccInfo;
-
+        $request['transactionRequest']['payment']['creditCard'] = '[filtered]';
         $result->setData('request', $request);
 
         return $result;
