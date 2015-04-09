@@ -56,21 +56,24 @@ class TransactionNormalizer implements NormalizerInterface
                 if ($account instanceof SwipedCardAccount
                     && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND
                 ){
-                    $payment['trackData'] = array(
-                        'track1' => $account->getTrackOne(),
-                        'track2' => $account->getTrackTwo(),
+                    $payment['trackData'] = array();
+                    if ($account->getTrackOne()) {
+                        $payment['trackData']['track1'] = $account->getTrackOne();
+                    } elseif ($account->getTrackTwo()) {
+                        $payment['trackData']['track2'] = $account->getTrackTwo();
+                    }
+                } else {
+                    $payment = array(
+                        'creditCard' => array(
+                            'cardNumber' => $account->getAccountNumber(),
+                            'expirationDate' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
+                        )
                     );
-                }
-                $payment = array(
-                    'creditCard' => array(
-                        'cardNumber' => $account->getAccountNumber(),
-                        'expirationDate' => $account->getExpMonth()->getLongMonth() . $account->getExpYear()->getShortYear(),
-                    )
-                );
 
-                if (isset($options['enable_cvv']) && true === $options['enable_cvv']
-                    && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND) {
-                    $payment['creditCard']['cardCode'] = $account->getCvv();
+                    if (isset($options['enable_cvv']) && true === $options['enable_cvv']
+                        && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND) {
+                        $payment['creditCard']['cardCode'] = $account->getCvv();
+                    }
                 }
             } elseif ($account instanceof BankAccount) {
                 $payment = array(
@@ -117,6 +120,15 @@ class TransactionNormalizer implements NormalizerInterface
                     'country' => $account->getCountry(),
                 );
             }
+        }
+
+        if ($account instanceof SwipedCardAccount
+            && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND
+        ){
+            $transactionRequest['retail'] = array(
+                'marketType' => 2,
+                'deviceType' => 7
+            );
         }
 
         if ($context['test']) {

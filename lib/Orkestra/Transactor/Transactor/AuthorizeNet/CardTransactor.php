@@ -95,16 +95,32 @@ class CardTransactor extends AbstractTransactor
             $response = $request->send();
             $data = (string) $response->getBody(true);
             $data = $this->removeNS($data);
-            $data = $this->serializer->decode($data, 'xml');
+
+            if ($data) {
+                $data = $this->serializer->decode($data, 'xml');
+            } else {
+                throw new BadResponseException();
+            }
         } catch (BadResponseException $e) {
             $data = array(
-                'response' => '3',
-                'message' => $e->getMessage()
+                'messages' => array(
+                    'resultCode' => 'Error'
+                ),
+                'transactionResponse' => array(
+                    'responseCode' => 200,
+                    'errors' => array(
+                        'error' => array(
+                            'errorText' => 'An error occurred while processing the payment. Please try again.',
+                            'errorCode' => 200
+                        )
+                    )
+                )
             );
         }
 
         if ($data['messages']['resultCode'] != 'Ok') {
-            $result->setStatus(new Result\ResultStatus((!empty($data['response']) && '2' == $data['response']) ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
+            $responseCode = $data['transactionResponse']['responseCode'];
+            $result->setStatus(new Result\ResultStatus($responseCode > 1 && $responseCode < 5 ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
             if (isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0) {
                 $error = $data['transactionResponse']['errors']['error'];
                 $result->setMessage(sprintf('Error Code: %d. %s', $error['errorCode'], $error['errorText']));
@@ -195,10 +211,19 @@ class CardTransactor extends AbstractTransactor
     protected function filterResult(Result $result)
     {
         $request = $result->getData('request') ?: array();
-        $request = $this->removeNS($request);
-        $request = $this->serializer->decode($request, 'xml');
+        if (!is_array($request)) {
+            $request = $this->removeNS($request);
+            $request = $this->serializer->decode($request, 'xml');
 
-        $request['transactionRequest']['payment']['creditCard'] = '[filtered]';
+            if (isset($request['transactionRequest']['payment']['creditCard'])) {
+                $request['transactionRequest']['payment']['creditCard'] = '[filtered]';
+            }
+            if (isset($request['transactionRequest']['payment']['trackData'])) {
+                $request['transactionRequest']['payment']['trackData'] = '[filtered]';
+            }
+
+        }//2p6SE6bH  4877Qe2YvNM3WtxW
+
         $result->setData('request', $request);
 
         return $result;

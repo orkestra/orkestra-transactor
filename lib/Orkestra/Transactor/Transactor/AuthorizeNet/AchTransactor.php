@@ -85,10 +85,12 @@ class AchTransactor extends CardTransactor
     protected function filterResult(Result $result)
     {
         $request = $result->getData('request') ?: array();
-        $request = $this->removeNS($request);
-        $request = $this->serializer->decode($request, 'xml');
 
-        $request['transactionRequest']['payment']['bankAccount'] = '[filtered]';
+        if (!is_array($request)) {
+            $request = $this->removeNS($request);
+            $request = $this->serializer->decode($request, 'xml');
+            $request['transactionRequest']['payment']['bankAccount'] = '[filtered]';
+        }
 
         $result->setData('request', $request);
 
