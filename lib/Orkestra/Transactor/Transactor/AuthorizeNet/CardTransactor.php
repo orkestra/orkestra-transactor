@@ -238,7 +238,7 @@ class CardTransactor extends AbstractTransactor
             'enable_avs' => false,
             'enable_cvv' => false,
             'test' => false,
-            'event_id' => null,
+            'invoice_id' => null,
             'post_url'   => 'https://api.authorize.net/xml/v1/request.api',
         ));
     }

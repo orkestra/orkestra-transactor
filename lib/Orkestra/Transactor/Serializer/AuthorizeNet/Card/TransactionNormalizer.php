@@ -91,9 +91,9 @@ class TransactionNormalizer implements NormalizerInterface
             $transactionRequest['payment'] = $payment;
         }
 
-        if ($context['event_id']) {
+        if ($context['invoice_id']) {
             $transactionRequest['order'] = array();
-            $transactionRequest['order']['invoiceNumber'] = $context['event_id'];
+            $transactionRequest['order']['invoiceNumber'] = $context['invoice_id'];
         }
 
 
