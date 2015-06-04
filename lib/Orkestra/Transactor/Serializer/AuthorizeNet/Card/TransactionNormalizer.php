@@ -91,6 +91,12 @@ class TransactionNormalizer implements NormalizerInterface
             $transactionRequest['payment'] = $payment;
         }
 
+        if ($context['event_id']) {
+            $transactionRequest['order'] = array();
+            $transactionRequest['order']['invoiceNumber'] = $context['event_id'];
+        }
+
+
         if (in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::CAPTURE,
             Transaction\TransactionType::REFUND,
@@ -100,12 +106,10 @@ class TransactionNormalizer implements NormalizerInterface
         }
 
 
-        if ( isset($options['enable_avs']) && true === $options['enable_avs']
-            && in_array($transaction->getType()->getValue(), array(
+        if (in_array($transaction->getType()->getValue(), array(
             Transaction\TransactionType::SALE,
             Transaction\TransactionType::AUTH))
         ) {
-            if (isset($options['enable_avs']) && true === $options['enable_avs']) {
                 $names = explode(' ', $account->getName(), 2);
                 $firstName = isset($names[0]) ? $names[0] : '';
                 $lastName = isset($names[1]) ? $names[1] : '';
@@ -119,7 +123,6 @@ class TransactionNormalizer implements NormalizerInterface
                     'zip' => $account->getPostalCode(),
                     'country' => $account->getCountry(),
                 );
-            }
         }
 
         if ($account instanceof SwipedCardAccount

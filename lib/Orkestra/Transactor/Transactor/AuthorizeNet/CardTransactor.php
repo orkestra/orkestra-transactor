@@ -194,7 +194,7 @@ class CardTransactor extends AbstractTransactor
      */
     protected function buildParams(Transaction $transaction, array $options = array())
     {
-        return $this->serializer->serialize($transaction, 'xml', array('test' => $options['test']));
+        return $this->serializer->serialize($transaction, 'xml', $options);
     }
 
     protected function removeNS($data) {
@@ -238,6 +238,7 @@ class CardTransactor extends AbstractTransactor
             'enable_avs' => false,
             'enable_cvv' => false,
             'test' => false,
+            'event_id' => null,
             'post_url'   => 'https://api.authorize.net/xml/v1/request.api',
         ));
     }
