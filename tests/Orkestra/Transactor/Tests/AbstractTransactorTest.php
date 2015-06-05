@@ -133,7 +133,9 @@ class TestTransactor extends AbstractTransactor
         $resolver->setDefaults(array(
             'test' => 'value'
         ));
-        $resolver->setAllowedValues(array(
+        
+        // Suppress this to avoid E_USER_DEPRECATED thrown by change in OptionsResolver 2.7
+        @$resolver->setAllowedValues(array(
             'test' => array('value')
         ));
     }
