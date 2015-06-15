@@ -119,15 +119,10 @@ class CardTransactor extends AbstractTransactor
         }
 
         if ($data['messages']['resultCode'] != 'Ok') {
-            $responseCode = $data['transactionResponse']['responseCode'];
+            $responseCode = (is_array($data['transactionResponse']) && isset($data['transactionResponse']['responseCode'])) ? $data['transactionResponse']['responseCode'] : $data['messages']['message']['code'];
+            $errorMessage = isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0 ? $data['transactionResponse']['errors']['error']['text'] : $data['messages']['message']['text'];
             $result->setStatus(new Result\ResultStatus($responseCode > 1 && $responseCode < 5 ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
-            if (isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0) {
-                $error = $data['transactionResponse']['errors']['error'];
-                $result->setMessage(sprintf('Error Code: %d. %s', $error['errorCode'], $error['errorText']));
-            } else {
-                $result->setMessage('An error occurred while processing the payment. Please try again.');
-            }
-
+            $result->setMessage(sprintf('Error Code: %d. %s', $responseCode, $errorMessage));
 
             if (isset($data['transactionResponse']) && !empty($data['transactionResponse']['transId'])) {
                 $result->setExternalId($data['transactionResponse']['transId']);
