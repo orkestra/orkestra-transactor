@@ -114,6 +114,12 @@ class TransactionNormalizer implements NormalizerInterface
                 $firstName = isset($names[0]) ? $names[0] : '';
                 $lastName = isset($names[1]) ? $names[1] : '';
 
+                if (isset($context['email'])) {
+                    $transactionRequest['customer'] = array(
+                        'email' => $context['email']
+                    );
+                }
+
                 $transactionRequest['billTo'] = array(
                     'firstName' => $firstName,
                     'lastName' => $lastName,
@@ -139,6 +145,17 @@ class TransactionNormalizer implements NormalizerInterface
                 'settingName' => 'testRequest',
                 'settingValue' => 'true'
             );
+        }
+
+        if ($context['userFields']) {
+            $transactionRequest['userFields'] = array();
+            $transactionRequest['userFields']['userField'] = array();
+            foreach ($context['userFields'] as $name => $value) {
+                $transactionRequest['userFields']['userField'][] = array(
+                    'name' => $name,
+                    'value' => $value
+                );
+            }
         }
 
         $createTransactionRequest['merchantAuthentication'] = $merchantAuthentication;
