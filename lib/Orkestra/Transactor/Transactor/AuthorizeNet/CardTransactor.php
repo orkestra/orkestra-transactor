@@ -118,9 +118,9 @@ class CardTransactor extends AbstractTransactor
             );
         }
 
-        if ($data['messages']['resultCode'] != 'Ok') {
+        if ($data['messages']['resultCode'] != 'Ok' || $data['transactionResponse']['responseCode'] > 1) {
             $responseCode = (is_array($data['transactionResponse']) && isset($data['transactionResponse']['responseCode'])) ? $data['transactionResponse']['responseCode'] : $data['messages']['message']['code'];
-            $errorMessage = isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0 ? $data['transactionResponse']['errors']['error']['text'] : $data['messages']['message']['text'];
+            $errorMessage = isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0 ? $data['transactionResponse']['errors']['error']['errorText'] : $data['messages']['message']['text'];
             $result->setStatus(new Result\ResultStatus($responseCode > 1 && $responseCode < 5 ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
             $result->setMessage(sprintf('Error Code: %d. %s', $responseCode, $errorMessage));
 
@@ -235,6 +235,11 @@ class CardTransactor extends AbstractTransactor
             'test' => false,
             'invoice_id' => null,
             'post_url'   => 'https://api.authorize.net/xml/v1/request.api',
+        ));
+
+        $resolver->setOptional(array(
+            'email',
+            'userFields'
         ));
     }
 
