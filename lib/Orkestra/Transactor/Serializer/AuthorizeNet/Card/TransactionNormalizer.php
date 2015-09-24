@@ -91,9 +91,9 @@ class TransactionNormalizer implements NormalizerInterface
             $transactionRequest['payment'] = $payment;
         }
 
-        if ($context['invoice_id']) {
+        if ($context['event_id']) {
             $transactionRequest['order'] = array();
-            $transactionRequest['order']['invoiceNumber'] = $context['invoice_id'];
+            $transactionRequest['order']['invoiceNumber'] = $context['event_id'];
         }
 
 
@@ -140,14 +140,14 @@ class TransactionNormalizer implements NormalizerInterface
             );
         }
 
-        if ($context['test']) {
+        if (isset($context['test']) && $context['test'])  {
             $transactionRequest['transactionSettings']['setting'][] = array(
                 'settingName' => 'testRequest',
                 'settingValue' => 'true'
             );
         }
 
-        if ($context['userFields']) {
+        if (isset($context['userFields'])) {
             $transactionRequest['userFields'] = array();
             $transactionRequest['userFields']['userField'] = array();
             foreach ($context['userFields'] as $name => $value) {
