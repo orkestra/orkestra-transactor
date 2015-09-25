@@ -120,9 +120,21 @@ class CardTransactor extends AbstractTransactor
 
         if ($data['messages']['resultCode'] != 'Ok' || $data['transactionResponse']['responseCode'] > 1) {
             $responseCode = (is_array($data['transactionResponse']) && isset($data['transactionResponse']['responseCode'])) ? $data['transactionResponse']['responseCode'] : $data['messages']['message']['code'];
-            $errorMessage = isset($data['transactionResponse']['errors']) && count($data['transactionResponse']['errors']) > 0 ? $data['transactionResponse']['errors']['error']['errorText'] : $data['messages']['message']['text'];
-            $result->setStatus(new Result\ResultStatus($responseCode > 1 && $responseCode < 5 ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
-            $result->setMessage(sprintf('Error Code: %d. %s', $responseCode, $errorMessage));
+            $error = array('errorCode' => 3, 'errorText' => 'An error occurred while processing the transaction');
+            if (isset($data['transactionResponse'])
+                && isset($data['transactionResponse']['errors'])
+                && count($data['transactionResponse']['errors']) > 0
+            ) {
+                $error = $data['transactionResponse']['errors']['error'];
+            } else if (is_array($data['transactionResponse'])
+                && isset($data['transactionResponse']['responseCode'])
+            ) {
+
+                $error = array('errorCode' => $responseCode, 'errorText' => $responseCode == 2 ? 'The transaction was declined' : 'An error occurred while processing the transaction');
+            }
+
+            $result->setStatus(new Result\ResultStatus( 1 < $responseCode && $responseCode < 5 ? Result\ResultStatus::DECLINED : Result\ResultStatus::ERROR));
+            $result->setMessage(sprintf('Error Code: %d. %s', $error['errorCode'], $error['errorText']));
 
             if (isset($data['transactionResponse']) && !empty($data['transactionResponse']['transId'])) {
                 $result->setExternalId($data['transactionResponse']['transId']);
