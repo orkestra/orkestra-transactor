@@ -132,7 +132,7 @@ class TransactionNormalizer implements NormalizerInterface
         }
 
         if ($account instanceof SwipedCardAccount
-            && $transaction->getType()->getValue() != Transaction\TransactionType::REFUND
+            && !in_array($transaction->getType()->getValue(), array(Transaction\TransactionType::REFUND, Transaction\TransactionType::VOID))
         ){
             $transactionRequest['retail'] = array(
                 'marketType' => 2,
