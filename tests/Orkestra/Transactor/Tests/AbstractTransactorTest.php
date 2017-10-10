@@ -15,7 +15,7 @@ use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
 use Orkestra\Transactor\Entity\Transaction;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Tests the functionality provided by the AbstractTransactor
@@ -128,14 +128,13 @@ class TestTransactor extends AbstractTransactor
         throw new \RuntimeException('Critical error');
     }
 
-    protected function configureResolver(OptionsResolverInterface $resolver)
+    protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'test' => 'value'
         ));
-        $resolver->setAllowedValues(array(
-            'test' => array('value')
-        ));
+        
+        $resolver->setAllowedValues('test', array('value'));
     }
 
     public function getName()
