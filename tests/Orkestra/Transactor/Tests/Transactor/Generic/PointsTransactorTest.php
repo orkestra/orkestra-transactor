@@ -13,8 +13,8 @@ namespace Orkestra\Transactor\Tests\Transactor\Generic;
 
 use Orkestra\Transactor\Entity\Account\PointsAccount;
 use Orkestra\Transactor\Entity\Result\ResultStatus;
-use Orkestra\Transactor\Transactor\Generic\PointsTransactor;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Transactor\Generic\PointsTransactor;
 
 /**
  * Unit tests for the Points Transactor

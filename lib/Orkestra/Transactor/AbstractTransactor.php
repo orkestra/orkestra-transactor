@@ -11,12 +11,11 @@
 
 namespace Orkestra\Transactor;
 
-use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Exception\TransactorException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Base class for any Transactor
@@ -34,7 +33,7 @@ abstract class AbstractTransactor implements TransactorInterface
     protected static $supportedTypes = array();
 
     /**
-     * @var \Symfony\Component\OptionsResolver\OptionsResolverInterface
+     * @var \Symfony\Component\OptionsResolver\OptionsResolver
      */
     private $resolver;
 
@@ -94,11 +93,11 @@ abstract class AbstractTransactor implements TransactorInterface
      *
      * @see transact
      *
-     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     * @param \Symfony\Component\OptionsResolver\OptionsResolver $resolver
      *
      * @return void
      */
-    protected function configureResolver(OptionsResolverInterface $resolver)
+    protected function configureResolver(OptionsResolver $resolver)
     {
     }
 
@@ -115,7 +114,7 @@ abstract class AbstractTransactor implements TransactorInterface
     }
 
     /**
-     * @return \Symfony\Component\OptionsResolver\OptionsResolverInterface
+     * @return \Symfony\Component\OptionsResolver\OptionsResolver
      */
     private function getResolver()
     {

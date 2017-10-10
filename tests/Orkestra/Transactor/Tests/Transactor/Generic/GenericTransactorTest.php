@@ -12,8 +12,8 @@
 namespace Orkestra\Transactor\Tests\Transactor\Generic;
 
 use Orkestra\Transactor\Entity\Result\ResultStatus;
-use Orkestra\Transactor\Transactor\Generic\GenericTransactor;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Transactor\Generic\GenericTransactor;
 
 /**
  * Unit tests for the Generic Transactor

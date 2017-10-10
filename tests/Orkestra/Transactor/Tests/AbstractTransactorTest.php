@@ -11,10 +11,10 @@
 
 namespace Orkestra\Transactor\Tests;
 
-use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\AbstractTransactor;
+use Orkestra\Transactor\Entity\Credentials;
 use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Entity\Transaction;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
