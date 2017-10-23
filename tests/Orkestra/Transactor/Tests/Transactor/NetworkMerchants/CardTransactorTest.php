@@ -11,17 +11,17 @@
 
 namespace Orkestra\Transactor\Tests\Transactor\NetworkMerchants;
 
-use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
-use Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor;
-use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Transaction;
-use Orkestra\Transactor\Entity\Result;
+use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\Mock\MockPlugin;
 use Orkestra\Transactor\Entity\Account\CardAccount;
+use Orkestra\Transactor\Entity\Account\SwipedCardAccount;
+use Orkestra\Transactor\Entity\Credentials;
+use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Transactor\NetworkMerchants\CardTransactor;
 use Orkestra\Transactor\Type\Month;
 use Orkestra\Transactor\Type\Year;
-use Guzzle\Http\Client;
-use Guzzle\Plugin\Mock\MockPlugin;
-use Guzzle\Http\Message\Response;
 
 /**
  * Unit tests for the Network Merchants Card Transactor

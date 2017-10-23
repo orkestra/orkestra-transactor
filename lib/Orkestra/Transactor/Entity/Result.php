@@ -12,9 +12,9 @@
 namespace Orkestra\Transactor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Common\Type\DateTime;
 use Orkestra\Common\Type\NullDateTime;
-use Orkestra\Common\Entity\AbstractEntity;
 use Orkestra\Transactor\TransactorInterface;
 
 /**

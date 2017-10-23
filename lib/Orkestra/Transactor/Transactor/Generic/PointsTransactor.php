@@ -14,9 +14,9 @@ namespace Orkestra\Transactor\Transactor\Generic;
 use Orkestra\Transactor\AbstractTransactor;
 use Orkestra\Transactor\Entity\Account\PointsAccount;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Exception\ValidationException;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Exception\ValidationException;
 
 /**
  * Handles Points transactions

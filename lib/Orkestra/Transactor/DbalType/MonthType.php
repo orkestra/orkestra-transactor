@@ -11,9 +11,9 @@
 
 namespace Orkestra\Transactor\DbalType;
 
-use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
+use Doctrine\DBAL\Types\StringType;
 
 use Orkestra\Transactor\Type\Month;
 

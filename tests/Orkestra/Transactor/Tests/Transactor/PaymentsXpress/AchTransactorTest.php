@@ -15,11 +15,11 @@ use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 
-use Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor;
 use Orkestra\Transactor\Entity\Account\BankAccount;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
+use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Transactor\PaymentsXpress\AchTransactor;
 
 /**
  * Unit tests for the Payments Xpress ACH Transactor

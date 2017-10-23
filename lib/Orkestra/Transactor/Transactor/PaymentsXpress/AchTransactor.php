@@ -14,13 +14,13 @@ namespace Orkestra\Transactor\Transactor\PaymentsXpress;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Orkestra\Transactor\AbstractTransactor;
-use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Entity\Account\BankAccount;
+use Orkestra\Transactor\Entity\Account\BankAccount\AccountType;
 use Orkestra\Transactor\Entity\Credentials;
-use Orkestra\Transactor\Exception\ValidationException;
-use Orkestra\Transactor\Entity\Transaction;
 use Orkestra\Transactor\Entity\Result;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Exception\ValidationException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * ACH transactor for the PaymentsXpress payment processing gateway
@@ -403,9 +403,9 @@ class AchTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     * @param \Symfony\Component\OptionsResolver\OptionsResolver $resolver
      */
-    protected function configureResolver(OptionsResolverInterface $resolver)
+    protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'test_mode'  => false,
