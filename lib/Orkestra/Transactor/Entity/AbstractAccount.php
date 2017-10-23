@@ -161,7 +161,7 @@ abstract class AbstractAccount extends AbstractEntity
      */
     public function __toString()
     {
-        return (string) $this->alias;
+        return (string) ($this->alias ?: sprintf('%s ending with %s', $this->getType(), $this->lastFour));
     }
 
     /**

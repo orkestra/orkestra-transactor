@@ -107,7 +107,7 @@ class AbstractTransactorTest extends \PHPUnit_Framework_TestCase
         $result = $transactor->transact($transaction, array('test' => 'invalid value'));
         $this->assertEquals(Result\ResultStatus::ERROR, $result->getStatus());
         $this->assertEquals('An internal error occurred while processing the transaction.', $result->getMessage());
-        $this->assertEquals('The option "test" has the value "invalid value", but is expected to be one of "value"', $result->getData('message'));
+        $this->assertContains('value "invalid value"', $result->getData('message'));
         $this->assertNotEmpty($result->getData('trace'));
         $this->assertNotEmpty($result->getTransactor());
     }
