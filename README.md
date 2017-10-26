@@ -5,7 +5,7 @@ Orkestra Transactor
 
 The Transactor provides payment processing functionality to any PHP 5.4+, 7.0+ project. This library contains dependencies on Symfony and supports both Symfony 2.3+ and 3.0+.
 
-> HHVM is loosely supported, but it has not been extensively tested. Please [Report an Issue](https://github.com/orkestra/orkestra-transactor/issues/new)
+> HHVM is loosely supported, but it has not been extensively tested. Please [Report an Issue](https://github.com/orkestra/orkestra-transactor/issues/new) if you have any problems.
 
 ### Supported payment processors:
 
@@ -16,9 +16,9 @@ The Transactor provides payment processing functionality to any PHP 5.4+, 7.0+ p
 
 ## Installation
 
-Install orkestra-transactor using [Composer](https://getcomposer.org).
+Install this project using [Composer](https://getcomposer.org).
 
-Add orkestra-transactor to your project by running `compose require orkestra/transactor:~1.2`, or by adding it to your `composer.json` file:
+Add orkestra-transactor to your project by running `composer require orkestra/transactor:~1.2`, or by adding it to your `composer.json` file:
 
 ``` json
 {
