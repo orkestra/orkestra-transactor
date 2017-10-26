@@ -20,7 +20,7 @@ use Orkestra\Transactor\Entity\Account\CardAccount;
 use Orkestra\Transactor\Exception\ValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Serializer;
@@ -229,7 +229,7 @@ class CardTransactor extends AbstractTransactor
                 $request['transactionRequest']['payment']['trackData'] = '[filtered]';
             }
 
-        }//2p6SE6bH  4877Qe2YvNM3WtxW
+        }
 
         $result->setData('request', $request);
 
@@ -237,9 +237,9 @@ class CardTransactor extends AbstractTransactor
     }
 
     /**
-     * @param \Symfony\Component\OptionsResolver\OptionsResolverInterface $resolver
+     * @param \Symfony\Component\OptionsResolver\OptionsResolver $resolver
      */
-    protected function configureResolver(OptionsResolverInterface $resolver)
+    protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'enable_avs' => false,
@@ -247,11 +247,6 @@ class CardTransactor extends AbstractTransactor
             'test' => false,
             'event_id' => null,
             'post_url'   => 'https://api.authorize.net/xml/v1/request.api',
-        ));
-
-        $resolver->setOptional(array(
-            'email',
-            'userFields'
         ));
     }
 
