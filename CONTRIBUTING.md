@@ -1,7 +1,7 @@
 Contributing Guidelines
 =======================
 
-This document details the process you should follow when contributing code.
+This document details the process you should follow when contributing code to this project.
 
 Overview
 --------
@@ -26,7 +26,7 @@ git checkout master
 
 ### 3. Create a new feature branch.
 
-In a contributor's case, a bug fix is still accomplished from a feature branch.
+> Name the branch whatever you like, preferably something descriptive but still short.
 
 ``` bash
 git checkout -b feature/new-and-awesome
@@ -42,13 +42,11 @@ git push origin feature/new-and-awesome
 
 ### 5. Create a pull request from your feature branch to the master branch of this project.
 
-From your repository on the GitHub interface, click the pull request button. Select your feature branch and ensure
-the master branch of orkestra-transactor is selected.
+From your fork of the repository on GitHub, click the Pull Request button. Select your feature branch and ensure the `master` branch of orkestra-transactor is selected.
 
 
 
 Additional Info
 ---------------
 
-This project tries to follow [Semantic Version](http://semver.org). See [UPGRADE.md](UPGRADE.md) for details on backwards
-compatibilty breaks.
+This project tries to avoid BC breaks between minor and patch versions, but some minor caveats apply. See [UPGRADE.md](UPGRADE.md) for details.

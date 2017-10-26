@@ -1,13 +1,15 @@
 # Upgrade from 1.1 to 1.2
 
-1.2 brought support for common payment processors and extended support for swiped card information decoding.
+1.2 brought support for Symfony 2.3+ and 3.0+. Additionally, the Authorize.Net payment transactor was implemented and support for swiped card information decoding was improved.
 
-### BC breaks
+### Changes and BC breaks
 * `TransactorInterface` gained an additional method `createCredentials` that all Transactors must implement.
     * This method is intended to create a default set of credentials for the given transactor.
-* An additional account entity, `EncryptedSwipedCardAccount`, was introduced.
 * A `SwipedCardAccount` no longer populates account information when track data is set.
     * Instead, use an appropriate Track Decoder implementation.
+* An additional account entity, `EncryptedSwipedCardAccount`, was introduced.
+* Added Authorize.Net Card and ACH transactors.
+* Added basic plumbing for tokenization of sensitive data for Account entities.
 
 
 # Upgrade from 1.0 to 1.1
