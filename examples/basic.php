@@ -3,8 +3,10 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Orkestra\Transactor\Entity\Account\CardAccount;
-use Orkestra\Transactor\Entity\Result\ResultStatus;
 use Orkestra\Transactor\Entity\Transaction;
+use Orkestra\Transactor\Model\Result\ResultStatus;
+use Orkestra\Transactor\Model\Transaction\NetworkType;
+use Orkestra\Transactor\Model\Transaction\TransactionType;
 use Orkestra\Transactor\Transactor\NetworkMerchants;
 use Orkestra\Transactor\Type\Month;
 use Orkestra\Transactor\Type\Year;
@@ -33,8 +35,8 @@ $transaction = new Transaction();
 $transaction->setCredentials($credentials);
 $transaction->setAccount($account);
 $transaction->setAmount(2.50);
-$transaction->setNetwork(new Transaction\NetworkType(Transaction\NetworkType::CARD));
-$transaction->setType(new Transaction\TransactionType(Transaction\TransactionType::SALE));
+$transaction->setNetwork(new NetworkType(NetworkType::CARD));
+$transaction->setType(new TransactionType(TransactionType::SALE));
 
 $result = $transactor->transact($transaction);
 
@@ -49,7 +51,7 @@ echo "Sale Approved, Transaction ID: " . $result->getExternalId() . PHP_EOL;
 
 
 // Refund the sale
-$refund = $transaction->createChild(new Transaction\TransactionType(Transaction\TransactionType::REFUND));
+$refund = $transaction->createChild(new TransactionType(TransactionType::REFUND));
 
 $result = $transactor->transact($refund);
 
